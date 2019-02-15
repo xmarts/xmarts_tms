@@ -64,7 +64,7 @@
 # proxy = WSDL.Proxy(wsdl, namespace = namespace)
 # proxy.soapproxy.config.debug = 1
 
-# proxy.GetCursOnDate(input)
+# proxy.GetCursOnDate(input)     MXCIK161109FH2
 
 
 from zeep import Client
@@ -96,3 +96,5 @@ for r in tree.findall("RESULTADOS/DISTANCIA_TOTAL"):
 # print (thora)
 # print(tmin)
 # print (float(thora)+(float(tmin)/60))
+
+#** NOTA DE CREDITO POR EL 5% DE LA FACTURA

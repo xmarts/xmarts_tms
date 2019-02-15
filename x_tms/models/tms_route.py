@@ -83,23 +83,31 @@ class TmsRoute(models.Model):
     @api.multi
     def get_route_soap(self):
         paradas = []
+        it = 0
         for r in self.route_place_ids:
             paradas.append([r.place_id.name,r.place_id.latitude,r.place_id.longitude])
+            it += 1
+        it = 20 - it
+        if it > 0:
+            i = 0
+            while it > i:
+                paradas.append(["",0,0])
+                i += 1
 
         client = Client('http://www.gmapserver.com/GlobalMap_API/V3/GlobalMapWSDL.wsdl')
         result = client.service.CalcularRuta("225217657648564", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3,
         str(self.departure_id.name), self.departure_id.latitude, self.departure_id.longitude, 0, 0,
         str(self.arrival_id.name), self.arrival_id.latitude, self.arrival_id.longitude, 0, 0,
-        str(paradas[0][0] or ""), float(paradas[0][1] or 0), float(paradas[0][1] or 0), 0, 0, str(paradas[1][0] or ""), float(paradas[1][1] or 0), float(paradas[1][2] or 0), 0, 0, 
-        str(paradas[2][0] or ""), float(paradas[2][1] or 0), float(paradas[2][1] or 0), 0, 0, str(paradas[3][0] or ""), float(paradas[3][1] or 0), float(paradas[3][2] or 0), 0, 0, 
-        str(paradas[4][0] or ""), float(paradas[4][1] or 0), float(paradas[4][1] or 0), 0, 0, str(paradas[5][0] or ""), float(paradas[5][1] or 0), float(paradas[5][2] or 0), 0, 0, 
-        str(paradas[6][0] or ""), float(paradas[6][1] or 0), float(paradas[6][1] or 0), 0, 0, str(paradas[7][0] or ""), float(paradas[7][1] or 0), float(paradas[7][2] or 0), 0, 0, 
-        str(paradas[8][0] or ""), float(paradas[8][1] or 0), float(paradas[8][1] or 0), 0, 0, str(paradas[9][0] or ""), float(paradas[9][1] or 0), float(paradas[9][2] or 0), 0, 0, 
-        str(paradas[10][0] or ""), float(paradas[10][1] or 0), float(paradas[10][1] or 0), 0, 0, str(paradas[11][0] or ""), float(paradas[11][1] or 0), float(paradas[11][2] or 0), 0, 0, 
-        str(paradas[12][0] or ""), float(paradas[12][1] or 0), float(paradas[12][1] or 0), 0, 0, str(paradas[13][0] or ""), float(paradas[13][1] or 0), float(paradas[13][2] or 0), 0, 0, 
-        str(paradas[14][0] or ""), float(paradas[14][1] or 0), float(paradas[14][1] or 0), 0, 0, str(paradas[15][0] or ""), float(paradas[15][1] or 0), float(paradas[15][2] or 0), 0, 0, 
-        str(paradas[16][0] or ""), float(paradas[16][1] or 0), float(paradas[16][1] or 0), 0, 0, str(paradas[17][0] or ""), float(paradas[17][1] or 0), float(paradas[17][2] or 0), 0, 0, 
-        str(paradas[18][0] or ""), float(paradas[18][1] or 0), float(paradas[18][1] or 0), 0, 0, str(paradas[19][0] or ""), float(paradas[19][1] or 0), float(paradas[19][2] or 0), 0, 0, 
+        str(paradas[0][0] or ""), float(paradas[0][1] or 0), float(paradas[0][2] or 0), 0, 0, str(paradas[1][0] or ""), float(paradas[1][1] or 0), float(paradas[1][2] or 0), 0, 0,
+        str(paradas[2][0] or ""), float(paradas[2][1] or 0), float(paradas[2][2] or 0), 0, 0, str(paradas[3][0] or ""), float(paradas[3][1] or 0), float(paradas[3][2] or 0), 0, 0,
+        str(paradas[4][0] or ""), float(paradas[4][1] or 0), float(paradas[4][2] or 0), 0, 0, str(paradas[5][0] or ""), float(paradas[5][1] or 0), float(paradas[5][2] or 0), 0, 0,
+        str(paradas[6][0] or ""), float(paradas[6][1] or 0), float(paradas[6][2] or 0), 0, 0, str(paradas[7][0] or ""), float(paradas[7][1] or 0), float(paradas[7][2] or 0), 0, 0,
+        str(paradas[8][0] or ""), float(paradas[8][1] or 0), float(paradas[8][2] or 0), 0, 0, str(paradas[9][0] or ""), float(paradas[9][1] or 0), float(paradas[9][2] or 0), 0, 0,
+        str(paradas[10][0] or ""), float(paradas[10][1] or 0), float(paradas[10][2] or 0), 0, 0, str(paradas[11][0] or ""), float(paradas[11][1] or 0), float(paradas[11][2] or 0), 0, 0,
+        str(paradas[12][0] or ""), float(paradas[12][1] or 0), float(paradas[12][2] or 0), 0, 0, str(paradas[13][0] or ""), float(paradas[13][1] or 0), float(paradas[13][2] or 0), 0, 0,
+        str(paradas[14][0] or ""), float(paradas[14][1] or 0), float(paradas[14][2] or 0), 0, 0, str(paradas[15][0] or ""), float(paradas[15][1] or 0), float(paradas[15][2] or 0), 0, 0,
+        str(paradas[16][0] or ""), float(paradas[16][1] or 0), float(paradas[16][2] or 0), 0, 0, str(paradas[17][0] or ""), float(paradas[17][1] or 0), float(paradas[17][2] or 0), 0, 0,
+        str(paradas[18][0] or ""), float(paradas[18][1] or 0), float(paradas[18][2] or 0), 0, 0, str(paradas[19][0] or ""), float(paradas[19][1] or 0), float(paradas[19][2] or 0), 0, 0,
         )
         result = result.encode('utf-8')
         tree = ET.XML(result)
