@@ -291,7 +291,7 @@
                         <page string="Waybills">
                             <group>
                                 <field name="waybill_ids" nolabel="1" context="{'form_view_ref': 'tms.view_tms_waybill_form_expense'}">
-                                    <tree create="false">
+                                    <tree create="false" >
                                         <field name="name"/>
                                         <field name="date_order"/>
                                         <field name="partner_id"/>
@@ -386,7 +386,7 @@
         <field name="name">TMS Travel</field>
         <field name="res_model">tms.travel</field>
         <field name="view_type">form</field>
-        <field name="view_mode">tree,form,gantt</field>
+        <field name="view_mode">tree,form,gantt,graph</field>
         <field name="view_id" ref="view_tms_travel_tree_report"/>
         <field name="context">{&quot;search_default_progress&quot;:1, 'search_default_date_dispatched': 1}</field>
     </record>

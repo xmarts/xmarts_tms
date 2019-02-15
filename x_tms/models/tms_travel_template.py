@@ -217,6 +217,21 @@ class TmsTravelTemplate(models.Model):
             rec.message_post('Travel Dispatched')
 
     @api.multi
+    def create_travel(self):
+        self.ensure_one()
+        vals = self
+        travel = self.env['tms.travel'].create(vals)
+        if not travel.operating_unit_id.travel_sequence_id:
+            raise ValidationError(_(
+                'You need to define the sequence for travels in base %s' %
+                travel.operating_unit_id.name
+            ))
+        sequence = travel.operating_unit_id.travel_sequence_id
+        travel.name = sequence.next_by_id()
+        return travel
+
+        
+    @api.multi
     def action_done(self):
         for rec in self:
             odometer = self.env['fleet.vehicle.odometer'].create({
@@ -251,7 +266,7 @@ class TmsTravelTemplate(models.Model):
 
     @api.model
     def create(self, values):
-        travel = super(TmsTravel, self).create(values)
+        travel = super(TmsTravelTemplate, self).create(values)
         if not travel.operating_unit_id.travel_sequence_id:
             raise ValidationError(_(
                 'You need to define the sequence for travels in base %s' %

@@ -12,6 +12,7 @@
                 <field name="amount_untaxed" sum="Amount Untaxed"/>
                 <field name="amount_tax"/>
                 <field name="amount_total"/>
+                <field name="waybill_type" invisible="1" />
                 <field invisible="1" name="invoice_id"/>
                 <field invisible="1" name="user_id"/>
                 <field name="state"/>
@@ -33,7 +34,12 @@
                     <field name="state" statusbar_visible="draft,approved,confirmed" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <h3>
+                        <field name="waybill_type" readonly="1" />
+                        
+                    </h3>
                     <h1>
+
                         <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Waybill - " style="font-size:30px;"/>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
@@ -43,6 +49,7 @@
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" groups="base.group_multi_currency" name="currency_id"/>
                         <separator colspan="4" string="·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·" style="text-align: center;"/>
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" colspan="4" domain="[('customer','=',True), ('is_company', '=', True)]" name="partner_id"/>
+                        <!--  -->
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" context="{'search_default_customer':1, 'show_address': 1}" domain="[('parent_id','=',partner_id)]" name="partner_order_id" options="{&quot;always_reload&quot;: True}"/>
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" context="{'search_default_customer':1, 'show_address': 1}" domain="[('parent_id','=',partner_id)]" name="partner_invoice_id" options="{&quot;always_reload&quot;: True}"/>
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" context="{'search_default_customer':1, 'show_address': 1}" name="departure_address_id" options="{&quot;always_reload&quot;: True}"/>
@@ -204,6 +211,7 @@
                         <field name="state" statusbar_visible="draft,approved,confirmed" widget="statusbar"/>
                     </header>
                     <h1>
+                    <field name="waybill_type" readonly="1" />
                         <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Waybill - " style="font-size:30px;"/>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
@@ -357,8 +365,20 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,calendar,graph</field>
         <field name="search_view_id" ref="view_tms_waybill_filter"/>
-        <field name="context">{&quot;search_default_user_id&quot;:uid, 'search_default_this_month': 1}</field>
+        <field name="domain" >[('waybill_type','=','waybill')]</field>
+        <field name="context">{&quot;search_default_user_id&quot;:uid, 'search_default_this_month': 1, 'default_waybill_type': 'waybill'}</field>
         <field name="help">Waybills</field>
+    </record>
+    <record id="action_tms_request_form" model="ir.actions.act_window">
+        <field name="name">Solicitudes de Transporte</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.waybill</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,calendar,graph</field>
+        <field name="search_view_id" ref="view_tms_waybill_filter"/>
+        <field name="domain" >[('waybill_type','=','request')]</field>
+        <field name="context">{&quot;search_default_user_id&quot;:uid, 'search_default_this_month': 1, 'default_waybill_type': 'request'}</field>
+        <field name="help">Solicitudes de Transporte</field>
     </record>
     <record id="action_tms_invoice" model="ir.values">
         <field name="name">Trial Balance</field>

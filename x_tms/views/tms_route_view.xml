@@ -31,6 +31,7 @@
                 <field name="distance_loaded"/>
                 <field name="distance_empty"/>
                 <field name="travel_time" widget="float_time"/>
+
             </tree>
         </field>
     </record>
@@ -42,6 +43,7 @@
                 <header>
                     <button name="get_route_info" string="Get Route Info from Google" type="object"/>
                     <button name="open_in_google" string="View in Google Maps" type="object"/>
+                    <button name="get_route_soap" string="Obtener Ruta" type="object"/>
                 </header>
                 <sheet>
                     <group col="4" colspan="4">
@@ -57,6 +59,7 @@
                         <field name="distance_loaded"/>
                         <field name="distance_empty"/>
                         <field name="active"/>
+                        <field name="mapa_link" widget="url" target="new" />
                     </group>
                     <notebook>
                         <page string="Places">

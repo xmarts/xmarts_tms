@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="employee_category_list">
+      <field name="name">hr_employee_category_menu</field>
+      <field name="model">hr.employee.category</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+  	  <record model="ir.ui.view" id="tms_hr_employee_category_list">
+      <field name="name">hr_employee_category</field>
+      <field name="model">hr.employee.category</field>
+      <field name="arch" type="xml">
+	  <form string="Vehicle Status Log">
+                  
+                    <sheet>
+                       <group name="group0"> 
+                            <field name="name"/>
+                            
+                        </group>
+                    </sheet>
+                </form>
+         </field>
+     </record>
+    </data>
+</odoo>
+            

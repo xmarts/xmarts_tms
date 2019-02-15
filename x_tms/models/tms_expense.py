@@ -22,9 +22,7 @@ class TmsExpense(models.Model):
         'operating.unit', string="Operating Unit", required=True)
     employee_id = fields.Many2one(
         'hr.employee', 'Driver', required=True,)
-    travel_ids = fields.Many2many(
-        'tms.travel',
-        string='Travels')
+    travel_ids = fields.Many2many('tms.travel',string='Travels')
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
     currency_id = fields.Many2one(

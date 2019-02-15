@@ -7,7 +7,15 @@
 import requests
 import simplejson as json
 from odoo import _, api, exceptions, fields, models
+import base64
+from suds.client import Client
+from lxml import etree
+from zeep import Client
+from xml.etree import ElementTree as ET
+import sys
+import locale
 
+locale.setlocale(locale.LC_ALL, 'es_MX.UTF-8')
 
 class TmsRoute(models.Model):
     _name = 'tms.route'
@@ -67,6 +75,54 @@ class TmsRoute(models.Model):
                     _("The value must be positive and lower than"
                         " the distance route."))
             rec.distance_empty = rec.distance - rec.distance_loaded
+
+    #ruta_file = fields.Binary('Archivo, detalles de ruta', readonly=True)
+
+    mapa_link = fields.Char(string="Link de ruta")
+
+    @api.multi
+    def get_route_soap(self):
+        paradas = []
+        for r in self.route_place_ids:
+            paradas.append([r.place_id.name,r.place_id.latitude,r.place_id.longitude])
+
+        client = Client('http://www.gmapserver.com/GlobalMap_API/V3/GlobalMapWSDL.wsdl')
+        result = client.service.CalcularRuta("225217657648564", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3,
+        str(self.departure_id.name), self.departure_id.latitude, self.departure_id.longitude, 0, 0,
+        str(self.arrival_id.name), self.arrival_id.latitude, self.arrival_id.longitude, 0, 0,
+        str(paradas[0][0] or ""), float(paradas[0][1] or 0), float(paradas[0][1] or 0), 0, 0, str(paradas[1][0] or ""), float(paradas[1][1] or 0), float(paradas[1][2] or 0), 0, 0, 
+        str(paradas[2][0] or ""), float(paradas[2][1] or 0), float(paradas[2][1] or 0), 0, 0, str(paradas[3][0] or ""), float(paradas[3][1] or 0), float(paradas[3][2] or 0), 0, 0, 
+        str(paradas[4][0] or ""), float(paradas[4][1] or 0), float(paradas[4][1] or 0), 0, 0, str(paradas[5][0] or ""), float(paradas[5][1] or 0), float(paradas[5][2] or 0), 0, 0, 
+        str(paradas[6][0] or ""), float(paradas[6][1] or 0), float(paradas[6][1] or 0), 0, 0, str(paradas[7][0] or ""), float(paradas[7][1] or 0), float(paradas[7][2] or 0), 0, 0, 
+        str(paradas[8][0] or ""), float(paradas[8][1] or 0), float(paradas[8][1] or 0), 0, 0, str(paradas[9][0] or ""), float(paradas[9][1] or 0), float(paradas[9][2] or 0), 0, 0, 
+        str(paradas[10][0] or ""), float(paradas[10][1] or 0), float(paradas[10][1] or 0), 0, 0, str(paradas[11][0] or ""), float(paradas[11][1] or 0), float(paradas[11][2] or 0), 0, 0, 
+        str(paradas[12][0] or ""), float(paradas[12][1] or 0), float(paradas[12][1] or 0), 0, 0, str(paradas[13][0] or ""), float(paradas[13][1] or 0), float(paradas[13][2] or 0), 0, 0, 
+        str(paradas[14][0] or ""), float(paradas[14][1] or 0), float(paradas[14][1] or 0), 0, 0, str(paradas[15][0] or ""), float(paradas[15][1] or 0), float(paradas[15][2] or 0), 0, 0, 
+        str(paradas[16][0] or ""), float(paradas[16][1] or 0), float(paradas[16][1] or 0), 0, 0, str(paradas[17][0] or ""), float(paradas[17][1] or 0), float(paradas[17][2] or 0), 0, 0, 
+        str(paradas[18][0] or ""), float(paradas[18][1] or 0), float(paradas[18][1] or 0), 0, 0, str(paradas[19][0] or ""), float(paradas[19][1] or 0), float(paradas[19][2] or 0), 0, 0, 
+        )
+        result = result.encode('utf-8')
+        tree = ET.XML(result)
+        distancia = ""
+        tiempo = ""
+        for r in tree.findall("RESULTADOS/DISTANCIA_TOTAL"):
+            distancia = r.text
+            distancia = distancia[:-4]
+
+        thora = ""
+        tmin = ""
+        for r in tree.findall("RESULTADOS/TIEMPO_TOTAL"):
+            tiempo = r.text
+            thora = tiempo[:-5]
+            tmin = tiempo[4:6]
+
+        for r in tree.findall("LINKS/MAPA"):
+            self.mapa_link = r.text
+        
+        print(result)
+        self.distance = float(distancia.replace(",",""))
+        self.travel_time = (float(thora)+(float(tmin)/60))
+
 
     @api.multi
     def get_route_info(self, error=False):
@@ -150,3 +206,5 @@ class TmsRoute(models.Model):
                 ('type', '=', framework)
             ])
         return fuel_id.performance
+
+

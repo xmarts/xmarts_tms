@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    
+    
+<!-- comienzo formulario TMS-->
+
+
+     <record id="tms_modelo_form" model="ir.ui.view">
+    <field name="name">add_tms</field>
+    <field name="model">add_tms.add_tms</field>
+    <field name="arch" type="xml">
+     
+       <form string ="Formulario de datos de vivienda">
+         <header>
+      <button string="Set to draft" type="object" name="draft_progressbar" attrs="{'invisible': [('state', '=', 'draft')]}"/>
+
+      <button string="Cancel" type="object" icon="fa-times" name="Cancel_progressbar" attrs="{'invisible': [('state','=','cancel')]}"/>
+      <button string="Done" type="object" icon="fa-check-square"  name="done_progressbar" attrs="{'invisible': [('state','=','done')]}"/>
+      
+      <field name="state" widget="statusbar"/>
+  </header>
+
+            <sheet> 
+                <group col="4" colspan="4">
+                        <h1>
+                          <label for="red_tape_id" class="oe_edit_only"/>
+                    <field name="red_tape_id" />
+                        </h1>
+                    </group>
+             
+                        <group col="4">
+                            <field name="vehicle_id"/>
+                            <field name="date"/>
+                            <field name="vehicle_type_id"/>                            
+                            <field name="partner_id"/>
+                            <field name="name" colspan="4"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="amount"/>
+                            <field name="amount_paid"/>
+                        </group>
+                        <separator string="Notes" colspan="4"/>
+                        <field name="notes" nolabel="1"/>
+                    </sheet>
+</form>       
+</field>
+</record>
+
+
+
+<!-- Fin -->
+
+
+<!-- cambio a la vista advances -->
+
+ <record model='ir.ui.view' id="xmarts_advances">
+      <field name="name">xmarts_advances</field>
+      <field name="model">tms.advance</field>
+      <field name="inherit_id" ref="x_tms.view_tms_advance_form" />
+      <field name="arch" type="xml">
+         
+            <xpath expr="//field[@name='employee_id']" position="after">
+              
+               <field name="vehicle_id"/>
+              
+                         
+           </xpath>
+            <xpath expr="//field[@name='product_id']" position="after">
+              
+               
+               <field name="product_uom_qty"/>
+               <field name="price_unit"/>
+               <field name="subtotal" class="oe_text_right" widget="monetary"/>
+              
+                         
+           </xpath>
+             <xpath expr="//field[@name='amount']" position="after">
+              
+             
+               <field name="total" class="oe_text_right" widget="monetary"/>
+               <field name="currency_id"/>
+               
+
+                         
+           </xpath>
+          
+      </field>
+     </record>
+
+<!-- Fin -->
+
+     <!--   menus agregados -->
+    
+    <record model="ir.actions.act_window" id="add_tms_tramites">
+      <field name="name">Tramites Vehiculares</field>
+      <field name="res_model">add_tms.add_tms</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    
+
+    <menuitem name="Tramites vehiculares" id="add_tms_tramites_menu_1_list" parent="x_tms.menu_tms_travels"
+              action="add_tms_tramites"/>
+   
+
+
+
+  <record model="ir.actions.act_window" id="add_tms_operaciones">
+      <field name="name">TMS Operaciones</field>
+      <field name="res_model">tms_operat.tms_operat</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Operaciones" id="add_operaciones_menu_2_list" parent="x_tms.menu_tms_travels"
+              action="add_tms_operaciones"/>
+    
+      <record model="ir.actions.act_window" id="add_tms_tipo_tramite_vehicular">
+      <field name="name">Tipo de Tramite Vehicular</field>
+      <field name="res_model">fleet.vehicle.red_tape_type</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Tipo de Trámites Vehiculares" id="add_operaciones_menu_3_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_tipo_tramite_vehicular"/>
+
+        <record model="ir.actions.act_window" id="add_tms_tipo_eventos_acciones">
+      <field name="name">Eventos y Acciones</field>
+      <field name="res_model">tms.event.action</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Acciones" id="add_operaciones_menu_4_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_eventos_acciones"/>
+
+           <record model="ir.actions.act_window" id="add_tms_tipo_tipos_eventos">
+      <field name="name">Categorías de Eventos</field>
+      <field name="res_model">tms.event.category</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Tipos de Eventos" id="add_operaciones_menu_5_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_tipos_eventos"/>
+
+      <record model="ir.actions.act_window" id="add_tms_odometro">
+      <field name="name">Odómetro del Vehículo</field>
+      <field name="res_model">fleet.vehicle.odometer.device</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Odómetro del Vehículo" id="add_operaciones_menu_6_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_odometro"/>
+
+
+     <record model="ir.actions.act_window" id="add_tms_atas_bajas">
+      <field name="name">Dar de Alta/Baja Vehículos</field>
+      <field name="res_model">fleet.vehicle.status_reason.data</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Historial del Vehículo" id="add_operaciones_menu_7_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_atas_bajas"/>
+
+
+        <record model="ir.actions.act_window" id="add_tms_categorias_vehiculos">
+      <field name="name">Tipo de Vehículos</field>
+      <field name="res_model">fleet.vehicle.category</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Tipo de Vehículos" id="add_operaciones_menu_8_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_categorias_vehiculos"/>
+
+           <record model="ir.actions.act_window" id="add_tms_razon_estado">
+      <field name="name">Razón de Estado</field>
+      <field name="res_model">fleet.vehicle.status_reason</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Razón de Estado" id="add_operaciones_menu_9_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_razon_estado"/>
+
+
+        <record model="ir.actions.act_window" id="add_tms_tipos_motor">
+      <field name="name">Tipos de Motor</field>
+      <field name="res_model">fleet.vehicle.motor</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Tipos de Motor" id="add_operaciones_menu_10_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_tipos_motor"/>
+
+
+      <record model="ir.actions.act_window" id="add_tms_vigencia_motor">
+      <field name="name">Datos de Vigencia</field>
+      <field name="res_model">fleet.vehicle.validity</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Documentos con Vigencia" id="add_operaciones_menu_11_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_vigencia_motor"/>
+
+            <record model="ir.actions.act_window" id="add_tms_llantas_motor">
+      <field name="name">Llenado de Llantas</field>
+      <field name="res_model">tms.tires</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Llantas" id="add_operaciones_menu_12_list" parent="x_tms.menu_tms_settings" action="add_tms_llantas_motor"/>
+
+       <record model="ir.actions.act_window" id="add_tms_etiquetas_contacto_motor">
+      <field name="name">Etiquetas del empleado</field>
+      <field name="res_model">hr.employee.category</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Categoría de Empleado" id="add_operaciones_menu_13_list" parent="x_tms.menu_tms_settings_operators" action="add_tms_etiquetas_contacto_motor"/>
+
+        <record model="ir.actions.act_window" id="add_tms_place">
+      <field name="name">TMS Plazas</field>
+      <field name="res_model">tms.place</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+        <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/>
+
+      
+   
+       
+   
+       
+   
+
+  </data>
+</odoo>

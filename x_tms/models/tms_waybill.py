@@ -22,6 +22,7 @@ class TmsWaybill(models.Model):
     _description = 'Waybills'
     _order = 'name desc'
 
+    waybill_type = fields.Selection([('waybill','Carta Porte'),('request','Solicitud Transporte')], string="Estado de solicitud", default='draft')
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit', required=True)
     customer_factor_ids = fields.One2many(

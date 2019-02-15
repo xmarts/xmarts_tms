@@ -7,66 +7,290 @@
 
     <!-- Menu Solicitud de Transporte -->
     <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
-    <menuitem id="menu_tms_soli" action="action_tms_waybill_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="1"/>
+    <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/>
 
 
     <!-- Menu Viajes -->
-    <menuitem id="menu_tms_travels" name="Freights" parent="menu_tms" sequence="10"/>
-    <menuitem action="fleet.fleet_vehicle_log_fuel_action" id="fuel_vehicle_log_menu" name="Fuel Voucher" parent="menu_tms_travels" sequence="4"/>
-    <menuitem action="open_view_tms_advance_form" id="menu_tms_advance_form" name="Advances" parent="menu_tms_travels" sequence="3"/>
-    <menuitem action="open_view_tms_travel_template_form" id="menu_tms_travel_template_form" name="Plantilla de viaje" parent="menu_tms_travels" sequence="6"/>
-    <menuitem action="open_view_tms_travel_form" id="menu_tms_travel_form" name="Travels" parent="menu_tms_travels" sequence="1"/>
-    <menuitem action="action_tms_waybill_form" id="menu_tms_waybill" parent="menu_tms_travels" sequence="2" groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic"/>
+    <menuitem id="menu_tms_travels" name="Freights" parent="menu_tms" sequence="2"/>
+    <menuitem action="open_view_tms_travel_form" id="menu_tms_travel_form" name="Travels" parent="menu_tms_travels" sequence="21"/>
+    <menuitem action="action_tms_waybill_form" id="menu_tms_waybill" parent="menu_tms_travels" sequence="22" groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic"/>
+    <menuitem action="open_view_tms_advance_form" id="menu_tms_advance_form" name="Advances" parent="menu_tms_travels" sequence="23"/>
+    <menuitem action="fleet.fleet_vehicle_log_fuel_action" id="fuel_vehicle_log_menu" name="Fuel Voucher" parent="menu_tms_travels" sequence="24"/>
+
+    <menuitem action="open_view_tms_travel_template_form" id="menu_tms_travel_template_form" name="Plantilla de viaje" parent="menu_tms_travels" sequence="26"/>
 
     
     <!-- Menu Administracion -->
-    <menuitem id="menu_tms_admin" name="Administración" parent="menu_tms" sequence="10"/>
-    <menuitem action="fleet.fleet_vehicle_odometer_action" id="tms_fleet_vehicle_odometer_menu" parent="menu_tms_admin" name="Units Odometers" sequence="3"/>
-    <menuitem action="action_tms_expense_loan_form" id="hr_menu_tms_expense_loan" parent="menu_tms_admin" sequence="2" />
-    <menuitem action="action_tms_expense_form" id="menu_tms_expense" parent="menu_tms_admin" sequence="1"/>
+    <menuitem id="menu_tms_admin" name="Administración" parent="menu_tms" sequence="3"/>
+    <menuitem action="fleet.fleet_vehicle_odometer_action" id="tms_fleet_vehicle_odometer_menu" parent="menu_tms_admin" name="Units Odometers" sequence="33"/>
+    <menuitem action="action_tms_expense_loan_form" id="hr_menu_tms_expense_loan" parent="menu_tms_admin" sequence="32" />
+    <menuitem action="action_tms_expense_form" id="menu_tms_expense" parent="menu_tms_admin" sequence="31"/>
 
 
     <!-- Menu Reportes -->
-    <menuitem id="menu_tms_reports" name="Reports" parent="menu_tms" sequence="50"/>
-    <menuitem action="open_view_tms_travel_report" id="menu_tms_travel_report" name="Travels" parent="menu_tms_reports" sequence="1"/>
+    <menuitem id="menu_tms_reports" name="Reports" parent="menu_tms" sequence="4"/>
+    <menuitem action="open_view_tms_travel_report" id="menu_tms_travel_report" name="Travels" parent="menu_tms_reports" sequence="41"/>
+    <menuitem action="open_view_tms_event_form" id="menu_tms_event_report" name="Eventos" parent="menu_tms_reports" sequence="46"/>
 
-
-    <menuitem id="menu_tms_settings" name="Configuration" parent="menu_tms" sequence="99"/>
+    <!-- Menu Settings Principal -->
+    <menuitem id="menu_tms_settings" name="Configuration" parent="menu_tms" sequence="9"/>
     
+
+    <!-- SubMenu 1 -->
+    <record id="action_partner_tms" model="ir.actions.act_window">
+        <field name="name">Clientes</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('customer','=',True)]</field>
+        <field name="filter" eval="True"/>
+    </record>
     <menuitem id="menu_tms_settings_partners" name="Clientes" parent="menu_tms_settings" sequence="101"/>
+    <menuitem id="menu_tms_partners" name="Clientes" action="action_partner_tms" parent="menu_tms_settings_partners" sequence="1"/>
+
+    <!-- SubMenu 2 -->
+    <record id="action_partner_tms_supp" model="ir.actions.act_window">
+        <field name="name">Proveedores</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="domain">[('supplier','=',True)]</field>
+        <field name="filter" eval="True"/>
+    </record>
     <menuitem id="menu_tms_settings_suppliers" name="Proveedores" parent="menu_tms_settings" sequence="102"/>
+     <menuitem id="menu_tms_suppliers" name="Proveedores" action="action_partner_tms_supp" parent="menu_tms_settings_suppliers" sequence="1"/>
+
+     <!-- SubMenu 3 -->
     <menuitem id="menu_tms_settings_operators" name="Operadores" parent="menu_tms_settings" sequence="103"/>
+    <menuitem action="tms_open_view_employee_list" id="menu_tms_open_view_employee_list" name="Drivers" parent="menu_tms_settings_operators" sequence="115"/>
+
+    <!-- SubMenu 4 -->
     <menuitem id="menu_tms_settings_routes" name="Routes" parent="menu_tms_settings" sequence="104"/>
+    <menuitem id="tms_route_tollstation_menu" sequence="121" name="Toll Stations" parent="menu_tms_settings_routes" action="action_tms_route_tollstation"/>
+    <menuitem action="open_view_tms_route_form" id="menu_tms_settings_route_form" name="Routes" parent="menu_tms_settings_routes" sequence="122"/>
+    <menuitem action="open_view_tms_place_form" id="menu_tms_settings_route_place_form" name="Places" parent="menu_tms_settings_routes" sequence="123"/>
+
+    <!-- SubMenu 5 -->
+    <record id="action_product_category_tms" model="ir.actions.act_window">
+        <field name="name">Categorias de Productos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.category</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain"></field>
+        <field name="filter" eval="True"/>
+    </record>
     <menuitem id="menu_tms_settings_products" name="Productos" parent="menu_tms_settings" sequence="105"/>
+    <menuitem action="action_product_category_tms" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/>
+
+    <!-- <menuitem action="tms_open_view_product_list" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/> -->
+
+    <!-- Records de direccionamiento -->
+    <record id="tms_open_view_product_list1" model="ir.actions.act_window">
+        <field name="name">Fletes</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'freight')]</field>
+        <field name="context">{'default_tms_product_category': 'freight'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list2" model="ir.actions.act_window">
+        <field name="name">Movimientos</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'move')]</field>
+        <field name="context">{'default_tms_product_category': 'move'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list3" model="ir.actions.act_window">
+        <field name="name">Seguros</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'insurance')]</field>
+        <field name="context">{'default_tms_product_category': 'insurance'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list4" model="ir.actions.act_window">
+        <field name="name">Casetas</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'tolls')]</field>
+        <field name="context">{'default_tms_product_category': 'tolls'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list5" model="ir.actions.act_window">
+        <field name="name">Otro</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'other')]</field>
+        <field name="context">{'default_tms_product_category': 'other'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list6" model="ir.actions.act_window">
+        <field name="name">Gasto Real</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'real_expense')]</field>
+        <field name="context">{'default_tms_product_category': 'real_expense'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list7" model="ir.actions.act_window">
+        <field name="name">Gasto Falso</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'made_up_expense')]</field>
+        <field name="context">{'default_tms_product_category': 'made_up_expense'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list8" model="ir.actions.act_window">
+        <field name="name">Salario</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'salary')]</field>
+        <field name="context">{'default_tms_product_category': 'salary'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list9" model="ir.actions.act_window">
+        <field name="name">Retención de Salario</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'salary_retention')]</field>
+        <field name="context">{'default_tms_product_category': 'salary_retention'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list10" model="ir.actions.act_window">
+        <field name="name">Descuento de Salario</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'salary_discount')]</field>
+        <field name="context">{'default_tms_product_category': 'salary_discount'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list11" model="ir.actions.act_window">
+        <field name="name">Combustible</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'fuel')]</field>
+        <field name="context">{'default_tms_product_category': 'fuel'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list12" model="ir.actions.act_window">
+        <field name="name">Otro Ingreso</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'other_income')]</field>
+        <field name="context">{'default_tms_product_category': 'other_income'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list13" model="ir.actions.act_window">
+        <field name="name">Reembolso</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'refund')]</field>
+        <field name="context">{'default_tms_product_category': 'refund'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list14" model="ir.actions.act_window">
+        <field name="name">Balance Negativo</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'negative_balance')]</field>
+        <field name="context">{'default_tms_product_category': 'negative_balance'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list15" model="ir.actions.act_window">
+        <field name="name">Combustible en efectivo</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'fuel_cash')]</field>
+        <field name="context">{'default_tms_product_category': 'fuel_cash'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list16" model="ir.actions.act_window">
+        <field name="name">Casetas (Liquidaciones)</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'tollstations')]</field>
+        <field name="context">{'default_tms_product_category': 'tollstations'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+    <record id="tms_open_view_product_list17" model="ir.actions.act_window">
+        <field name="name">Préstamo</field>
+        <field name="res_model">product.template</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('tms_product_category', '=', 'loan')]</field>
+        <field name="context">{'default_tms_product_category': 'loan'}</field>
+        <field eval="False" name="view_id"/>
+    </record>
+
+
+    <!-- SubMenu 6 -->
     <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
+    <menuitem action="tms_open_view_product_list1" id="menu_tms_open_view_product_list1" name="Producto Flete" parent="menu_tms_settings_r_carta" sequence="1"/>
+    <menuitem action="tms_open_view_product_list2" id="menu_tms_open_view_product_list2" name="Maniobras de Carga/Descarga" parent="menu_tms_settings_r_carta" sequence="2"/>
+    <menuitem action="tms_open_view_product_list3" id="menu_tms_open_view_product_list3" name="Seguro de carga" parent="menu_tms_settings_r_carta" sequence="3"/>
+    <menuitem action="tms_open_view_product_list16" id="menu_tms_open_view_product_list16" name="Autopistas" parent="menu_tms_settings_r_carta" sequence="16"/>
+    <menuitem action="tms_open_view_product_list12" id="menu_tms_open_view_product_list12" name="Otros Ingresos" parent="menu_tms_settings_r_carta" sequence="12"/>
+    <menuitem action="action_tms_transportable" id="tms_transportable_menu" name="Productos Transportables" parent="menu_tms_settings_r_carta" sequence="100"/>
+
+    <!-- SubMenu 7 -->
     <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/>
-    <menuitem id="menu_tms_settings_unit" name="Eventos y Acciones" parent="menu_tms_settings" sequence="108"/>
+    <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/>
+    <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
+    <menuitem action="tms_open_view_product_list6" id="menu_tms_open_view_product_list6" name="Concepto de Gasto" parent="menu_tms_settings_liquidac" sequence="6"/>
+    <menuitem action="tms_open_view_product_list7" id="menu_tms_open_view_product_list7" name="Gastos Indirectos" parent="menu_tms_settings_liquidac" sequence="7"/>
+    <menuitem action="tms_open_view_product_list8" id="menu_tms_open_view_product_list8" name="Sueldo Operador" parent="menu_tms_settings_liquidac" sequence="8"/>
+    <menuitem action="tms_open_view_product_list9" id="menu_tms_open_view_product_list9" name="Retención de Salario" parent="menu_tms_settings_liquidac" sequence="9"/>
+    <menuitem action="tms_open_view_product_list10" id="menu_tms_open_view_product_list10" name="Descuento de Salario" parent="menu_tms_settings_liquidac" sequence="10"/>
+    <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/>
+    
+    <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
+    <menuitem action="tms_open_view_product_list14" id="menu_tms_open_view_product_list14" name="Balance en Contra" parent="menu_tms_settings_liquidac" sequence="14"/>
+    <menuitem action="tms_open_view_product_list15" id="menu_tms_open_view_product_list15" name="Combustible en efectivo" parent="menu_tms_settings_liquidac" sequence="15"/>
+    
+    <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/>
+
+    <!-- SubMenu 8 -->
+    <menuitem id="menu_tms_settings_eve_acc" name="Eventos y Acciones" parent="menu_tms_settings" sequence="108"/>
+    <menuitem action="action_fleet_vehicle_tms" id="tms_fleet_vehicle_menu" name="Units" parent="menu_tms_settings_eve_acc" sequence="116"/>
+    <menuitem action="open_view_tms_unit_kit_form" id="menu_tms_config_unit_kit_form" name="Units Kits" parent="menu_tms_settings_eve_acc" sequence="125"/>
+
+    <!-- SubMenu 9 -->
     <menuitem id="menu_tms_settings_conf_ve" name="Configuración de Vehículos" parent="menu_tms_settings" sequence="109"/>
+    <menuitem action="fleet.fleet_vehicle_state_action" groups="fleet.fleet_group_manager" id="tms_fleet_vehicle_state_menu" parent="menu_tms_settings_conf_ve" sequence="111"/>
+    <menuitem action="fleet.fleet_vehicle_model_action" id="tms_fleet_vehicle_model" parent="menu_tms_settings_conf_ve" sequence="113"/>
+    <menuitem action="fleet.fleet_vehicle_model_brand_action" id="tms_fleet_vehicle_make" parent="menu_tms_settings_conf_ve" sequence="114"/>    <menuitem id="fleet_vehicle_engine_menu" sequence="117" name="Engines" parent="menu_tms_settings_conf_ve" action="action_fleet_vehicle_engine"/>
+    
+    <!-- SubMenu 10 -->
     <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
-
-
-    <menuitem action="fleet.fleet_vehicle_state_action" groups="fleet.fleet_group_manager" id="tms_fleet_vehicle_state_menu" parent="menu_tms_settings_unit" sequence="13"/>
-    <menuitem id="menu_tms_tollstation" name="Tollstation import" parent="menu_tms" sequence="20"/>
-    <menuitem action="fleet.fleet_vehicle_model_action" id="tms_fleet_vehicle_model" parent="menu_tms_settings_unit" sequence="14"/>
-    <menuitem action="fleet.fleet_vehicle_model_brand_action" id="tms_fleet_vehicle_make" parent="menu_tms_settings_unit" sequence="15"/>
-    <menuitem action="tms_open_view_employee_list" id="menu_tms_open_view_employee_list" name="Drivers" parent="menu_tms_settings" sequence="3"/>
-    <menuitem action="action_fleet_vehicle_tms" id="tms_fleet_vehicle_menu" name="Units" parent="menu_tms_settings_unit" sequence="10"/>
+    <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/>
     
-    <menuitem id="fleet_vehicle_engine_menu" name="Engines" parent="menu_tms_settings_unit" action="action_fleet_vehicle_engine"/>
-    <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="66"/>
-    <menuitem action="tms_open_view_product_list" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings" sequence="50"/>
-      
+
+    <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="100"/>
     <menuitem id="menu_custom_config" name="Settings" parent="menu_tms_settings"
-    sequence="1" action="action_tms_config"/>
-    <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="80"/>
-    
-    <menuitem id="tms_route_tollstation_menu" name="Toll Stations" parent="menu_tms_settings_routes" action="action_tms_route_tollstation"/>
-    <menuitem action="open_view_tms_route_form" id="menu_tms_settings_route_form" name="Routes" parent="menu_tms_settings_routes" sequence="10"/>
+    sequence="100" action="action_tms_config"/>
+    <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="100"/>
 
-    <menuitem action="open_view_tms_place_form" id="menu_tms_settings_route_place_form" name="Places" parent="menu_tms_settings_routes" sequence="1"/>
-    <menuitem action="action_tms_transportable" id="tms_transportable_menu" name="Transportable" parent="menu_tms_settings" sequence="90" groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic,base.group_system"/>
+
     
-    <!-- Menu for tms.travel -->
-    <menuitem action="open_view_tms_unit_kit_form" id="menu_tms_config_unit_kit_form" name="Units Kits" parent="menu_tms_settings_unit" sequence="11"/>
-    
+    <!--  groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic,base.group_system" -->
 </odoo>
