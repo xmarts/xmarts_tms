@@ -51,8 +51,8 @@
     <record model="ir.sequence" id="sale_journal_sequence">
         <field name="name">Sale Jorunal Sequence</field>
         <field name="implementation">no_gap</field>
-        <field name="code">ST</field>
-        <field name="prefix">ST</field>
+        <field name="code">S</field>
+        <field name="prefix">S</field>
         <field name="padding">4</field>
         <field name="number_increment">1</field>
     </record>
@@ -67,8 +67,8 @@
     <record model="ir.sequence" id="solicitud_sequence">
         <field name="name">Solicitud Secuencia</field>
         <field name="implementation">no_gap</field>
-        <field name="code">S</field>
-        <field name="prefix">S</field>
+        <field name="code">ST</field>
+        <field name="prefix">ST</field>
         <field name="padding">4</field>
         <field name="number_increment">1</field>
     </record> 
