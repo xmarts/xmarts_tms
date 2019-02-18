@@ -90,6 +90,7 @@ class TmsRoute(models.Model):
         it = 20 - it
         if it > 0:
             i = 0
+            
             while it > i:
                 paradas.append(["",0,0])
                 i += 1

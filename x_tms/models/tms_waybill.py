@@ -183,14 +183,15 @@ class TmsWaybill(models.Model):
         string="Customs")
 
     expense_ids = fields.Many2many(
-        'tms.expense', compute='_compute_expense_ids', string="Expenses")
+        'tms.expense', string="Expenses")
+    #, compute='_compute_expense_ids'
 
-    @api.depends('travel_ids')
-    def _compute_expense_ids(self):
-        for rec in self:
-            rec.expense_ids = False
-            for travel in rec.travel_ids:
-                rec.expense_ids += travel.expense_id
+    # @api.depends('travel_ids')
+    # def _compute_expense_ids(self):
+    #     for rec in self:
+    #         rec.expense_ids = False
+    #         for travel in rec.travel_ids:
+    #             rec.expense_ids += travel.expense_id
 
     @api.model
     def create(self, values):
