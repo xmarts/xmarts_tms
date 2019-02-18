@@ -22,7 +22,7 @@ class TmsWaybill(models.Model):
     _description = 'Waybills'
     _order = 'name desc'
 
-    waybill_type = fields.Selection([('waybill','Carta Porte'),('request','Solicitud Transporte')], string="Estado de solicitud", default='draft')
+    waybill_type = fields.Selection([('waybill','Carta Porte'),('request','Solicitud Transporte')], string="Estado de solicitud", default='waybill')
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit', required=True)
     customer_factor_ids = fields.One2many(
@@ -196,8 +196,12 @@ class TmsWaybill(models.Model):
     @api.model
     def create(self, values):
         waybill = super(TmsWaybill, self).create(values)
-        sequence = waybill.operating_unit_id.waybill_sequence_id
-        waybill.name = sequence.next_by_id()
+        if waybill.waybill_type == 'request':
+            sequence = waybill.operating_unit_id.request_sequence_id
+            waybill.name = sequence.next_by_id()
+        if waybill.waybill_type == 'waybill':
+            sequence = waybill.operating_unit_id.waybill_sequence_id
+            waybill.name = sequence.next_by_id()
         product = self.env['product.product'].search([
             ('tms_product_category', '=', 'freight')], limit=1)
         if product:

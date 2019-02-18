@@ -34,13 +34,9 @@
                     <field name="state" statusbar_visible="draft,approved,confirmed" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <h3>
-                        <field name="waybill_type" readonly="1" />
-                        
-                    </h3>
                     <h1>
-
-                        <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Waybill - " style="font-size:30px;"/>
+                        <field name="waybill_type" readonly="1" />
+                        <span> - </span>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
                     <group col="4">
@@ -366,7 +362,7 @@
         <field name="view_mode">tree,form,calendar,graph</field>
         <field name="search_view_id" ref="view_tms_waybill_filter"/>
         <field name="domain" >[('waybill_type','=','waybill')]</field>
-        <field name="context">{&quot;search_default_user_id&quot;:uid, 'search_default_this_month': 1, 'default_waybill_type': 'waybill'}</field>
+        <field name="context">{'search_default_user_id':uid, 'search_default_this_month': 1, 'default_waybill_type': 'waybill'}</field>
         <field name="help">Waybills</field>
     </record>
     <record id="action_tms_request_form" model="ir.actions.act_window">
