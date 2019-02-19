@@ -63,7 +63,7 @@
                                 <separator coslpan="4" string="Transportable"/>
                                 <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" colspan="4" name="transportable_line_ids" nolabel="1">
                                     <tree editable="bottom">
-                                        <field name="transportable_id"/>
+                                        <field name="transportable_id" domain="[('tms_product_category','=','charge')]"/>
                                         <field name="name"/>
                                         <field name="transportable_uom_id"/>
                                         <field name="quantity"/>

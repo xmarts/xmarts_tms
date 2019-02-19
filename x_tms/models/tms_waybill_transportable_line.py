@@ -12,7 +12,7 @@ class TmsWaybillTransportableLine(models.Model):
     _order = 'sequence, id desc'
 
     transportable_id = fields.Many2one(
-        'tms.transportable', string='Transportable')
+        'product.template', string='Transportable')
     name = fields.Char('Description', required=True)
     transportable_uom_id = fields.Many2one(
         'product.uom', 'Unit of Measure ', required=True)
