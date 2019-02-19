@@ -11,7 +11,7 @@
                     <field name="travel_sequence_id" required="1"/>
                     <field name="expense_sequence_id" required="1"/>
                     <field name="waybill_sequence_id" required="1"/>
-                    <!-- <field name="request_sequence_id" required="1"/> -->
+                    <field name="request_sequence_id" required="1"/>
                     <field name="advance_sequence_id" required="1"/>
                     <field name="fuel_log_sequence_id" required="1"/>
                     <field name="loan_sequence_id" required="1"/>
