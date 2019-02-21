@@ -208,6 +208,7 @@
     <menuitem id="menu_tms_settings_suppliers" name="Proveedores" parent="menu_tms_settings" sequence="102"/>
      <menuitem id="menu_tms_suppliers" name="Proveedores" action="action_partner_tms_supp" parent="menu_tms_settings_suppliers" sequence="1"/>
 
+
      <!-- SubMenu 3 -->
     <menuitem id="menu_tms_settings_operators" name="Operadores" parent="menu_tms_settings" sequence="103"/>
     <menuitem action="tms_open_view_employee_list" id="menu_tms_open_view_employee_list" name="Drivers" parent="menu_tms_settings_operators" sequence="115"/>

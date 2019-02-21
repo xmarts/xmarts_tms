@@ -49,7 +49,7 @@
              <field name="waybill_ids"/>
 
                <separator string="Liquidaciones" colspan="4"/>
-            <!-- <field name="expense_line_ids"/> -->  
+            <field name="expense_line_ids" colspan="4" />
 
              
             </page>
