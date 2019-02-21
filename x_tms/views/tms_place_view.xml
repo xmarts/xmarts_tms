@@ -40,7 +40,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,geoengine</field>
     </record>
-    <!-- <record id="tms_place_geoengine_view" model="ir.ui.view">
+    <record id="tms_place_geoengine_view" model="ir.ui.view">
         <field name="name">Place Geospatial View</field>
         <field eval="16" name="priority"/>
         <field name="model">tms.place</field>
@@ -51,7 +51,7 @@
         </field>
     </record>
     <record id="geoengine_vector_layer_place" model="geoengine.vector.layer">
-        <field name="geo_field_id" ref="tms.field_tms_place_point"/>
+        <field name="geo_field_id" ref="x_tms.field_tms_place_point"/>
         <field name="name">Place Basic point</field>
         <field eval="6" name="sequence"/>
         <field name="view_id" ref="tms_place_geoengine_view"/>
@@ -71,5 +71,5 @@
         <field name="url">vmap0.tiles.osgeo.org/wms/vmap0</field>
         <field name="view_id" ref="tms_place_geoengine_view"/>
         <field eval="1" name="overlay"/>
-    </record> -->
+    </record>
 </odoo>
