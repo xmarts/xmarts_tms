@@ -34,7 +34,7 @@
             </form>
         </field>
     </record>
-    <record id="open_view_tms_place_form" model="ir.actions.act_window">
+    <!-- <record id="open_view_tms_place_form" model="ir.actions.act_window">
         <field name="name">TMS Places</field>
         <field name="res_model">tms.place</field>
         <field name="view_type">form</field>
@@ -71,5 +71,5 @@
         <field name="url">vmap0.tiles.osgeo.org/wms/vmap0</field>
         <field name="view_id" ref="tms_place_geoengine_view"/>
         <field eval="1" name="overlay"/>
-    </record>
+    </record> -->
 </odoo>

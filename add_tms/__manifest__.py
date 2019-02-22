@@ -40,7 +40,7 @@
         'views/tms_tires.xml',
         'views/tms_categories_empresa.xml',
         'views/tms_employee_category.xml',
-        #'views/tms_plazas.xml',
+        'views/tms_plazas.xml',
         'views/tms_categories_letter_porte.xml',
         'views/tms_transportable_product.xml',
         'views/tms_procedure_vehicle.xml',
