@@ -34,12 +34,13 @@
             </form>
         </field>
     </record>
-    <!-- <record id="open_view_tms_place_form" model="ir.actions.act_window">
+    <record id="open_view_tms_place_form" model="ir.actions.act_window">
         <field name="name">TMS Places</field>
         <field name="res_model">tms.place</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,geoengine</field>
     </record>
+    <!-- 
     <record id="tms_place_geoengine_view" model="ir.ui.view">
         <field name="name">Place Geospatial View</field>
         <field eval="16" name="priority"/>
