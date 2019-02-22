@@ -42,8 +42,9 @@ class TmsPlace(geo_model.GeoModel):
     point = geo_fields.GeoPoint(
         string='Coordinate',
         compute='_compute_point',
-        inverse='_set_lat_long',
+        
     )
+    #inverse='_set_lat_long',
 
     @api.onchange('state_id')
     def get_country_id(self):
@@ -107,13 +108,13 @@ class TmsPlace(geo_model.GeoModel):
         self.latitude = latitude
         self.longitude = longitude
 
-    @api.onchange('point')
-    def onchange_geo_point(self):
-        if self.point:
-            self.set_lang_long()
+    # @api.onchange('point')
+    # def onchange_geo_point(self):
+    #     if self.point:
+    #         self.set_lang_long()
 
-    @api.depends('point')
-    def _set_lat_long(self):
-        for rec in self:
-            if rec.point:
-                rec.set_lang_long()
+    # @api.depends('point')
+    # def _set_lat_long(self):
+    #     for rec in self:
+    #         if rec.point:
+    #             rec.set_lang_long()
