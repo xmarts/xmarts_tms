@@ -99,9 +99,7 @@ class TmsPlace(geo_model.GeoModel):
             rec.point = geo_fields.GeoPoint.from_latlon(
                 self.env.cr, rec.latitude, rec.longitude).wkb_hex
 
-    @api.one
     def set_lang_long(self):
-        #print(geojson.loads(self.point)['coordinates'])
         point_x, point_y = geojson.loads(self.point)['coordinates']
         inproj = Proj(init='epsg:3857')
         outproj = Proj(init='epsg:4326')
