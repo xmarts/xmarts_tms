@@ -204,13 +204,13 @@
 
         <menuitem name="Categoría de Empleado" id="add_operaciones_menu_13_list" parent="x_tms.menu_tms_settings_operators" action="add_tms_etiquetas_contacto_motor"/>
 
-        <record model="ir.actions.act_window" id="add_tms_place">
+        <!-- <record model="ir.actions.act_window" id="add_tms_place">
       <field name="name">TMS Plazas</field>
       <field name="res_model">tms.place</field>
       <field name="view_mode">tree,form</field>
     </record>
 
-        <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/>
+        <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/> -->
 
 
       <record model="ir.actions.act_window" id="add_tms_categorias_porte">

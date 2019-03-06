@@ -410,7 +410,7 @@
 
     <!-- SubMenu 7 -->
     <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/>
-    <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/>
+    <!-- <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/> -->
     <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
     <menuitem action="tms_open_view_product_list6" id="menu_tms_open_view_product_list6" name="Concepto de Gasto" parent="menu_tms_settings_liquidac" sequence="6"/>
     <menuitem action="tms_open_view_product_list7" id="menu_tms_open_view_product_list7" name="Gastos Indirectos" parent="menu_tms_settings_liquidac" sequence="7"/>

@@ -24,89 +24,126 @@ except ImportError:
 class TmsPlace(geo_model.GeoModel):
     _name = 'tms.place'
     _description = 'Cities / Places'
-
-    name = fields.Char('Place', size=64, required=True, index=True)
-    complete_name = fields.Char(compute='_compute_complete_name')
+    name = fields.Char(string="Nombre", required=True)
     state_id = fields.Many2one(
         'res.country.state',
         string='State Name')
+    calle = fields.Char(string="Calle",required=True)
+    noexterior = fields.Char(string="No. Exterior",required=True)
+    nointerior = fields.Char(string="No. Interior")
+    localidad = fields.Many2one('res.colonia.zip.sat.code', string='Localidad',required=True)
+    cruce = fields.Char(string="Cruce")
+    latitude = fields.Float(string="Latitud")
+    longitude = fields.Float(string="Longitud")
+    comentarios = fields.Text(string="Comentarios")
+    municipio = fields.Many2one(string='Municipio',related='localidad.zip_sat_code.township_sat_code')
+
+    tipo_carga = fields.Selection([('carga', 'Carga'), ('descarga', 'Descarga'),('carga/descarga','Carga/Descarga')], string="Tipo de carga", required=True)
+    cap_carga = fields.Float(string="Capacidad de carga")
+    cap_descarga= fields.Float(string="Capacidad de descarga")
+    bodega_prob = fields.Boolean(string="Es bodega problematica")
+    tipo_ubicacion = fields.Selection([('almacen','Almacén'),('puerto','Puerto')], string="Tipo de ubicacion", required=True)
+    responsable = fields.Char(string="Responsable")
+    coberturacelular = fields.Boolean(string="Cobertura de celular")
+    
+    # bodega_id = fields.One2many('trafitec.contacto', 'bodega')
+
+
     country_id = fields.Many2one(
         'res.country',
         string='Country')
-    latitude = fields.Float(
-        required=False, digits=(20, 10),
-        help='GPS Latitude')
-    longitude = fields.Float(
-        required=False, digits=(20, 10),
-        help='GPS Longitude')
-    point = geo_fields.GeoPoint(
-        string='Coordinate',
-        compute='_compute_point',
+    active= fields.Boolean(string="Activo",default=True)
+
+    @api.constrains('name')
+    def _check_constrains(self):
+        if self.name:
+            name_obj = self.env['tms.place'].search([('name','ilike',self.name)])
+            if len(name_obj) > 1:
+                raise UserError(_(
+                    'Aviso !\nEl nombre de la ubicación no se puede repetir.'))
+
+    # name = fields.Char('Place', size=64, required=True, index=True)
+    # complete_name = fields.Char(compute='_compute_complete_name')
+    # state_id = fields.Many2one(
+    #     'res.country.state',
+    #     string='State Name')
+    # country_id = fields.Many2one(
+    #     'res.country',
+    #     string='Country')
+    # latitude = fields.Float(
+    #     required=False, digits=(20, 10),
+    #     help='GPS Latitude')
+    # longitude = fields.Float(
+    #     required=False, digits=(20, 10),
+    #     help='GPS Longitude')
+    # point = geo_fields.GeoPoint(
+    #     string='Coordinate',
+    #     compute='_compute_point',
         
-    )
-    #inverse='_set_lat_long',
+    # )
+    # #inverse='_set_lat_long',
 
-    @api.onchange('state_id')
-    def get_country_id(self):
-        for rec in self:
-            if rec.state_id:
-                rec.country_id = rec.state_id.country_id
-            else:
-                rec.country_id = False
+    # @api.onchange('state_id')
+    # def get_country_id(self):
+    #     for rec in self:
+    #         if rec.state_id:
+    #             rec.country_id = rec.state_id.country_id
+    #         else:
+    #             rec.country_id = False
 
-    @api.multi
-    def get_coordinates(self):
-        for rec in self:
-            if rec.name and rec.state_id:
-                address = (rec.name + "," + rec.state_id.name + "," +
-                           rec.state_id.country_id.name)
-            else:
-                raise ValidationError(
-                    _("You need to set a Place and a State Name"))
-            google_url = (
-                'http://maps.googleapis.com/maps/api/geocode/json?' +
-                'address=' + address.encode('utf-8') + '&sensor=false')
-            try:
-                result = json.load(my_urllib.urlopen(google_url))
-                if result['status'] == 'OK':
-                    location = result['results'][0]['geometry']['location']
-                    self.latitude = location['lat']
-                    self.longitude = location['lng']
-            except Exception:
-                raise ValidationError(_("Google Maps is not available."))
+    # @api.multi
+    # def get_coordinates(self):
+    #     for rec in self:
+    #         if rec.name and rec.state_id:
+    #             address = (rec.name + "," + rec.state_id.name + "," +
+    #                        rec.state_id.country_id.name)
+    #         else:
+    #             raise ValidationError(
+    #                 _("You need to set a Place and a State Name"))
+    #         google_url = (
+    #             'http://maps.googleapis.com/maps/api/geocode/json?' +
+    #             'address=' + address.encode('utf-8') + '&sensor=false')
+    #         try:
+    #             result = json.load(my_urllib.urlopen(google_url))
+    #             if result['status'] == 'OK':
+    #                 location = result['results'][0]['geometry']['location']
+    #                 self.latitude = location['lat']
+    #                 self.longitude = location['lng']
+    #         except Exception:
+    #             raise ValidationError(_("Google Maps is not available."))
 
-    @api.multi
-    def open_in_google(self):
-        for place in self:
-            url = ("/tms/static/src/googlemaps/get_place_from_coords.html?" +
-                   str(place.latitude) + ',' + str(place.longitude))
-        return {
-            'type': 'ir.actions.act_url',
-            'url': url,
-            'nodestroy': True,
-            'target': 'new'}
+    # @api.multi
+    # def open_in_google(self):
+    #     for place in self:
+    #         url = ("/tms/static/src/googlemaps/get_place_from_coords.html?" +
+    #                str(place.latitude) + ',' + str(place.longitude))
+    #     return {
+    #         'type': 'ir.actions.act_url',
+    #         'url': url,
+    #         'nodestroy': True,
+    #         'target': 'new'}
 
-    @api.depends('name', 'state_id')
-    def _compute_complete_name(self):
-        for rec in self:
-            if rec.state_id:
-                rec.complete_name = rec.name + ', ' + rec.state_id.name
-            else:
-                rec.complete_name = rec.name
+    # @api.depends('name', 'state_id')
+    # def _compute_complete_name(self):
+    #     for rec in self:
+    #         if rec.state_id:
+    #             rec.complete_name = rec.name + ', ' + rec.state_id.name
+    #         else:
+    #             rec.complete_name = rec.name
 
-    @api.depends('latitude', 'longitude')
-    def _compute_point(self):
-        for rec in self:
-            rec.point = geo_fields.GeoPoint.from_latlon(
-                self.env.cr, rec.latitude, rec.longitude).wkb_hex
+    # @api.depends('latitude', 'longitude')
+    # def _compute_point(self):
+    #     for rec in self:
+    #         rec.point = geo_fields.GeoPoint.from_latlon(
+    #             self.env.cr, rec.latitude, rec.longitude).wkb_hex
 
-    def set_lang_long(self):
-        point_x, point_y = geojson.loads(self.point)['coordinates']
-        inproj = Proj(init='epsg:3857')
-        outproj = Proj(init='epsg:4326')
-        longitude, latitude = transform(inproj, outproj, point_x, point_y)
-        self.latitude = latitude
-        self.longitude = longitude
+    # def set_lang_long(self):
+    #     point_x, point_y = geojson.loads(self.point)['coordinates']
+    #     inproj = Proj(init='epsg:3857')
+    #     outproj = Proj(init='epsg:4326')
+    #     longitude, latitude = transform(inproj, outproj, point_x, point_y)
+    #     self.latitude = latitude
+    #     self.longitude = longitude
 
     # @api.onchange('point')
     # def onchange_geo_point(self):
