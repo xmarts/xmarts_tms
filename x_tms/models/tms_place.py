@@ -42,7 +42,7 @@ class TmsPlace(geo_model.GeoModel):
     cap_carga = fields.Float(string="Capacidad de carga")
     cap_descarga= fields.Float(string="Capacidad de descarga")
     bodega_prob = fields.Boolean(string="Es bodega problematica")
-    tipo_ubicacion = fields.Selection([('almacen','Almacén'),('puerto','Puerto')], string="Tipo de ubicacion", required=True)
+    tipo_ubicacion = fields.Selection([('almacen','Almacén'),('puerto','Puerto'),('parada','Parada')], string="Tipo de ubicacion", required=True)
     responsable = fields.Char(string="Responsable")
     coberturacelular = fields.Boolean(string="Cobertura de celular")
     
