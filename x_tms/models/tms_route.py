@@ -52,6 +52,10 @@ class TmsRoute(models.Model):
         'tms.route.place',
         'route_id',
         string='Places')
+    route_stop_ids = fields.One2many(
+        'tms.route.stops',
+        'route_id',
+        string='Places')
     tollstation_ids = fields.Many2many(
         'tms.route.tollstation', string="Toll Station")
     note_ids = fields.One2many('tms.route.note', 'route_id', string='Notes')
