@@ -23,8 +23,8 @@ class TmsRoute(models.Model):
     _description = 'Routes'
 
     name = fields.Char('Route Name', size=64, required=True, index=True)
-    departure_id = fields.Many2one('tms.place', 'Departure', required=True)
-    arrival_id = fields.Many2one('tms.place', 'Arrival', required=True)
+    departure_id = fields.Many2one('res.colonia.zip.sat.code', 'Departure', required=True)
+    arrival_id = fields.Many2one('res.colonia.zip.sat.code', 'Arrival', required=True)
     distance = fields.Float(
         'Distance (mi./kms)', digits=(14, 4),
         help='Route distance (mi./kms)', required=True)
