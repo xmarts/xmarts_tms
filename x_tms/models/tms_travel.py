@@ -48,12 +48,12 @@ class TmsTravel(models.Model):
         'fleet.vehicle', 'Unit',
         required=True)
     trailer1_id = fields.Many2one(
-        'fleet.vehicle', 'Trailer1')
+        'fleet.vehicle', 'Remolque 1')
     dolly_id = fields.Many2one(
         'fleet.vehicle', 'Dolly',
         domain=[('fleet_type', '=', 'dolly')])
     trailer2_id = fields.Many2one(
-        'fleet.vehicle', 'Trailer2',
+        'fleet.vehicle', 'Remolque 2',
         domain=[('fleet_type', '=', 'trailer')])
     employee_id = fields.Many2one(
         'hr.employee', 'Driver', required=True,
