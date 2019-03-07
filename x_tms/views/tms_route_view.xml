@@ -41,9 +41,9 @@
         <field name="arch" type="xml">
             <form string="Routes" version="9.0">
                 <header>
-                    <button name="get_route_info" string="Get Route Info from Google" type="object"/>
+                    <!-- <button name="get_route_info" string="Get Route Info from Google" type="object"/>
                     <button name="open_in_google" string="View in Google Maps" type="object"/>
-                    <button name="get_route_soap" string="Obtener Ruta" type="object"/>
+                    <button name="get_route_soap" string="Obtener Ruta" type="object"/> -->
                 </header>
                 <sheet>
                     <group col="4" colspan="4">
@@ -83,6 +83,7 @@
                                     <field name="calle" />
                                     <field name="noexterior" />
                                     <field name="nointerior" />
+                                    <field name="tipo_ubicacion" />
                                     <field name="latitude" />
                                     <field name="longitude" />
                                 </tree>
