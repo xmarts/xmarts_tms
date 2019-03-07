@@ -22,6 +22,7 @@ class TmsRoutePlace(models.Model):
     localidad = fields.Many2one('res.colonia.zip.sat.code', string='Localidad',readonly=True, related="place_id.localidad")
     latitude = fields.Float(string="Latitud",readonly=True, related="place_id.latitude")
     longitude = fields.Float(string="Longitud",readonly=True, related="place_id.longitude")
+    tipo_ubicacion = fields.Selection([('almacen','Almacén'),('puerto','Puerto'),('parada','Parada')], string="Tipo de ubicacion", readonly=True, related="place_id.tipo_ubicacion")
 
 
 class TmsRouteStops(models.Model):
