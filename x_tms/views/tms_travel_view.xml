@@ -129,6 +129,19 @@
                     </div>
                     <group>
                         <group>
+                            <field name="fecha_viaje" />
+                            <field name="subpedido_id" />
+                            <field name="product" />
+                            <field name="costo_producto" />
+                            <field name="sucursal_id" />
+                            <field name="lineanegocio" />
+                            <field name="tipo_lineanegocio" />
+                        </group>
+                        <group>
+                            <field name="asociado_id" />
+                            <field name="celular_asociado" />
+                            <field name="celular_operador" />
+                            <field name="tipo_viaje" />
                             <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}"/>
                             <field name="unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('fleet_type', '=', 'tractor')]"/>
@@ -153,6 +166,56 @@
                         </group>
                     </group>
                     <notebook colspan="4">
+                        <page string="Pesos">
+                            <group>
+                                <group>
+                                    <field name="peso_origen_remolque_1"/>
+                                    <field name="peso_origen_remolque_2"/>
+                                    <field name="peso_origen_total"/>
+                                </group>
+                                <group>
+                                    <field name="peso_destino_remolque_1"/>
+                                    <field name="peso_destino_remolque_2"/>
+                                    <field name="peso_destino_total"/>
+                                    <field name="peso_autorizado"/>
+                                </group>
+                                <group>
+                                    <field name="peso_convenido_remolque_1"/>
+                                    <field name="peso_convenido_remolque_2"/>
+                                    <field name="peso_convenido_total"/>
+                                    
+                                </group>
+                            </group>
+                            <separator />
+                            <group>
+                                <group>
+                                    <field name="facturar_con"/>
+                                    <field name="facturar_con_cliente"/>
+                                    <field name="excedente_merma"/>
+                                    <field name="merma_kg"/>
+                                    <field name="merma_pesos"/>
+                                    <field name="merma_permitida_kg"/>
+                                    <field name="merma_permitida_pesos"/>
+                                    <field name="merma_cobrar_kg"/>
+                                    <field name="merma_cobrar_pesos"/>
+                                    
+                                </group>
+
+                                <group>
+                                    <field name="comision_linea"/>
+                                    <field name="regla_comision"/>
+                                    <field name="comision_calculada"/>
+                                    <field name="motivo"/>
+                                    <field name="porcent_comision"/>
+                                    <field name="cant_especifica"/>
+                                    <field name="maniobras"/>
+                                    <field name="regla_maniobra"/>
+                                    <field name="pronto_pago"/>
+                                    
+                                </group>
+                            </group>
+                            
+                        </page>
                         <page string="Expense driver factor">
                             <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
                         </page>
