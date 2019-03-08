@@ -99,7 +99,20 @@
                             </field>
                         </page>
                         <page string="Toll Stations">
-                            <field name="tollstation_ids"/>
+                            <field name="tollstation_ids">
+                                <tree editable="bottom">
+                                    <field name="id" invisible="1" />
+                                    <field name="name" />
+                                    <field name="place_id" />
+                                    <field name="partner_id" />
+                                    <field name="credit" />
+                                    <field name="ejes" domain="[('tollstation_id','=',id)]"/>
+                                    <field name="costo_caseta" />
+                                </tree>
+                            </field>
+                            <group class="oe_right">
+                                <field name="total_casetas" nolabel="1" widget="monetary"/>
+                            </group>
                         </page>
                         <page string="Driver Factor">
                             <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
