@@ -35,6 +35,7 @@ from . import tms_route_tollstation
 from . import tms_route_tollstation_costperaxis
 from . import tms_toll_data
 from . import tms_transportable
+from . import sale_order
 from . import tms_travel
 from . import tms_unit_kit
 from . import tms_waybill

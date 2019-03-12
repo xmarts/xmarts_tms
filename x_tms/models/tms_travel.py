@@ -150,10 +150,12 @@ class TmsTravel(models.Model):
     subpedido_id = fields.Many2one('sale.order', string='Cotización',
                                    required=True, change_default=True, index=True, track_visibility='always')
     product = fields.One2many('sale.order.line', string='Producto', related="subpedido_id.order_line")
+    
+    producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
     costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange')
-    sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True)
+    sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange')
 
-    asociado_id = fields.Many2one('res.partner', string="Asociado", required=True)
+    asociado_id = fields.Many2one('res.partner', string="Asociado", required=True, track_visibility='onchange')
 
     porcentaje_comision = fields.Float(string='Porcentaje de comisión', readonly=True)
     usar_porcentaje = fields.Boolean(string='Usar porcentaje de línea de negocio', readonly=True)
@@ -164,12 +166,17 @@ class TmsTravel(models.Model):
     celular_operador = fields.Char(string='Celular operador', required=True)
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
-
+    tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
     lineanegocio = fields.Many2one(comodel_name='tms.lineanegocio', string='Linea de negocios', store=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
 
-
+    @api.onchange('subpedido_id')
+    def onchange_subpedido_id(self):
+        self.tarifa_cliente = self.subpedido_id.tarifa_cliente
+        self.route_id = self.subpedido_id.ruta
+        self.producto = self.subpedido_id.product
+        self.costo_producto = self.subpedido_id.product.standard_price
 
     @api.constrains('lineanegocio', 'asociado_id', 'sucursal_id',
                     'peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
@@ -260,9 +267,18 @@ class TmsTravel(models.Model):
             self.peso_origen_total = self.peso_origen_remolque_1 + self.peso_origen_remolque_2
 
     @api.one
-    @api.depends('peso_origen_total','tarifa_cliente')
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
     def _compute_flete_cliente(self):
-        self.flete_cliente = self.tarifa_cliente * (self.peso_origen_total / 1000)
+        for reg in self:
+            if self.lineanegocio.tipo == 'granel':
+                if reg.facturar_con_cliente == 'Peso convenido':
+                    reg.flete_cliente = (reg.peso_convenido_total / 1000) * reg.tarifa_cliente
+                elif reg.facturar_con_cliente == 'Peso origen':
+                    reg.flete_cliente = (reg.peso_origen_total / 1000) * reg.tarifa_cliente
+                elif reg.facturar_con_cliente == 'Peso destino':
+                    reg.flete_cliente = (reg.peso_destino_total / 1000) * reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'flete':
+                reg.flete_cliente = reg.tarifa_cliente
 
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')

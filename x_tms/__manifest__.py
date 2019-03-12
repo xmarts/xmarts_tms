@@ -71,6 +71,7 @@
         'report/expense_report.xml',
         'data/ir_config_parameter.xml',
         'views/tms_travel_template_view.xml',
+        'views/sale_order.xml',
         'views/tms_view.xml',
     ],
     "demo": [
