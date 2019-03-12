@@ -10,7 +10,7 @@ class TmsRouteTollstation(models.Model):
     _name = 'tms.route.tollstation'
 
     name = fields.Char(required=True)
-    place_id = fields.Many2one('res.colonia.zip.sat.code', string="Place", required=True)
+    place_id = fields.Many2one('tms.place', string="Place", required=True)
     partner_id = fields.Many2one('res.partner', string="Partner")
     route_ids = fields.Many2many('tms.route', string="Routes")
     credit = fields.Boolean()

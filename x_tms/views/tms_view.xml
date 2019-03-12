@@ -59,14 +59,14 @@
                         <group>
                             <field name="fecha_viaje" />
                             <field name="subpedido_id" />
-                            <field name="product" />
                             <field name="costo_producto" />
                             <field name="sucursal_id" />
                             <field name="lineanegocio" />
                             <field name="tipo_lineanegocio" />
                             <field name="porcentaje_comision" />
                             <field name="usar_porcentaje" />
-                            <field name="tarifa_asociado" />
+                            <field name="tarifa_cliente" />
+                            <field name="flete_cliente" />
                         </group>
                         <group>
                             <field name="asociado_id" />
@@ -143,6 +143,11 @@
                                 </group>
                             </group>
                         </page> 
+                        <page string="Productos" >
+                            <group>
+                                <field name="product" />
+                            </group>
+                        </page>
                         <page string="Vehicle log fuel">
                             <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}">
                               <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
