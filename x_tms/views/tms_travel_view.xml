@@ -131,6 +131,7 @@
                         <group>
                             <field name="fecha_viaje" />
                             <field name="subpedido_id" />
+                            <field name="cliente_id" />
                             <field name="product" />
                             <field name="costo_producto" />
                             <field name="sucursal_id" />
@@ -138,8 +139,6 @@
                             <field name="tipo_lineanegocio" />
                         </group>
                         <group>
-                            <field name="asociado_id" />
-                            <field name="celular_asociado" />
                             <field name="celular_operador" />
                             <field name="tipo_viaje" />
                             <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
@@ -201,7 +200,7 @@
                                     
                                 </group>
 
-                                <group>
+                                <!-- <group>
                                     <field name="comision_linea"/>
                                     <field name="regla_comision"/>
                                     <field name="comision_calculada"/>
@@ -212,7 +211,7 @@
                                     <field name="regla_maniobra"/>
                                     <field name="pronto_pago"/>
                                     
-                                </group>
+                                </group> -->
                             </group>
                             
                         </page>

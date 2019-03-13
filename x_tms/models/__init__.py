@@ -15,6 +15,7 @@ from . import hr_employee
 from . import operating_unit
 from . import product_template
 from . import res_company
+from . import res_partner
 from . import tms_advance
 from . import tms_config_settings
 from . import tms_custom_house

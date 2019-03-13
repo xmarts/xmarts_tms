@@ -154,11 +154,11 @@ class TmsTravel(models.Model):
     producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
     costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange')
     sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange')
+    cliente_id = fields.Many2one('res.partner', string="Cliente", required=True, track_visibility='onchange')
+    #asociado_id = fields.Many2one('res.partner', string="Asociado", required=True, track_visibility='onchange')
 
-    asociado_id = fields.Many2one('res.partner', string="Asociado", required=True, track_visibility='onchange')
-
-    porcentaje_comision = fields.Float(string='Porcentaje de comisión', readonly=True)
-    usar_porcentaje = fields.Boolean(string='Usar porcentaje de línea de negocio', readonly=True)
+    #porcentaje_comision = fields.Float(string='Porcentaje de comisión', readonly=True)
+    #usar_porcentaje = fields.Boolean(string='Usar porcentaje de línea de negocio', readonly=True)
     #tarifa_asociado = fields.Float(string='Tarifa asociado', default=0, track_visibility='onchange', required=True)
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
 
@@ -177,8 +177,9 @@ class TmsTravel(models.Model):
         self.route_id = self.subpedido_id.ruta
         self.producto = self.subpedido_id.product
         self.costo_producto = self.subpedido_id.product.standard_price
+        self.cliente_id = self.subpedido_id.partner_id
 
-    @api.constrains('lineanegocio', 'asociado_id', 'sucursal_id',
+    @api.constrains('lineanegocio', 'sucursal_id',
                     'peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
                     'peso_destino_remolque_2', 'peso_convenido_remolque_1', 'peso_convenido_remolque_2')
     def _valida(self):
@@ -188,8 +189,8 @@ class TmsTravel(models.Model):
         if not self.lineanegocio:
             raise UserError(_('Alerta !\nDebe especificar la línea de negocio.'))
 
-        if not self.asociado_id:
-            raise UserError(_('Alerta !\nDebe especificar el asociado.'))
+        # if not self.asociado_id:
+        #     raise UserError(_('Alerta !\nDebe especificar el asociado.'))
 
         if not self.sucursal_id:
             raise UserError(_('Alerta !\nDebe especificar la sucursal.'))
@@ -197,8 +198,8 @@ class TmsTravel(models.Model):
         # if not self.placas_id:
         #     raise UserError(_('Alerta !\nDebe especificar el vehículo.'))
 
-        if not self.asociado_id:
-            raise UserError(_('Alerta !\nDebe especificar el asociado.'))
+        # if not self.asociado_id:
+        #     raise UserError(_('Alerta !\nDebe especificar el asociado.'))
 
         # total_viajes = self.total_viajes()
         # total_subpedido = self.subpedido_id.cantidad
@@ -310,69 +311,68 @@ class TmsTravel(models.Model):
         string='Si la merma excede lo permitido', required=True, default='Porcentaje: Cobrar diferencia')
 
     
-    # @api.onchange('peso_origen_total', 'peso_destino_total')
-    # def _onchange_merma_kg_(self):
-    #     self.merma_kg = 0
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.peso_destino_total > self.peso_origen_total:
-    #             self.merma_kg = 0
-    #         else:
-    #             self.merma_kg = self.peso_origen_total - self.peso_destino_total
-    #     else:
-    #         self.merma_kg = 0
+    @api.onchange('peso_origen_total', 'peso_destino_total')
+    def _onchange_merma_kg_(self):
+        self.merma_kg = 0
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.peso_destino_total > self.peso_origen_total:
+                self.merma_kg = 0
+            else:
+                self.merma_kg = self.peso_origen_total - self.peso_destino_total
+        else:
+            self.merma_kg = 0
 
-    # @api.one
-    # def _compute_merma_kg_(self):
-    #     self.merma_kg = 0
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.peso_destino_total > self.peso_origen_total:
-    #             self.merma_kg = 0
-    #         else:
-    #             self.merma_kg = self.peso_origen_total - self.peso_destino_total
-    #     else:
-    #         self.merma_kg = 0
+    @api.one
+    def _compute_merma_kg_(self):
+        self.merma_kg = 0
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.peso_destino_total > self.peso_origen_total:
+                self.merma_kg = 0
+            else:
+                self.merma_kg = self.peso_origen_total - self.peso_destino_total
+        else:
+            self.merma_kg = 0
 
-    merma_kg = fields.Float(string='Merma Kg', readonly=True)
+    merma_kg = fields.Float(string='Merma Kg', readonly=True,compute="_compute_merma_kg_")
 
-    # @api.onchange('peso_origen_total', 'peso_destino_total', 'tipo_remolque')
-    # def _onchange_merma_pesos(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         # if 'Contenedor' in self.tipo_remolque.name:
-    #         if self.lineanegocio.id == 3:  # Contenedores.
-    #             self.merma_pesos = 0
-    #         else:
-    #             self.merma_pesos = self.merma_kg * self.costo_producto
-    #     else:
-    #         self.merma_pesos = 0
+    @api.onchange('peso_origen_total', 'peso_destino_total', 'tipo_remolque')
+    def _onchange_merma_pesos(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            # if 'Contenedor' in self.tipo_remolque.name:
+            if self.lineanegocio.tipo == 'flete':  # Contenedores.
+                self.merma_pesos = 0
+            else:
+                self.merma_pesos = self.merma_kg * self.costo_producto
+        else:
+            self.merma_pesos = 0
 
-    # @api.depends('merma_kg')
-    # @api.one
-    # def _compute_merma_pesos(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.lineanegocio.id == 3:  # Contenedores.
-    #             self.merma_pesos = 0
-    #         else:
-    #             self.merma_pesos = self.merma_kg * self.costo_producto
-    #     else:
-    #         self.merma_pesos = 0
+    @api.depends('merma_kg')
+    @api.one
+    def _compute_merma_pesos(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.lineanegocio.tipo == 'flete':  # Contenedores.
+                self.merma_pesos = 0
+            else:
+                self.merma_pesos = self.merma_kg * self.costo_producto
+        else:
+            self.merma_pesos = 0
 
-    merma_pesos = fields.Float(string='Merma $', readonly=True)
+    merma_pesos = fields.Float(string='Merma $', readonly=True, compute="_compute_merma_pesos")
 
-    # @api.onchange('excedente_merma', 'peso_origen_total', 'peso_destino_total')
-    # def _onchange_merma_permitida_kg(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.excedente_merma:
-    #             if self.excedente_merma == 'No cobrar':
-    #                 self.merma_permitida_kg = 0
-    #             else:
-    #                 if self.cliente_id.merma_permitida_por:
-    #                     if self.peso_origen_total > self.peso_destino_total:
-    #                         self.merma_permitida_kg = self.cliente_id.merma_permitida_por * (
-    #                         self.peso_origen_total / 100)
-    #                     else:
-    #                         self.merma_permitida_kg = 0
-    #     else:
-    #         self.merma_permitida_kg = 0
+    @api.onchange('excedente_merma', 'peso_origen_total', 'peso_destino_total')
+    def _onchange_merma_permitida_kg(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.excedente_merma:
+                if self.excedente_merma == 'No cobrar':
+                    self.merma_permitida_kg = 0
+                else:
+                    if self.cliente_id.merma_permitida_por:
+                        if self.peso_origen_total > self.peso_destino_total:
+                            self.merma_permitida_kg = self.cliente_id.merma_permitida_por * (self.peso_origen_total / 100)
+                        else:
+                            self.merma_permitida_kg = 0
+        else:
+            self.merma_permitida_kg = 0
 
     # @api.onchange('peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
     #               'peso_destino_remolque_2')
@@ -413,87 +413,86 @@ class TmsTravel(models.Model):
 
     #     print("**********MERMA KG: " + str(merma_kg))
 
-    # @api.one
-    # def _compute_merma_permitida_kg(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.excedente_merma:
-    #             if self.excedente_merma == 'No cobrar':
-    #                 self.merma_permitida_kg = 0
-    #             else:
-    #                 if self.cliente_id.merma_permitida_por:
-    #                     if self.peso_origen_total > self.peso_destino_total:
-    #                         self.merma_permitida_kg = self.cliente_id.merma_permitida_por * (
-    #                         self.peso_origen_total / 100)
-    #                     else:
-    #                         self.merma_permitida_kg = 0
-    #     else:
-    #         self.merma_permitida_kg = 0
+    @api.one
+    def _compute_merma_permitida_kg(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.excedente_merma:
+                if self.excedente_merma == 'No cobrar':
+                    self.merma_permitida_kg = 0
+                else:
+                    if self.cliente_id.merma_permitida_por:
+                        if self.peso_origen_total > self.peso_destino_total:
+                            self.merma_permitida_kg = self.cliente_id.merma_permitida_por * (
+                            self.peso_origen_total / 100)
+                        else:
+                            self.merma_permitida_kg = 0
+        else:
+            self.merma_permitida_kg = 0
 
-    merma_permitida_kg = fields.Float(string='Merma permitida Kg', readonly=True)
+    merma_permitida_kg = fields.Float(string='Merma permitida Kg', readonly=True, compute="_compute_merma_permitida_kg")
 
-    # @api.onchange('merma_permitida_kg', 'costo_producto')
-    # def _onchange_merma_permitida_pesos(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.merma_permitida_kg:
-    #             self.merma_permitida_pesos = self.merma_permitida_kg * self.costo_producto
-    #         else:
-    #             self.merma_permitida_pesos = 0
-    #     else:
-    #         self.merma_permitida_pesos = 0
+    @api.onchange('merma_permitida_kg', 'costo_producto')
+    def _onchange_merma_permitida_pesos(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.merma_permitida_kg:
+                self.merma_permitida_pesos = self.merma_permitida_kg * self.costo_producto
+            else:
+                self.merma_permitida_pesos = 0
+        else:
+            self.merma_permitida_pesos = 0
 
-    # @api.one
-    # def _compute_merma_permitida_pesos(self):
-    #     if self.peso_origen_total and self.peso_destino_total:
-    #         if self.merma_permitida_kg:
-    #             self.merma_permitida_pesos = self.merma_permitida_kg * self.costo_producto
-    #         else:
-    #             self.merma_permitida_pesos = 0
-    #     else:
-    #         self.merma_permitida_pesos = 0
+    @api.one
+    def _compute_merma_permitida_pesos(self):
+        if self.peso_origen_total and self.peso_destino_total:
+            if self.merma_permitida_kg:
+                self.merma_permitida_pesos = self.merma_permitida_kg * self.costo_producto
+            else:
+                self.merma_permitida_pesos = 0
+        else:
+            self.merma_permitida_pesos = 0
 
-    merma_permitida_pesos = fields.Float(string='Merma permitida $',
-                                         readonly=True)
+    merma_permitida_pesos = fields.Float(string='Merma permitida $',readonly=True,compute="_compute_merma_permitida_pesos")
 
-    # @api.onchange('peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
-    #               'peso_destino_remolque_2')
-    # def _onchange_merma_total(self):
-    #     if self.peso_origen_remolque_1 > self.peso_destino_remolque_1:
-    #         merma_origen = self.peso_origen_remolque_1 - self.peso_destino_remolque_1
-    #     else:
-    #         merma_origen = 0
-    #     if self.peso_origen_remolque_2 > self.peso_destino_remolque_2:
-    #         merma_destino = self.peso_origen_remolque_2 - self.peso_destino_remolque_2
-    #     else:
-    #         merma_destino = 0
-    #     self.merma_total = merma_origen + merma_destino
+    @api.onchange('peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
+                  'peso_destino_remolque_2')
+    def _onchange_merma_total(self):
+        if self.peso_origen_remolque_1 > self.peso_destino_remolque_1:
+            merma_origen = self.peso_origen_remolque_1 - self.peso_destino_remolque_1
+        else:
+            merma_origen = 0
+        if self.peso_origen_remolque_2 > self.peso_destino_remolque_2:
+            merma_destino = self.peso_origen_remolque_2 - self.peso_destino_remolque_2
+        else:
+            merma_destino = 0
+        self.merma_total = merma_origen + merma_destino
 
-    # @api.one
-    # def _compute_merma_total(self):
-    #     if self.peso_origen_remolque_1 > self.peso_destino_remolque_1:
-    #         merma_origen = self.peso_origen_remolque_1 - self.peso_destino_remolque_1
-    #     else:
-    #         merma_origen = 0
-    #     if self.peso_origen_remolque_2 > self.peso_destino_remolque_2:
-    #         merma_destino = self.peso_origen_remolque_2 - self.peso_destino_remolque_2
-    #     else:
-    #         merma_destino = 0
-    #     self.merma_total = merma_origen + merma_destino
+    @api.one
+    def _compute_merma_total(self):
+        if self.peso_origen_remolque_1 > self.peso_destino_remolque_1:
+            merma_origen = self.peso_origen_remolque_1 - self.peso_destino_remolque_1
+        else:
+            merma_origen = 0
+        if self.peso_origen_remolque_2 > self.peso_destino_remolque_2:
+            merma_destino = self.peso_origen_remolque_2 - self.peso_destino_remolque_2
+        else:
+            merma_destino = 0
+        self.merma_total = merma_origen + merma_destino
 
-    merma_total = fields.Float(string='Merma total kg', readonly=True)
+    merma_total = fields.Float(string='Merma total kg', readonly=True, compute="_compute_merma_total")
 
-    # @api.onchange('merma_kg', 'merma_permitida_kg')
-    # def _onchange_diferencia_porcentaje(self):
-    #     if self.merma_kg > self.merma_permitida_kg:
-    #         self.diferencia_porcentaje = self.merma_kg - self.merma_permitida_kg
-    #     else:
-    #         self.diferencia_porcentaje = 0
+    @api.onchange('merma_kg', 'merma_permitida_kg')
+    def _onchange_diferencia_porcentaje(self):
+        if self.merma_kg > self.merma_permitida_kg:
+            self.diferencia_porcentaje = self.merma_kg - self.merma_permitida_kg
+        else:
+            self.diferencia_porcentaje = 0
 
-    # @api.one
-    # def _compute_diferencia_porcentaje(self):
-    #     if self.merma_kg > self.merma_permitida_kg:
-    #         self.diferencia_porcentaje = self.merma_kg - self.merma_permitida_kg
-    #     else:
-    #         self.diferencia_porcentaje = 0
+    @api.one
+    def _compute_diferencia_porcentaje(self):
+        if self.merma_kg > self.merma_permitida_kg:
+            self.diferencia_porcentaje = self.merma_kg - self.merma_permitida_kg
+        else:
+            self.diferencia_porcentaje = 0
 
     diferencia_porcentaje = fields.Float(string='diferencia_porcentaje kg',
                                          readonly=True)
@@ -501,77 +500,142 @@ class TmsTravel(models.Model):
     diferencia_kg = fields.Float(string='diferencia_porcentaje kg', compute='_compute_diferencia_kg',
                                  readonly=True)
 
-    merma_cobrar_kg = fields.Float(string='Merma cobrar kg', readonly=True)
+    @api.onchange('excedente_merma', 'merma_permitida_kg', 'diferencia_porcentaje', 'diferencia_kg',
+                  'peso_origen_total', 'peso_destino_total')
+    def _onchange_merma_cobrar_kg(self):
+        if self.peso_origen_total > self.peso_destino_total:
+            if self.excedente_merma:
+                if self.excedente_merma == 'No cobrar':
+                    self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Porcentaje: Cobrar diferencia':
+                    if self.merma_kg > self.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg - self.merma_permitida_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Porcentaje: Cobrar todo':
+                    if self.merma_kg > self.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Kg: Cobrar diferencia':
+                    if self.merma_kg > self.cliente_id.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg - self.cliente_id.merma_permitida_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Kg: Cobrar todo':
+                    if self.merma_kg > self.cliente_id.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Cobrar todo':
+                    self.merma_cobrar_kg = self.merma_kg
+        else:
+            self.merma_cobrar_kg = 0
 
-    # @api.onchange('merma_cobrar_kg', 'costo_producto')
-    # def _onchange_merma_cobrar_pesos(self):
-    #     if self.merma_cobrar_kg > 0:
-    #         self.merma_cobrar_pesos = self.merma_cobrar_kg * self.costo_producto
-    #     else:
-    #         self.merma_cobrar_pesos = 0
+    @api.one
+    @api.depends('peso_origen_total', 'peso_destino_total', 'merma_kg', 'merma_permitida_kg', 'diferencia_porcentaje',
+                 'diferencia_kg')
+    def _compute_merma_cobrar_kg(self):
+        if self.peso_origen_total > self.peso_destino_total:
+            if self.excedente_merma:
+                if self.excedente_merma == 'No cobrar':
+                    self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Porcentaje: Cobrar diferencia':
+                    if self.merma_kg > self.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg - self.merma_permitida_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Porcentaje: Cobrar todo':
+                    if self.merma_kg > self.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Kg: Cobrar diferencia':
+                    if self.merma_kg > self.cliente_id.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg - self.cliente_id.merma_permitida_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Kg: Cobrar todo':
+                    if self.merma_kg > self.cliente_id.merma_permitida_kg:
+                        self.merma_cobrar_kg = self.merma_kg
+                    else:
+                        self.merma_cobrar_kg = 0
+                if self.excedente_merma == 'Cobrar todo':
+                    self.merma_cobrar_kg = self.merma_kg
+        else:
+            self.merma_cobrar_kg = 0
 
-    # @api.one
-    # @api.depends('merma_cobrar_kg', 'costo_producto')
-    # def _compute_merma_cobrar_pesos(self):
-    #     if self.merma_cobrar_kg > 0:
-    #         self.merma_cobrar_pesos = self.merma_cobrar_kg * self.costo_producto
-    #         # self.merma_cobrar_pesos = merma_cobrar_pesos
-    #         valores = {'viaje_id': self.id, 'monto': self.merma_cobrar_pesos, 'tipo_cargo': 'merma',
-    #                    'asociado_id': self.asociado_id.id}
-    #         obc_cargos = self.env['trafitec.cargos'].search(
-    #             ['&', ('viaje_id', '=', self.id), ('tipo_cargo', '=', 'merma')])
-    #         if len(obc_cargos) == 0:
-    #             self.env['trafitec.cargos'].create(valores)
-    #         else:
-    #             obc_cargos.write(valores)
-    #     else:
-    #         self.merma_cobrar_pesos = 0
+    merma_cobrar_kg = fields.Float(string='Merma cobrar kg', readonly=True, compute="_compute_merma_cobrar_kg")
 
-    merma_cobrar_pesos = fields.Float(string='Merma cobrar $', readonly=True)
+    @api.onchange('merma_cobrar_kg', 'costo_producto')
+    def _onchange_merma_cobrar_pesos(self):
+        if self.merma_cobrar_kg > 0:
+            self.merma_cobrar_pesos = self.merma_cobrar_kg * self.costo_producto
+        else:
+            self.merma_cobrar_pesos = 0
+
+    @api.one
+    @api.depends('merma_cobrar_kg', 'costo_producto')
+    def _compute_merma_cobrar_pesos(self):
+        if self.merma_cobrar_kg > 0:
+            self.merma_cobrar_pesos = self.merma_cobrar_kg * self.costo_producto
+            # self.merma_cobrar_pesos = merma_cobrar_pesos
+            # valores = {'viaje_id': self.id, 'monto': self.merma_cobrar_pesos, 'tipo_cargo': 'merma',
+            #            'asociado_id': self.asociado_id.id}
+            # obc_cargos = self.env['trafitec.cargos'].search(
+            #     ['&', ('viaje_id', '=', self.id), ('tipo_cargo', '=', 'merma')])
+            # if len(obc_cargos) == 0:
+            #     self.env['trafitec.cargos'].create(valores)
+            # else:
+            #     obc_cargos.write(valores)
+        else:
+            self.merma_cobrar_pesos = 0
+
+    merma_cobrar_pesos = fields.Float(string='Merma cobrar $', readonly=True, compute="_compute_merma_cobrar_pesos")
 
 
 
 
-    comision_linea = fields.Float(string='Porcentaje linea negocio', readonly=True, related='lineanegocio.porcentaje')
-    regla_comision = fields.Selection([('No cobrar', 'No cobrar'),
-                                       ('Con % linea transportista y peso origen',
-                                        'Con % linea transportista y peso origen'),
-                                       ('Con % linea transportista y peso destino',
-                                        'Con % linea transportista y peso destino'),
-                                       ('Con % linea transportista y peso convenido',
-                                        'Con % linea transportista y peso convenido'),
-                                       ('Con % linea transportista y capacidad de remolque',
-                                        'Con % linea transportista y capacidad de remolque'),
-                                       ('Con % especifico y peso origen', 'Con % especifico y peso origen'),
-                                       ('Con % especifico y peso destino', 'Con % especifico y peso destino'),
-                                       ('Con % especifico y peso convenido', 'Con % especifico y peso convenido'),
-                                       ('Con % especifico y capacidad de remolque',
-                                        'Con % especifico y capacidad de remolque'),
-                                       ('Cobrar cantidad especifica', 'Cobrar cantidad específica')],
-                                      string='Regla de Comisión', default='Con % linea transportista y peso origen',
-                                      required=True, track_visibility='onchange')
-    comision = fields.Selection([('No cobrar', 'No cobrar'), ('Cobrar en contra-recibo', 'Cobrar en contra-recibo'), (
-    'Cobrar en contra recibo-porcentaje especifico', 'Cobrar en contra recibo-porcentaje específico'),
-                                 ('Cobrar cantidad especifica', 'Cobrar cantidad específica')], string='Comisión',
-                                default='Cobrar en contra-recibo', required=True, track_visibility='onchange')
+    # comision_linea = fields.Float(string='Porcentaje linea negocio', readonly=True, related='lineanegocio.porcentaje')
+    # regla_comision = fields.Selection([('No cobrar', 'No cobrar'),
+    #                                    ('Con % linea transportista y peso origen',
+    #                                     'Con % linea transportista y peso origen'),
+    #                                    ('Con % linea transportista y peso destino',
+    #                                     'Con % linea transportista y peso destino'),
+    #                                    ('Con % linea transportista y peso convenido',
+    #                                     'Con % linea transportista y peso convenido'),
+    #                                    ('Con % linea transportista y capacidad de remolque',
+    #                                     'Con % linea transportista y capacidad de remolque'),
+    #                                    ('Con % especifico y peso origen', 'Con % especifico y peso origen'),
+    #                                    ('Con % especifico y peso destino', 'Con % especifico y peso destino'),
+    #                                    ('Con % especifico y peso convenido', 'Con % especifico y peso convenido'),
+    #                                    ('Con % especifico y capacidad de remolque',
+    #                                     'Con % especifico y capacidad de remolque'),
+    #                                    ('Cobrar cantidad especifica', 'Cobrar cantidad específica')],
+    #                                   string='Regla de Comisión', default='Con % linea transportista y peso origen',
+    #                                   required=True, track_visibility='onchange')
+    # comision = fields.Selection([('No cobrar', 'No cobrar'), ('Cobrar en contra-recibo', 'Cobrar en contra-recibo'), (
+    # 'Cobrar en contra recibo-porcentaje especifico', 'Cobrar en contra recibo-porcentaje específico'),
+    #                              ('Cobrar cantidad especifica', 'Cobrar cantidad específica')], string='Comisión',
+    #                             default='Cobrar en contra-recibo', required=True, track_visibility='onchange')
 
-    pronto_pago = fields.Boolean(sring='Pronto pago', default=False)
+    # pronto_pago = fields.Boolean(sring='Pronto pago', default=False)
 
-    comision_calculada = fields.Float(string='Comisión calculada', readonly=True)
-    motivo = fields.Text(string='Motivo sin comisión', track_visibility='onchange')
-    porcent_comision = fields.Float(string='Porcentaje de comisión')
-    cant_especifica = fields.Float(string='Cobrar cantidad específica')
+    # comision_calculada = fields.Float(string='Comisión calculada', readonly=True)
+    # motivo = fields.Text(string='Motivo sin comisión', track_visibility='onchange')
+    # porcent_comision = fields.Float(string='Porcentaje de comisión')
+    # cant_especifica = fields.Float(string='Cobrar cantidad específica')
     peso_autorizado = fields.Float(string='Peso autorizado Tons', required=True)
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
-    maniobras = fields.Float(string='Maniobras')
-    regla_maniobra = fields.Selection(
-        [('Pagar en contrarecibo y cobrar en factura', 'Pagar en contrarecibo y cobrar en factura'),
-         ('Pagar en contrarecibo y no cobrar en factura', 'Pagar en contrarecibo y no cobrar en factura'),
-         ('No pagar en contrarecibo y cobrar en factura', 'No pagar en contrarecibo y cobrar en factura'),
-         ('No pagar en contrarecibo y no cobrar en factura', 'No pagar en contrarecibo y no cobrar en factura')],
-        string='Regla de maniobra', default='Pagar en contrarecibo y cobrar en factura', required=True,
-        track_visibility='onchange')
+    # maniobras = fields.Float(string='Maniobras')
+    # regla_maniobra = fields.Selection(
+    #     [('Pagar en contrarecibo y cobrar en factura', 'Pagar en contrarecibo y cobrar en factura'),
+    #      ('Pagar en contrarecibo y no cobrar en factura', 'Pagar en contrarecibo y no cobrar en factura'),
+    #      ('No pagar en contrarecibo y cobrar en factura', 'No pagar en contrarecibo y cobrar en factura'),
+    #      ('No pagar en contrarecibo y no cobrar en factura', 'No pagar en contrarecibo y no cobrar en factura')],
+    #     string='Regla de maniobra', default='Pagar en contrarecibo y cobrar en factura', required=True,
+    #     track_visibility='onchange')
 
     # @api.constrains('regla_comision', 'motivo', 'porcent_comision', 'cant_especifica')
     # def _check_comision_motivo(self):
@@ -818,3 +882,32 @@ class TmsTravel(models.Model):
         default = dict(default or {})
         default['waybill_ids'] = False
         return super(TmsTravel, self).copy(default)
+
+
+
+    evidencias_id = fields.One2many(string="Evidencias",comodel_name="tms.viajes.evidencias", inverse_name="linea_id", track_visibility='onchange')
+    documentacion_completa = fields.Boolean(string='Documentanción completa', default=False)
+    fecha_documentacion = fields.Date(string="Fecha documentación")
+    dif_dias = fields.Integer(string="Dias", default=0)
+    asignadoa_id = fields.Many2one("res.users", string="Asignado a")
+
+
+    @api.constrains('evidencia_id', 'documentacion_completa', 'name')
+    def _check_evidencia(self):
+        if self.documentacion_completa == True:
+            obj_eviden = self.env['trafitec.viajes.evidencias'].search(
+                ['&', ('linea_id', '=', self.id), ('name', '=', 'Evidencia de viaje')])
+            if len(obj_eviden) == 0:
+                raise UserError(
+                    _('Aviso !\nNo puede aplicar como documentación completa, si no tiene ninguna evidencia de viaje'))
+
+
+class tms_viajes_evidencias(models.Model):
+    _name = 'tms.viajes.evidencias'
+
+    name = fields.Selection(string="Tipo",
+                            selection=[('Evidencia de viaje', 'Evidencia de viaje'), ('Carta porte', 'Carta porte')],
+                            required=True, default='Evidencia de viaje')
+    image_filename = fields.Char("Nombre del archivo")
+    evidencia_file = fields.Binary(string="Archivo", required=True)
+    linea_id = fields.Many2one(comodel_name="tms.travel", string="Evidencia id", ondelete='cascade')
