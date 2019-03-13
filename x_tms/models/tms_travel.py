@@ -10,7 +10,7 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class trafitec_sucursal(models.Model):
+class tms_sucursal(models.Model):
     _name = 'tms.sucursal'
 
     name = fields.Char(string='Nombre',required=True)
@@ -21,7 +21,7 @@ class trafitec_sucursal(models.Model):
     ]
 
 
-class trafitec_lineanegocio(models.Model):
+class tms_lineanegocio(models.Model):
     _name = 'tms.lineanegocio'
 
     name = fields.Char(string="Nombre", required=True)
@@ -890,12 +890,21 @@ class TmsTravel(models.Model):
     fecha_documentacion = fields.Date(string="Fecha documentación")
     dif_dias = fields.Integer(string="Dias", default=0)
     asignadoa_id = fields.Many2one("res.users", string="Asignado a")
-    boletas_id = fields.One2many(comodel_name="tms.viajes.boletas", inverse_name="linea_id",track_visibility='onchange')
+    boletas_id = fields.One2many(comodel_name="tms.viajes.boletas", inverse_name="linea_id",track_visibility='onchange', string="Boletas")
+
+    detalle_origen = fields.Text(string="Detalle Origen")
+    detalle_destino = fields.Text(string="Detalle Destino")
+
+    fecha_hora_carga = fields.Datetime(string="Fecha y hora de carga")
+    fecha_hora_descarga = fields.Datetime(string="Fecha y hora de descarga")
+    detalles_cita = fields.Text(string="Detalles de cita")
+
+    cargo_id = fields.One2many('tms.viaje.cargos', 'line_cargo_id', string="Cargos Adicionales")
 
     @api.constrains('evidencia_id', 'documentacion_completa', 'name')
     def _check_evidencia(self):
         if self.documentacion_completa == True:
-            obj_eviden = self.env['trafitec.viajes.evidencias'].search(
+            obj_eviden = self.env['tms.viajes.evidencias'].search(
                 ['&', ('linea_id', '=', self.id), ('name', '=', 'Evidencia de viaje')])
             if len(obj_eviden) == 0:
                 raise UserError(
@@ -968,3 +977,26 @@ class tms_viajes_boletas(models.Model):
                         _('Aviso !\nYa existe un folio para este cliente y bodega de destino.'))
 
         return super(tms_viajes_boletas, self).write(vals)
+
+
+class tms_viaje_cargos(models.Model):
+    _name = 'tms.viaje.cargos'
+
+    name = fields.Many2one('tms.tipocargosadicionales', string='Tipos de cargos adicionales', required=True)
+    valor = fields.Float(string='Valor', required=True)
+    line_cargo_id = fields.Many2one('tms.travel', string='Id viaje')
+    sistema = fields.Boolean(string="Sistema", default=False)  # Indica si es un registro del sistema.
+
+    @api.constrains('name')
+    def _check_name(self):
+        obj = self.env['tms.viaje.cargos'].search(
+            [('name', '=', self.name.id), ('line_cargo_id', '=', self.line_cargo_id.id)])
+        if len(obj) > 1:
+            raise UserError(
+                _('Aviso !\nNo se puede crear cargos del mismo tipo mas de 1 vez.'))
+
+class tms_tipocargosadicionales(models.Model):
+    _name = 'tms.tipocargosadicionales'
+
+    name = fields.Char(string="Nombre", required=True)
+    product_id = fields.Many2one('product.product', string='Producto', required=True)

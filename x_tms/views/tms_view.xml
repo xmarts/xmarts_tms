@@ -159,7 +159,29 @@
                             </group>
                         </page>
                         <page string="Boletas">
-                            <field name="boletas_id" />
+                            <group>
+                                <field name="boletas_id" />
+                            </group>
+                        </page>
+                        <page string="CARTA DE INSTRUCCIÓN">
+                            <group>
+                                <field name="detalle_origen" string="Detalle Origen"/>
+                                <field name="detalle_destino" string="Detalle Destino"/>
+                            </group>
+                        </page>
+
+                        <page string="Cita">
+                            <group>
+                                <field name="fecha_hora_carga" />
+                                <field name="fecha_hora_descarga" />
+                                <field name="detalles_cita" />
+                            </group>
+                        </page>
+
+                        <page string="Cargos Adicionales">
+                            <group>
+                                <field name="cargo_id" />
+                            </group>
                         </page>
 
                         <page string="Vehicle log fuel">
