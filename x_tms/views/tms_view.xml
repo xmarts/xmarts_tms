@@ -184,6 +184,19 @@
                             </group>
                         </page>
 
+                        <page string="Calificaciones">
+                            <group>
+                                <field name="calificaiones" />
+                            </group>
+                        </page>
+                        <page string="Detalles">
+                            <group>
+                                <field name="observaciones" />
+                                <field name="especificaciones" />
+                                <field name="folio_cliente" />
+                                <field name="suger_pago" />
+                            </group>
+                        </page>
                         <page string="Vehicle log fuel">
                             <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}">
                               <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">

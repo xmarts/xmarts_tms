@@ -901,6 +901,16 @@ class TmsTravel(models.Model):
 
     cargo_id = fields.One2many('tms.viaje.cargos', 'line_cargo_id', string="Cargos Adicionales")
 
+    calificaiones = fields.One2many(string = 'Calificaciones',inverse_name='viaje_id', comodel_name = 'tms.calificacionesgxviaje', track_visibility='onchange')
+
+
+
+
+    observaciones = fields.Text(string="Observaciones")
+    especificaciones = fields.Text(string="Especificaciones")
+    folio_cliente = fields.Char(string="Folio del cliente")
+    suger_pago = fields.Boolean(string="Sugerir pago inmediato")
+
     @api.constrains('evidencia_id', 'documentacion_completa', 'name')
     def _check_evidencia(self):
         if self.documentacion_completa == True:
@@ -1000,3 +1010,21 @@ class tms_tipocargosadicionales(models.Model):
 
     name = fields.Char(string="Nombre", required=True)
     product_id = fields.Many2one('product.product', string='Producto', required=True)
+
+class tms_clasificacionesgxviaje(models.Model):
+    _name = 'tms.calificacionesgxviaje'
+    viaje_id = fields.Many2one(string='Viaje',comodel_name='tms.travel')
+    clasificacion_id = fields.Many2one(string='Calificación',comodel_name='tms.clasificacionesg',required=True)
+    operador_nombre = fields.Char(string='Operador',related='viaje_id.employee_id.name',store=True)
+    #asociado_nombre = fields.Char(string='Asociado',related='viaje_id.asociado_id.display_name',store=True)
+    considerar = fields.Selection(string='Considerado como',related='clasificacion_id.considerar',store=True)
+    
+    _sql_constraints = [('viaje_clasificacion_uniq', 'unique(viaje_id, clasificacion_id)', 'La calificación debe ser unica en el viaje.')]
+
+class tms_clasificacionesg(models.Model):
+    _name='tms.clasificacionesg'
+    name=fields.Char(string='Nombre',default='',required=True)
+    aplica_viajes=fields.Boolean(string='Aplica a calificar viaje',default=False)
+    considerar=fields.Selection(string="Considerar",selection=[('malo','Malo'),('bueno','Bueno')],default='malo',required=True)
+    state=fields.Selection(string='Estado',selection=[('inactivo','Inactivo'),('activo','Activo')],required=True,default='activo')
+    
