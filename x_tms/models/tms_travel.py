@@ -890,7 +890,7 @@ class TmsTravel(models.Model):
     fecha_documentacion = fields.Date(string="Fecha documentación")
     dif_dias = fields.Integer(string="Dias", default=0)
     asignadoa_id = fields.Many2one("res.users", string="Asignado a")
-
+    boletas_id = fields.One2many(comodel_name="tms.viajes.boletas", inverse_name="linea_id",track_visibility='onchange')
 
     @api.constrains('evidencia_id', 'documentacion_completa', 'name')
     def _check_evidencia(self):
@@ -911,3 +911,60 @@ class tms_viajes_evidencias(models.Model):
     image_filename = fields.Char("Nombre del archivo")
     evidencia_file = fields.Binary(string="Archivo", required=True)
     linea_id = fields.Many2one(comodel_name="tms.travel", string="Evidencia id", ondelete='cascade')
+
+
+class tms_viajes_boletas(models.Model):
+    _name = 'tms.viajes.boletas'
+
+    name = fields.Char(string='Folio de boleta', required=True, track_visibility='onchange')
+    tipo_boleta = fields.Selection(string="Tipo de boleta", selection=[('Origen', 'Origen'), ('Destino', 'Destino')],
+                                   required=True, track_visibility='onchange')
+    linea_id = fields.Many2one(comodel_name="tms.travel", string="Folio de viaje", ondelete='cascade')
+
+    fecha = fields.Date(related='linea_id.fecha_viaje', string='Fecha', store=True, readonly=True)
+    cliente = fields.Many2one(related='linea_id.cliente_id', string='Cliente', store=True, readonly=True)
+    origen = fields.Many2one(related='linea_id.departure_id', string='Origen', store=True, readonly=True)
+    destino = fields.Many2one(related='linea_id.arrival_id', string='Destino', store=True, readonly=True)
+    tipo_viaje = fields.Selection(related='linea_id.tipo_viaje', string='Tipo de viaje', store=True, readonly=True)
+    state = fields.Selection(related='linea_id.state', string='Estado', store=True, readonly=True)
+
+    @api.model
+    def create(self, vals):
+        object_boletas = self.env['tms.viajes.boletas'].search([('name', '=ilike', vals['name'])])
+        object_viaje = self.env['tms.travel'].search([('id', '=', vals['linea_id'])])
+
+        for object_bolets in object_boletas:
+            if vals['tipo_boleta'] == 'Origen':
+                if object_viaje.departure_id.id == object_bolets.linea_id.origen.id and object_viaje.cliente_id.id == object_bolets.linea_id.cliente_id.id and object_bolets.tipo_boleta == 'Origen':
+                    raise UserError(
+                        _('Alerta..\nYa existe un folio para este cliente y bodega de origen.'))
+            else:
+                if object_viaje.arrival_id.id == object_bolets.linea_id.destino.id and object_viaje.cliente_id.id == object_bolets.linea_id.cliente_id.id and object_bolets.tipo_boleta == 'Destino':
+                    raise UserError(
+                        _('Alerta..\nYa existe un folio para este cliente y bodega de destino.'))
+
+        return super(tms_viajes_boletas, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        if 'name' in vals:
+            name = vals['name']
+        else:
+            name = self.name
+        if 'tipo_boleta' in vals:
+            tipo_boleta = vals['tipo_boleta']
+        else:
+            tipo_boleta = self.tipo_boleta
+        object_boletas = self.env['tms.viajes.boletas'].search([('name', '=ilike', name)])
+        object_viaje = self.env['tms.travel'].search([('id', '=', self.linea_id.id)])
+        for object_bolets in object_boletas:
+            if tipo_boleta == 'Origen':
+                if object_viaje.departure_id.id == object_bolets.linea_id.origen.id and object_viaje.cliente_id.id == object_bolets.linea_id.cliente_id.id and object_bolets.tipo_boleta == 'Origen':
+                    raise UserError(
+                        _('Aviso !\nYa existe un folio para este cliente y bodega de origen.'))
+            else:
+                if object_viaje.arrival_id.id == object_bolets.linea_id.destino.id and object_viaje.cliente_id.id == object_bolets.linea_id.cliente_id.id and object_bolets.tipo_boleta == 'Destino':
+                    raise UserError(
+                        _('Aviso !\nYa existe un folio para este cliente y bodega de destino.'))
+
+        return super(tms_viajes_boletas, self).write(vals)

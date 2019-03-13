@@ -158,6 +158,9 @@
                                 <field name="asignadoa_id" />
                             </group>
                         </page>
+                        <page string="Boletas">
+                            <field name="boletas_id" />
+                        </page>
 
                         <page string="Vehicle log fuel">
                             <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}">
