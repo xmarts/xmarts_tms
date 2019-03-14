@@ -91,7 +91,7 @@ class TmsRoute(models.Model):
 
     #ruta_file = fields.Binary('Archivo, detalles de ruta', readonly=True)
 
-    mapa_link = fields.Char(string="Link de ruta")
+    mapa_link = fields.Char(string="Enlace de ruta")
 
     @api.multi
     def get_route_soap(self):
