@@ -8,7 +8,7 @@
     "name": "Freight Management",
     "version": "10.3",    
     "category": "Transport",
-    "author": "Jarsa Sistemas, Argil Consulting",
+    "author": "Jarsa Sistemas, Argil Consulting, XMARTS",
     "website": "https://www.jarsa.com.mx/page/transport-management-system",
     "depends": [
         "account_accountant",
