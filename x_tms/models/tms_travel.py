@@ -4,10 +4,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from __future__ import division
-
 from datetime import datetime, timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+import random
 
 
 class tms_sucursal(models.Model):
@@ -150,7 +150,7 @@ class TmsTravel(models.Model):
     subpedido_id = fields.Many2one('sale.order', string='Cotización',
                                    required=True, change_default=True, index=True, track_visibility='always')
     product = fields.One2many('sale.order.line', string='Producto', related="subpedido_id.order_line")
-    
+
     producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
     costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange')
     sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange')
@@ -162,7 +162,7 @@ class TmsTravel(models.Model):
     #tarifa_asociado = fields.Float(string='Tarifa asociado', default=0, track_visibility='onchange', required=True)
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
 
-    celular_asociado = fields.Char(string='Celular asociado', required=True)
+    #celular_asociado = fields.Char(string='Celular asociado', required=True)
     celular_operador = fields.Char(string='Celular operador', required=True)
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
@@ -310,7 +310,7 @@ class TmsTravel(models.Model):
          ('Kg: Cobrar todo', 'Kg: Cobrar todo'), ('Cobrar todo', 'Cobrar todo')],
         string='Si la merma excede lo permitido', required=True, default='Porcentaje: Cobrar diferencia')
 
-    
+
     @api.onchange('peso_origen_total', 'peso_destino_total')
     def _onchange_merma_kg_(self):
         self.merma_kg = 0
@@ -921,6 +921,72 @@ class TmsTravel(models.Model):
                     _('Aviso !\nNo puede aplicar como documentación completa, si no tiene ninguna evidencia de viaje'))
 
 
+
+    #--------------------------------------------------------------------------------------------------------------------------------------
+    #SLI TRACK
+    #--------------------------------------------------------------------------------------------------------------------------------------
+    slitrack_gps_latitud = fields.Float(string='Latitud', default=0, digits=(10, 10))
+    slitrack_gps_longitud = fields.Float(string='Longitud', default=0, digits=(10, 10))
+    slitrack_gps_velocidad = fields.Float(string='Velocidad', default=0)
+    slitrack_gps_fechahorar = fields.Datetime(string='Fecha y hora')
+    slitrack_comentarios = fields.Text(string='Comentarios', defaut='')
+    slitrack_estado = fields.Selection(string='Estado',selection=[('noiniciado', '(No iniciado)'), ('iniciado', 'Iniciado'),('terminado', 'Terminado')], default='noiniciado')
+    slitrack_codigo = fields.Char(string='Código', default='')
+    slitrack_gps_contador = fields.Integer(string='Contador', default=0)
+    slitrack_st = fields.Selection(string='Activo', selection=[('inactivo', 'Inactivo'), ('activo', 'Activo')],default='inactivo')
+
+    slitrack_registro=fields.One2many(string='Registro',comodel_name='tms.slitrack.registro',inverse_name='viaje_id')
+    slitrack_proveedor=fields.Selection(string="Tipo",selection=[('slitrack','SLI Track'),('geotab','GeoTab'),('manual','Manual')],default='manual')
+
+    def action_slitrack_codigo(self):
+        codigo = str(self.id)+str(random.randrange(10000, 99999))
+        #self.slitrack_codigo = codigo
+        self.write({'slitrack_codigo':codigo})
+
+    def action_slitrack_activa(self):
+        self.action_slitrack_codigo()
+        self.slitrack_estado='noiniciado'
+        self.slitrack_st='activo'
+
+class trafitec_slitrack_registro(models.Model):
+    _name='tms.slitrack.registro'
+    _order='fechahorag desc'
+    viaje_id=fields.Many2one(string='Viaje',comodel_name='tms.travel')
+    fechahorad=fields.Datetime(string='Fecha hora dispositivo')
+    fechahorag=fields.Datetime(string='Fecha hora de generacion')
+    latitud=fields.Float(string='Latitud',default=0,digits=(10,10))
+    longitud=fields.Float(string='Longitud',default=0,digits=(10,10))
+    velocidad=fields.Float(string='Velocidad',default=0,digits=(10,10))
+    detalles=fields.Char(string='Detalles',default='')
+    proveedor = fields.Selection(string="Tipo", selection=[('slitrack', 'SLI Track'),('manual', 'Manual')],default='manual')
+
+    @api.model
+    def create(self,vals):
+        return super(trafitec_slitrack_registro, self).create(vals)
+
+    @api.multi
+    def unlink(self):
+        for r in self:
+            if r.proveedor in ("geotab","slitrack"):
+                raise UserError(_("Solo se pueden borrar los registros de tipo manual."))
+        return super(trafitec_slitrack_registro, self).unlink()
+
+    @api.constrains
+    def _validar(self):
+        if not self.create_date:
+           raise UserError(_("Debe especificar la fecha y hora."))
+
+        if self.latitud == 0 and self.longitud == 0:
+            raise UserError(_("Debe especificar la latitud y longitud."))
+
+
+    def action_vermapa(self):
+        return {
+        "type": "ir.actions.act_url",
+        "url": "http://maps.google.com/maps?q=loc:"+str(self.latitud)+","+str(self.longitud),
+        "target": "blank",
+        }
+
 class tms_viajes_evidencias(models.Model):
     _name = 'tms.viajes.evidencias'
 
@@ -1018,7 +1084,7 @@ class tms_clasificacionesgxviaje(models.Model):
     operador_nombre = fields.Char(string='Operador',related='viaje_id.employee_id.name',store=True)
     #asociado_nombre = fields.Char(string='Asociado',related='viaje_id.asociado_id.display_name',store=True)
     considerar = fields.Selection(string='Considerado como',related='clasificacion_id.considerar',store=True)
-    
+
     _sql_constraints = [('viaje_clasificacion_uniq', 'unique(viaje_id, clasificacion_id)', 'La calificación debe ser unica en el viaje.')]
 
 class tms_clasificacionesg(models.Model):
@@ -1027,4 +1093,3 @@ class tms_clasificacionesg(models.Model):
     aplica_viajes=fields.Boolean(string='Aplica a calificar viaje',default=False)
     considerar=fields.Selection(string="Considerar",selection=[('malo','Malo'),('bueno','Bueno')],default='malo',required=True)
     state=fields.Selection(string='Estado',selection=[('inactivo','Inactivo'),('activo','Activo')],required=True,default='activo')
-    
