@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                 <field name="tarifa_cliente" />
-                <field name="product" domain="[('tms_product_category','=','charge')]"/>
+                <field name="product" domain="[('tms_product_category','=','charge')]" context="{'default_tms_product_category': 'charge'}"/>
                 <field name="ruta" />
             </field>
         </field>
