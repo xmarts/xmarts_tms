@@ -6,7 +6,7 @@
 
 {
     "name": "Freight Management",
-    "version": "10.2",    
+    "version": "10.3",    
     "category": "Transport",
     "author": "Jarsa Sistemas, Argil Consulting",
     "website": "https://www.jarsa.com.mx/page/transport-management-system",
