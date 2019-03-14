@@ -104,4 +104,25 @@
         <field eval="False" name="sale_ok"/>
         <field name="tms_product_category">loan</field>
     </record>
+    <record id="product_caseta" model="product.product">
+        <field name="name">Costo Caseta</field>
+        <field name="type">consu</field>
+        <field eval="False" name="purchase_ok"/>
+        <field eval="False" name="sale_ok"/>
+        <field eval="True" name="es_caseta"/>
+    </record>
+    <record id="product_fact_op" model="product.product">
+        <field name="name">Costo Factor Operador</field>
+        <field name="type">consu</field>
+        <field eval="False" name="purchase_ok"/>
+        <field eval="False" name="sale_ok"/>
+        <field eval="True" name="es_factor_op"/>
+    </record>
+    <record id="product_combustible" model="product.product">
+        <field name="name">Costo Combustible</field>
+        <field name="type">consu</field>
+        <field eval="False" name="purchase_ok"/>
+        <field eval="False" name="sale_ok"/>
+        <field eval="True" name="es_combustible"/>
+    </record>
 </odoo>

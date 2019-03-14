@@ -8,7 +8,9 @@ from odoo import _, api, exceptions, fields, models
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
-
+    es_caseta = fields.Boolean(string="Es producto caseta")
+    es_factor_op = fields.Boolean(string="Es producto factor")
+    es_combustible = fields.Boolean(string="Es producto combustible")
     tms_product_category = fields.Selection([
         ('freight', 'Freight (Waybill)'),
         ('move', 'Moves (Waybill)'),
