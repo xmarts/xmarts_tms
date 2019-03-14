@@ -19,7 +19,7 @@
 
     <menuitem action="open_view_tms_travel_template_form" id="menu_tms_travel_template_form" name="Plantilla de viaje" parent="menu_tms_travels" sequence="26"/>
 
-    
+
     <!-- Menu Administracion -->
     <menuitem id="menu_tms_admin" name="Administración" parent="menu_tms" sequence="3"/>
     <menuitem action="fleet.fleet_vehicle_odometer_action" id="tms_fleet_vehicle_odometer_menu" parent="menu_tms_admin" name="Units Odometers" sequence="33"/>
@@ -79,7 +79,7 @@
                             <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
                             <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
                         </group>
-                        <group>  
+                        <group>
                             <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="employee_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
@@ -126,7 +126,7 @@
                                     <field name="merma_permitida_pesos"/>
                                     <field name="merma_cobrar_kg"/>
                                     <field name="merma_cobrar_pesos"/>
-                                    
+
                                 </group>
                                 <!-- <group string="Comisión">
                                     <field name="comision_linea"/>
@@ -138,10 +138,10 @@
                                     <field name="maniobras"/>
                                     <field name="regla_maniobra"/>
                                     <field name="pronto_pago"/>
-                                    
+
                                 </group> -->
                             </group>
-                        </page> 
+                        </page>
                         <page string="Productos" >
                             <group>
                                 <field name="product" />
@@ -189,6 +189,35 @@
                                 <field name="calificaiones" />
                             </group>
                         </page>
+                        <page string="SLI TRACK">
+                        <hr/>
+                          <div>
+                                   <button string="Generar c&#243;digo" name="action_slitrack_codigo" type="object" class="oe_inline oe_stat_button" confirm="&#191;Generar c&#243;digo?"/>
+                                   <span style="width:100%;"/><span style="color:white;">|</span>
+                                   <button string="Activar" name="action_slitrack_activa" type="object" class="oe_inline oe_stat_button" confirm="&#191;Activar viaje?"/>
+                                 </div>
+                                 <hr/>
+                             <group>
+                               <group>
+                               </group>
+                               <group/>
+                               <group name="slitrack_gps" string="GPS">
+                                 <field name="slitrack_gps_fechahorar" readonly="0"/>
+                                 <field name="slitrack_gps_latitud" readonly="0"/>
+                                 <field name="slitrack_gps_longitud" readonly="0"/>
+                                 <field name="slitrack_gps_velocidad" readonly="0"/>
+                                 <field name="slitrack_gps_contador" readonly="0"/>
+
+                               </group>
+                               <group name="slitrack_control" string="Control">
+                                 <field name="slitrack_proveedor"/>
+                                 <field name="slitrack_estado"/>
+                                 <field name="slitrack_codigo" readonly="1"/>
+                                 <field name="slitrack_st"/>
+                                 <field name="slitrack_comentarios"/>
+                               </group>
+                             </group>
+                        </page>
                         <page string="Detalles">
                             <group>
                                 <field name="observaciones" />
@@ -220,13 +249,13 @@
                                         <button groups="x_tms.group_waybill_approve" icon="gtk-go-forward" name="action_approve" states="draft" string="Approve" type="object"/>
                                         <button groups="x_tms.group_waybill_confirm" icon="gtk-ok" name="action_confirm" states="approved" string="Confirm" type="object"/>
                                         <field name="state"/>
-                                        <field name="name"/> 
+                                        <field name="name"/>
                                         <field name="date_order"/>
-                                        <field name="partner_id"/> 
-                                        <field name="product_qty" sum="Product Quantity"/> 
+                                        <field name="partner_id"/>
+                                        <field name="product_qty" sum="Product Quantity"/>
                                         <field name="amount_untaxed" sum="Amount Untaxed"/>
-                                        <field name="amount_tax" sum="Taxes"/> 
-                                        <field name="amount_total" sum="Total "/> 
+                                        <field name="amount_tax" sum="Taxes"/>
+                                        <field name="amount_total" sum="Total "/>
                                     </tree>
                                 </field>
                             </group>
@@ -296,7 +325,7 @@
 
     <!-- Menu Settings Principal -->
     <menuitem id="menu_tms_settings" name="Configuration" parent="menu_tms" sequence="9"/>
-    
+
 
     <!-- SubMenu 1 -->
     <record id="action_partner_tms" model="ir.actions.act_window">
@@ -534,11 +563,11 @@
     <menuitem action="tms_open_view_product_list9" id="menu_tms_open_view_product_list9" name="Retención de Salario" parent="menu_tms_settings_liquidac" sequence="9"/>
     <menuitem action="tms_open_view_product_list10" id="menu_tms_open_view_product_list10" name="Descuento de Salario" parent="menu_tms_settings_liquidac" sequence="10"/>
     <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/>
-    
+
     <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
     <menuitem action="tms_open_view_product_list14" id="menu_tms_open_view_product_list14" name="Balance en Contra" parent="menu_tms_settings_liquidac" sequence="14"/>
     <menuitem action="tms_open_view_product_list15" id="menu_tms_open_view_product_list15" name="Combustible en efectivo" parent="menu_tms_settings_liquidac" sequence="15"/>
-    
+
     <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/>
 
     <!-- SubMenu 8 -->
@@ -551,11 +580,11 @@
     <menuitem action="fleet.fleet_vehicle_state_action" groups="fleet.fleet_group_manager" id="tms_fleet_vehicle_state_menu" parent="menu_tms_settings_conf_ve" sequence="111"/>
     <menuitem action="fleet.fleet_vehicle_model_action" id="tms_fleet_vehicle_model" parent="menu_tms_settings_conf_ve" sequence="113"/>
     <menuitem action="fleet.fleet_vehicle_model_brand_action" id="tms_fleet_vehicle_make" parent="menu_tms_settings_conf_ve" sequence="114"/>    <menuitem id="fleet_vehicle_engine_menu" sequence="117" name="Engines" parent="menu_tms_settings_conf_ve" action="action_fleet_vehicle_engine"/>
-    
+
     <!-- SubMenu 10 -->
     <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
     <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/>
-    
+
 
     <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="100"/>
     <menuitem id="menu_custom_config" name="Settings" parent="menu_tms_settings"
@@ -563,6 +592,6 @@
     <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="100"/>
 
 
-    
+
     <!--  groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic,base.group_system" -->
 </odoo>
