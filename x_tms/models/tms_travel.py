@@ -888,7 +888,7 @@ class TmsTravel(models.Model):
     evidencias_id = fields.One2many(string="Evidencias",comodel_name="tms.viajes.evidencias", inverse_name="linea_id", track_visibility='onchange')
     documentacion_completa = fields.Boolean(string='Documentanción completa', default=False)
     fecha_documentacion = fields.Date(string="Fecha documentación")
-    dif_dias = fields.Integer(string="Dias", default=0)
+    #dif_dias = fields.Integer(string="Dias", default=0)
     asignadoa_id = fields.Many2one("res.users", string="Asignado a")
     boletas_id = fields.One2many(comodel_name="tms.viajes.boletas", inverse_name="linea_id",track_visibility='onchange', string="Boletas")
 

@@ -154,7 +154,7 @@
                                 <field name="evidencias_id" />
                                 <field name="documentacion_completa" />
                                 <field name="fecha_documentacion" />
-                                <field name="dif_dias" />
+                                <!-- <field name="dif_dias" /> -->
                                 <field name="asignadoa_id" />
                             </group>
                         </page>
