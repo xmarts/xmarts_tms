@@ -6,7 +6,7 @@
 from __future__ import division
 from datetime import datetime, timedelta
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 import random
 
 
@@ -163,13 +163,17 @@ class TmsTravel(models.Model):
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
 
     #celular_asociado = fields.Char(string='Celular asociado', required=True)
-    celular_operador = fields.Char(string='Celular operador', readonly=True, related="employee_id.mobile_phone")
+    celular_operador = fields.Char(string='Celular operador')
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
     tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
     lineanegocio = fields.Many2one(comodel_name='tms.lineanegocio', string='Linea de negocios', store=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        self.celular_operador = self.employee_id.mobile_phone
 
     @api.onchange('subpedido_id')
     def onchange_subpedido_id(self):
