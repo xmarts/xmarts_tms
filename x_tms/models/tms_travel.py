@@ -163,7 +163,7 @@ class TmsTravel(models.Model):
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
 
     #celular_asociado = fields.Char(string='Celular asociado', required=True)
-    celular_operador = fields.Char(string='Celular operador', required=True)
+    celular_operador = fields.Char(string='Celular operador', readonly=True, related="employee_id.mobile_phone")
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
     tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
