@@ -34,8 +34,8 @@ class FleetVehicleLogFuel(models.Model):
     odometer = fields.Float(related='vehicle_id.odometer',)
     product_uom_id = fields.Many2one('product.uom', string='UoM')
     product_qty = fields.Float(string='Liters', default=1.0,)
-    tax_amount = fields.Float(string='Taxes',)
-    price_total = fields.Float(string='Total')
+    tax_amount = fields.Float(string='Taxes',compute="_compute_taxes")
+    price_total = fields.Float(string='Total', compute="_compute_total")
     special_tax_amount = fields.Float(
         compute="_compute_special_tax_amount", string='IEPS')
     price_unit = fields.Float(
@@ -99,18 +99,35 @@ class FleetVehicleLogFuel(models.Model):
     @api.depends('tax_amount')
     def _compute_price_subtotal(self):
         for rec in self:
-            rec.price_subtotal = 0
-            if rec.tax_amount > 0:
-                rec.price_subtotal = rec.tax_amount / 0.16
+            rec.price_subtotal = rec.price_unit * rec.product_qty
+            # if rec.tax_amount > 0:
+            #     rec.price_subtotal = rec.tax_amount / 0.16
 
     @api.multi
-    @api.depends('product_qty', 'price_subtotal')
     def _compute_price_unit(self):
         for rec in self:
-            rec.price_unit = 0
-            if rec.product_qty and rec.price_subtotal > 0:
-                rec.price_unit = rec.price_subtotal / rec.product_qty
-            return rec.price_unit
+            # rec.price_unit = 0
+            # if rec.product_qty and rec.price_subtotal > 0:
+            #     rec.price_unit = rec.price_subtotal / rec.product_qty
+            rec.price_unit = rec.product_id.standard_price
+
+    @api.multi
+    def _compute_taxes(self):
+        for rec in self:
+            tax = 0
+            for t in rec.product_id.supplier_taxes_id:
+                tax += t.amount
+            rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
+
+    @api.multi
+    def _compute_total(self):
+        for rec in self:
+            rec.price_total = rec.tax_amount + rec.price_subtotal
+            # tax = 0
+            # for t in rec.product_id.supplier_taxes_id:
+            #     tax += t.amount
+            # rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
+
 
     @api.multi
     @api.depends('price_subtotal', 'tax_amount', 'price_total')
