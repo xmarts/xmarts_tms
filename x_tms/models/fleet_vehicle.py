@@ -47,6 +47,8 @@ class FleetVehicle(models.Model):
     insurance_days_to_expire = fields.Integer(
         compute='_compute_insurance_days_to_expire', string='Days to expire')
 
+    ejes = fields.Integer(string="Numero de ejes", default=2)
+
     @api.depends('insurance_expiration')
     def _compute_insurance_days_to_expire(self):
         for rec in self:
