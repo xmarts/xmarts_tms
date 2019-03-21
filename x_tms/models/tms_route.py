@@ -103,7 +103,7 @@ class TmsRoute(models.Model):
         it = 20 - it
         if it > 0:
             i = 0
-            
+
             while it > i:
                 paradas.append(["",0,0])
                 i += 1
@@ -140,7 +140,7 @@ class TmsRoute(models.Model):
 
         for r in tree.findall("LINKS/MAPA"):
             self.mapa_link = r.text
-        
+
         print(result)
         self.distance = float(distancia.replace(",",""))
         self.travel_time = (float(thora)+(float(tmin)/60))
@@ -228,5 +228,3 @@ class TmsRoute(models.Model):
                 ('type', '=', framework)
             ])
         return fuel_id.performance
-
-

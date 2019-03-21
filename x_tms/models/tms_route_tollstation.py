@@ -20,9 +20,15 @@ class TmsRouteTollstation(models.Model):
         string='Cost per Axis')
     active = fields.Boolean(default=True)
 
-    ejes = fields.Many2one("tms.route.tollstation.costperaxis",string="# Ejes")
+    @api.model
+    def _get_field_axis(self):
+        related_model_id = self.env['tms.route.tollstation.costperaxis'].search([('tollstation_id','=',self.id)], limit=1).id
+        return related_model_id
+
+    ejes = fields.Many2one("tms.route.tollstation.costperaxis",string="# Ejes",default=_get_field_axis)
     costo_caseta = fields.Float(string="Costo caseta", compute="get_costo")
-    total_casetas = fields.Float(string="Total Casetas", compute="get_t_casetas")
+
+
 
     @api.multi
     @api.depends('credit','costo_caseta','ejes')

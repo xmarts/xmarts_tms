@@ -19,12 +19,11 @@ class TmsRouteTollstationCostperaxis(models.Model):
     @api.multi
     @api.depends('name','axis')
     def get_name(self):
-
         res = []
         for record in self:
-            name = ''
-            if record.axis == 1:
-                name = 'eje'
-            else:
-                name = 'ejes'
-            record.name = str(record.axis) + ' ' + name
+            # name = ''
+            # if record.axis == 1:
+            #     name = 'eje'
+            # else:
+            #     name = 'ejes'
+            record.name = str(record.axis)
