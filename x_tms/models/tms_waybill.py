@@ -83,8 +83,8 @@ class TmsWaybill(models.Model):
     arrival_address_id = fields.Many2one(
         'res.partner', 'Arrival Address', required=True,
         help="Arrival address for current Waybill.", change_default=True)
-    upload_point = fields.Char(change_default=True)
-    download_point = fields.Char(change_default=True)
+    upload_point = fields.Many2one("tms.place",change_default=True)
+    download_point = fields.Many2one("tms.place",change_default=True)
     invoice_id = fields.Many2one(
         'account.invoice', 'Invoice', readonly=True, copy=False)
     invoice_paid = fields.Boolean(

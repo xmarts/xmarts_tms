@@ -952,6 +952,27 @@ class TmsTravel(models.Model):
         self.slitrack_estado='noiniciado'
         self.slitrack_st='activo'
 
+
+    ejes = fields.Integer(string="Total de ejes.", compute="_total_ejes")
+    costo_casetas = fields.Float(string="Costo Total de Casetas", compute="_costo_casetas")
+
+    @api.one
+    def _total_ejes(self):
+        if self.tipo_remolque == 'doble':
+            self.ejes = self.unit_id.ejes + self.trailer1_id.ejes + self.dolly_id.ejes + self.trailer2_id.ejes
+        else:
+            self.ejes = self.unit_id.ejes + self.trailer1_id.ejes
+
+    @api.one
+    def _costo_casetas(self):
+        suma = 0
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.costo_casetas = suma
+
+
 class trafitec_slitrack_registro(models.Model):
     _name='tms.slitrack.registro'
     _order='fechahorag desc'

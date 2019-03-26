@@ -58,16 +58,16 @@ class TmsRoute(models.Model):
         'tms.route.tollstation', string="Toll Station")
     note_ids = fields.One2many('tms.route.note', 'route_id', string='Notes')
 
-    total_casetas = fields.Float(string="Total Casetas", compute="get_t_casetas")
+    # total_casetas = fields.Float(string="Total Casetas", compute="get_t_casetas")
 
-    @api.multi
-    @api.depends('tollstation_ids', 'total_casetas')
-    def get_t_casetas(self):
-        for record in self:
-            suma = 0.0
-            for rec in record.tollstation_ids:
-                suma += rec.costo_caseta
-            record.total_casetas = suma
+    # @api.multi
+    # @api.depends('tollstation_ids', 'total_casetas')
+    # def get_t_casetas(self):
+    #     for record in self:
+    #         suma = 0.0
+    #         for rec in record.tollstation_ids:
+    #             suma += rec.costo_caseta
+    #         record.total_casetas = suma
 
     @api.depends('distance_empty', 'distance')
     @api.onchange('distance_empty')
