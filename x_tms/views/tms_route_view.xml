@@ -117,6 +117,9 @@
                         <page string="Driver Factor">
                             <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
                         </page>
+                        <page string="Vales de combustible">
+                            <field name="fuel_log_ids" />
+                        </page>
                         <page string="Notes">
                             <field name="note_ids">
                                 <tree>

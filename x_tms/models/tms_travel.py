@@ -38,7 +38,7 @@ class TmsTravel(models.Model):
         'tms.waybill', string='Waybills')
     driver_factor_ids = fields.One2many(
         'tms.factor', 'travel_id', string='Travel Driver Payment Factors',
-        domain=[('category', '=', 'driver')])
+        domain=[('category', '=', 'driver')], related="route_id.driver_factor_ids", readonly=True)
     name = fields.Char('Travel Number')
     state = fields.Selection([
         ('draft', 'Pending'), ('progress', 'In Progress'), ('done', 'Done'),
@@ -74,8 +74,8 @@ class TmsTravel(models.Model):
         'fleet.vehicle', 'Remolque 2',
         domain=[('fleet_type', '=', 'trailer')])
     employee_id = fields.Many2one(
-        'hr.employee', 'Driver', required=True,
-        domain=[('driver', '=', True)])
+        'hr.employee', 'Driver', readonly=True,
+        domain=[('driver', '=', True)], related="unit_id.employee_id")
     date = fields.Datetime(
         'Date  registered', required=True,
         default=(fields.Datetime.now))
@@ -110,7 +110,7 @@ class TmsTravel(models.Model):
         store=True,
         readonly=True)
     fuel_log_ids = fields.One2many(
-        'fleet.vehicle.log.fuel', 'travel_id', string='Fuel Vouchers')
+        'fleet.vehicle.log.fuel', 'travel_id', string='Fuel Vouchers', related="route_id.fuel_log_ids", readonly=True)
     advance_ids = fields.One2many(
         'tms.advance', 'travel_id', string='Advances')
     arrival_id = fields.Many2one(
@@ -163,7 +163,7 @@ class TmsTravel(models.Model):
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
 
     #celular_asociado = fields.Char(string='Celular asociado', required=True)
-    celular_operador = fields.Char(string='Celular operador')
+    celular_operador = fields.Char(string='Celular operador', readonly=True, related="employee_id.mobile_phone")
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
     tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
@@ -720,7 +720,7 @@ class TmsTravel(models.Model):
         self.trailer2_id = self.kit_id.trailer2_id.id
         self.trailer1_id = self.kit_id.trailer1_id.id
         self.dolly_id = self.kit_id.dolly_id.id
-        self.employee_id = self.kit_id.employee_id.id
+        #self.employee_id = self.kit_id.employee_id.id
 
     @api.onchange('route_id')
     def _onchange_route(self):

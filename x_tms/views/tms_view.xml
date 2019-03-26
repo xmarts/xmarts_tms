@@ -84,7 +84,7 @@
                         <group>
                             <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="employee_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="employee_id" readonly="1"/>
                             <field name="framework"/>
                         </group>
                         <group colspan="4">
@@ -327,6 +327,17 @@
 
     <!-- Menu Settings Principal -->
     <menuitem id="menu_tms_settings" name="Configuration" parent="menu_tms" sequence="9"/>
+
+    <record id="action_lineasnegocio_tms" model="ir.actions.act_window">
+        <field name="name">Lineas del negocio</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.lineanegocio</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="filter" eval="True"/>
+    </record>
+    <menuitem id="menu_tms_settings_lineasnegocio" action="action_lineasnegocio_tms" name="Lineas de Negocio" parent="menu_tms_settings" sequence="10"/>
 
 
     <!-- SubMenu 1 -->

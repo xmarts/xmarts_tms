@@ -24,6 +24,7 @@ class FleetVehicleLogFuel(models.Model):
 
     name = fields.Char()
     travel_id = fields.Many2one('tms.travel', string='Travel')
+    route_id = fields.Many2one('tms.route', string='Ruta')
     expense_id = fields.Many2one('tms.expense', string='Expense')
     employee_id = fields.Many2one(
         'hr.employee',
