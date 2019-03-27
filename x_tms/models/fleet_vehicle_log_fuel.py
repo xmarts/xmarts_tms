@@ -24,7 +24,7 @@ class FleetVehicleLogFuel(models.Model):
 
     name = fields.Char()
     travel_id = fields.Many2one('tms.travel', string='Travel')
-    route_id = fields.Many2one('tms.route', string='Ruta')
+    
     expense_id = fields.Many2one('tms.expense', string='Expense')
     employee_id = fields.Many2one(
         'hr.employee',
@@ -206,3 +206,16 @@ class FleetVehicleLogFuel(models.Model):
         total = str(float(product_qty)).split('.')[0]
         total = num2words(float(total), lang='es').upper()
         return '%s' % (total)
+
+
+class FleetVehicleLogFuelTem(models.Model):
+    _name = 'fleet.vehicle.log.fuel.tem'
+    
+    product_qty = fields.Float(string='Liters', default=1.0,)
+    vendor_id = fields.Many2one('res.partner')
+    product_id = fields.Many2one(
+        'product.product',
+        string='Product',
+        domain=[('tms_product_category', '=', 'fuel')])
+
+    route_id = fields.Many2one('tms.route', string='Ruta')

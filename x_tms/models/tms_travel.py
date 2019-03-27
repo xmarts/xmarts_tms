@@ -110,7 +110,7 @@ class TmsTravel(models.Model):
         store=True,
         readonly=True)
     fuel_log_ids = fields.One2many(
-        'fleet.vehicle.log.fuel', 'travel_id', string='Fuel Vouchers', related="route_id.fuel_log_ids", readonly=True)
+        'fleet.vehicle.log.fuel', 'travel_id', string='Fuel Vouchers', readonly=True)
     advance_ids = fields.One2many(
         'tms.advance', 'travel_id', string='Advances')
     arrival_id = fields.Many2one(

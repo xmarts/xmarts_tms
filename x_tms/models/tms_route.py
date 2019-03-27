@@ -94,7 +94,7 @@ class TmsRoute(models.Model):
     mapa_link = fields.Char(string="Enlace de ruta")
 
     fuel_log_ids = fields.One2many(
-        'fleet.vehicle.log.fuel', 'route_id', string='Vales de combustible')
+        'fleet.vehicle.log.fuel.tem', 'route_id', string='Vales de combustible')
 
     @api.multi
     def get_route_soap(self):
