@@ -771,6 +771,30 @@ class TmsTravel(models.Model):
             rec.date_end_real = fields.Datetime.now()
             rec.message_post('Travel Finished')
 
+    @api.depends('route_id','fuel_log_ids')
+    @api.onchange('route_id')
+    def _onchange_ruta_fuel(self):
+        line_ids = []
+        res = {'value':{
+                'fuel_log_ids':[],
+            }
+        }
+        for x in self.route_id.fuel_log_ids:
+            lines = {
+              'operating_unit_id': self.operating_unit_id.id,
+              'vendor_id': x.vendor_id.id,
+              'vehicle_id': self.unit_id.id,
+              'date': datetime.today(),
+              'product_id': x.product_id,
+              'product_qty': x.product_qty,
+              'state': 'approved',
+            }
+            line_ids += [lines]
+        res['value'].update({
+            'fuel_log_ids': line_ids,
+        })
+        return res
+
     @api.multi
     def action_cancel(self):
         for rec in self:

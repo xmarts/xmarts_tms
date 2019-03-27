@@ -89,7 +89,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Fuel Efficiency">
+                        <!-- <page string="Fuel Efficiency">
                             <field name="fuel_efficiency_ids">
                                 <tree editable="bottom">
                                     <field name="engine_id"/>
@@ -97,7 +97,7 @@
                                     <field name="performance"/>
                                 </tree>
                             </field>
-                        </page>
+                        </page> -->
                         <page string="Toll Stations">
                             <field name="tollstation_ids">
                                 <tree editable="bottom">
@@ -117,7 +117,7 @@
                         <page string="Driver Factor">
                             <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
                         </page>
-                        <page string="Vales de combustible">
+                        <!-- <page string="Vales de combustible">
                             <field name="fuel_log_ids">
                                 <tree editable="bottom">
                                     <field name="vendor_id" required="1" />
@@ -125,7 +125,7 @@
                                     <field name="product_qty" required="1" />
                                 </tree>
                             </field>
-                        </page>
+                        </page> -->
                         <page string="Notes">
                             <field name="note_ids">
                                 <tree>
