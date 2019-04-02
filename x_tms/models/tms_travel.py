@@ -139,7 +139,7 @@ class TmsTravel(models.Model):
     arrival_id = fields.Many2one(
         'tms.place',
         string='Arrival',
-        compute='_compute_arrival2_id',
+        compute='_compute_arrival_id',
         store=True,
         readonly=True)
     arrival2_id = fields.Many2one(
