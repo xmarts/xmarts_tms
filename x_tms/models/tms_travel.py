@@ -8,6 +8,19 @@ from datetime import datetime, timedelta
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError, UserError
 import random
+import mygeotab
+
+username = 'javier.ramirez@sli.mx'
+password = 'Javier0318*'
+database = 'GSYEECA'
+
+geo = mygeotab.API(
+        username=username,
+        password=password,
+        database=database
+    )
+
+authenticate = geo.authenticate()
 
 
 class tms_sucursal(models.Model):
@@ -46,6 +59,10 @@ class TmsTravel(models.Model):
         readonly=True, default='draft')
     route_id = fields.Many2one(
         'tms.route', 'Route', required=True,
+        states={'cancel': [('readonly', True)],
+                'closed': [('readonly', True)]})
+    route2_id = fields.Many2one(
+        'tms.route', '2da Ruta',
         states={'cancel': [('readonly', True)],
                 'closed': [('readonly', True)]})
     travel_duration = fields.Float(
@@ -109,6 +126,12 @@ class TmsTravel(models.Model):
         compute='_compute_departure_id',
         store=True,
         readonly=True)
+    departure2_id = fields.Many2one(
+        'tms.place',
+        string='2do Origen',
+        compute='_compute_departure2_id',
+        store=True,
+        readonly=True)
     fuel_log_ids = fields.One2many(
         'fleet.vehicle.log.fuel', 'travel_id', string='Fuel Vouchers', readonly=True)
     advance_ids = fields.One2many(
@@ -116,7 +139,13 @@ class TmsTravel(models.Model):
     arrival_id = fields.Many2one(
         'tms.place',
         string='Arrival',
-        compute='_compute_arrival_id',
+        compute='_compute_arrival2_id',
+        store=True,
+        readonly=True)
+    arrival2_id = fields.Many2one(
+        'tms.place',
+        string='2do Destino',
+        compute='_compute_arrival2_id',
         store=True,
         readonly=True)
     notes = fields.Text(
@@ -678,6 +707,16 @@ class TmsTravel(models.Model):
         for rec in self:
             rec.arrival_id = rec.route_id.arrival_id
 
+    @api.depends('route2_id')
+    def _compute_departure2_id(self):
+        for rec in self:
+            rec.departure2_id = rec.route2_id.departure_id
+
+    @api.depends('route2_id')
+    def _compute_arrival2_id(self):
+        for rec in self:
+            rec.arrival2_id = rec.route2_id.arrival_id
+
     @api.depends('fuel_efficiency_expected', 'fuel_efficiency_travel')
     def _compute_fuel_efficiency_extraction(self):
         for rec in self:
@@ -995,6 +1034,36 @@ class TmsTravel(models.Model):
                 if z.axis == self.ejes:
                     suma += z.cost_cash
         self.costo_casetas = suma
+
+    kml = fields.Float(string="Litros/Km")
+    com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
+    viaje_gm = fields.Char(string="Viaje GM")
+
+    @api.onchange('unit_id')
+    def _onchange_fuel_kml(self):
+        xxx = geo.get('Device', engineVehicleIdentificationNumber=str(self.unit_id.serial_number))[0]
+        odometer_records = geo.get('StatusData', 
+                                      diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
+                                      deviceSearch=dict(id=xxx['id']),
+                                      fromDate=datetime.utcnow() - timedelta(days=365),
+                                      toDate=datetime.utcnow())
+        fuel_records = geo.get('StatusData',
+                                  diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
+                                  deviceSearch=dict(id=xxx['id']),
+                                  fromDate=datetime.utcnow() - timedelta(days=365),
+                                  toDate=datetime.utcnow())
+        if len(odometer_records) == 0 or len(fuel_records) == 0:
+            raise Exception('Device has not travelled in this time period or no fuel usage reported')
+        odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
+        fuel_change = fuel_records[-1]['data'] - fuel_records[0]['data']
+        self.kml = fuel_change / (odometer_change / 1000)
+
+    @api.one
+    def _com_com_necesario(self):
+        if self.route2_id:
+            self.update({'com_necesario':(self.kml * self.route_id.distance) + (self.kml * self.route2_id.distance)})
+        else:
+            self.update({'com_necesario': self.kml * self.route_id.distance})
 
 
 class trafitec_slitrack_registro(models.Model):
