@@ -19,18 +19,18 @@ authenticate = geo.authenticate()
 
 
 
-def calculate_litres_per_100km(device_id, from_date, to_date):
+def calculate_litres_per_100km(from_date, to_date):
 
     odometer_records = geo.get('StatusData', 
                                   diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
-                                  deviceSearch=dict(id=device_id),
-                                  fromDate=from_date,
-                                  toDate=to_date)
+                                  deviceSearch=dict(engineVehicleIdentificationNumber='3HSDJAPT4HN513265'),
+                                  toDate=to_date,
+                                  fromDate=from_date)
     fuel_records = geo.get('StatusData',
                               diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
-                              deviceSearch=dict(id=device_id),
-                              fromDate=from_date,
-                              toDate=to_date)
+                              deviceSearch=dict(engineVehicleIdentificationNumber='3HSDJAPT4HN513265'),
+                              toDate=to_date,
+                              fromDate=from_date)
     if len(odometer_records) == 0 or len(fuel_records) == 0:
         raise Exception('Device has not travelled in this time period or no fuel usage reported')
     odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
@@ -39,8 +39,9 @@ def calculate_litres_per_100km(device_id, from_date, to_date):
 
 # end = datetime.utcnow()
 # start = end - timedelta(days=365)
-xxx = api.get('Device', engineVehicleIdentificationNumber='3HSDJAPT4HN513265')[0]
-print(calculate_litres_per_100km(xxx['id'], datetime.utcnow() - timedelta(days=365), datetime.utcnow()))
+#xxx = geo.get('Device', engineVehicleIdentificationNumber='3HSDJAPT4HN513265')[0]
+#print(xxx)
+print(calculate_litres_per_100km(datetime.utcnow() - timedelta(days=10), datetime.utcnow()))
 
 
 
