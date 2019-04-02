@@ -2,9 +2,9 @@
 
 from odoo import models, fields, api
 
-class tms_operat_ih(models.Model):
-	_inherit = 'tms.advance'
-	travel_id=fields.Many2one('tms.advance', string='table')
+# class tms_operat_ih(models.Model):
+# 	_inherit = 'tms.advance'
+# 	travel_id=fields.Many2one('tms.advance', string='table')
 
 #class tms_operat_fuelvoucher(models.Model):
 #	_inherit = 'fleet.vehicle.log.fuel'
