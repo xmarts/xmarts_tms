@@ -43,6 +43,7 @@
                 <field name="operating_unit_id" required="1"/>
                 <field name="fleet_type" required="1"/>
                 <field name="ejes"/>
+                <field name="efficiency" invisible="1"/>
             </field>
             <field name="car_value" position="after">
                 <field name="year_model"/>
