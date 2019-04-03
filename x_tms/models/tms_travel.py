@@ -781,6 +781,13 @@ class TmsTravel(models.Model):
     @api.multi
     def action_progress(self):
         for rec in self:
+            val = True
+            for x in self.fuel_log_ids:
+                if x.state != 'approved' and x.state != 'confirmed':
+                    val = False
+            if val == False:
+                raise ValidationError(
+                    _('Uno o mas vales aun no son aprovados o confirmados'))
             rec.validate_driver_license()
             rec.validate_vehicle_insurance()
             travels = rec.search(
@@ -1033,38 +1040,54 @@ class TmsTravel(models.Model):
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
                     suma += z.cost_cash
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
         self.costo_casetas = suma
 
-    kml = fields.Float(string="Litros/Km")
+    kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
     com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
     viaje_gm = fields.Char(string="Viaje GM")
 
-    @api.onchange('unit_id')
-    def _onchange_fuel_kml(self):
-        xxx = geo.get('Device', engineVehicleIdentificationNumber=str(self.unit_id.serial_number))[0]
-        odometer_records = geo.get('StatusData', 
-                                      diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
-                                      deviceSearch=dict(id=xxx['id']),
-                                      fromDate=datetime.utcnow() - timedelta(days=365),
-                                      toDate=datetime.utcnow())
-        fuel_records = geo.get('StatusData',
-                                  diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
-                                  deviceSearch=dict(id=xxx['id']),
-                                  fromDate=datetime.utcnow() - timedelta(days=365),
-                                  toDate=datetime.utcnow())
-        if len(odometer_records) == 0 or len(fuel_records) == 0:
-            raise Exception('Device has not travelled in this time period or no fuel usage reported')
-        odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
-        fuel_change = fuel_records[-1]['data'] - fuel_records[0]['data']
-        self.kml = fuel_change / (odometer_change / 1000)
+    @api.depends('unit_id')
+    @api.one
+    def _comp_fuel_kml(self):
+        self.kml = self.unit_id.efficiency
 
     @api.one
     def _com_com_necesario(self):
-        if self.route2_id:
-            self.update({'com_necesario':(self.kml * self.route_id.distance) + (self.kml * self.route2_id.distance)})
-        else:
-            self.update({'com_necesario': self.kml * self.route_id.distance})
+        if self.kml > 0:
+            if self.route2_id:
+                self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
+            else:
+                self.update({'com_necesario':self.route_id.distance/self.kml})
 
+    @api.onchange('route_id','route2_id')
+    def _onchange_routes(self):
+        line_ids = []
+        res = {'value':{
+                'cargo_id':[],
+            }
+        }
+        for x in self.route_id.cargos_id:
+            line = {
+              'name': x.name.id,
+              'valor': x.valor,
+              'sistema': x.sistema,
+            }
+            line_ids += [line]
+        for x in self.route2_id.cargos_id:
+            line = {
+              'name': x.name.id,
+              'valor': x.valor,
+              'sistema': x.sistema,
+            }
+            line_ids += [line]
+        res['value'].update({
+            'cargo_id': line_ids,
+        })
+        return res
 
 class trafitec_slitrack_registro(models.Model):
     _name='tms.slitrack.registro'
@@ -1180,6 +1203,7 @@ class tms_viaje_cargos(models.Model):
     valor = fields.Float(string='Valor', required=True)
     line_cargo_id = fields.Many2one('tms.travel', string='Id viaje')
     sistema = fields.Boolean(string="Sistema", default=False)  # Indica si es un registro del sistema.
+    route_id = fields.Many2one("tms.route", string="Ruta")
 
     @api.constrains('name')
     def _check_name(self):
