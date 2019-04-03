@@ -57,7 +57,7 @@ class TmsRoute(models.Model):
     tollstation_ids = fields.Many2many(
         'tms.route.tollstation', string="Toll Station")
     note_ids = fields.One2many('tms.route.note', 'route_id', string='Notes')
-
+    cargos_id = fields.One2many('tms.viaje.cargos', 'route_id', string="Cargos Adicionales")
     # total_casetas = fields.Float(string="Total Casetas", compute="get_t_casetas")
 
     # @api.multi

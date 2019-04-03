@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class FleetVehicle(models.Model):
@@ -48,6 +48,11 @@ class FleetVehicle(models.Model):
         compute='_compute_insurance_days_to_expire', string='Days to expire')
 
     ejes = fields.Integer(string="Numero de ejes", default=2)
+    efficiency = fields.Float(
+        digits=(4, 2),
+        help=_("Rendimiento L/KM"),
+        string=_("Rendimiento L/Km")
+    )
 
     @api.depends('insurance_expiration')
     def _compute_insurance_days_to_expire(self):
