@@ -208,6 +208,7 @@ class TmsTravel(models.Model):
     def onchange_subpedido_id(self):
         self.tarifa_cliente = self.subpedido_id.tarifa_cliente
         self.route_id = self.subpedido_id.ruta
+        self.route2_id = self.subpedido_id.ruta2
         self.producto = self.subpedido_id.product
         self.costo_producto = self.subpedido_id.product.standard_price
         self.cliente_id = self.subpedido_id.partner_id
@@ -1049,6 +1050,8 @@ class TmsTravel(models.Model):
     kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
     com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
     viaje_gm = fields.Char(string="Viaje GM")
+    ruta_vacia1 = fields.Boolean(string="Ruta 1 sin carga?")
+    ruta_vacia2 = fields.Boolean(string="Ruta 2 sin carga?")
 
     @api.depends('unit_id')
     @api.one
@@ -1086,6 +1089,34 @@ class TmsTravel(models.Model):
             line_ids += [line]
         res['value'].update({
             'cargo_id': line_ids,
+        })
+        return res
+
+    @api.onchange('route_id','route2_id','unit_id')
+    def _onchange_route_unit(self):
+        vale = 0
+        if self.route2_id:
+            if self.kml > 0:
+                vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        else:
+            if self.kml > 0:
+                vale = self.route_id.distance/self.kml
+        line_ids = []
+        res = {'value':{
+                'fuel_log_ids':[],
+            }
+        }
+        comb = self.env['product.product'].search([('tms_product_category','=','fuel')], limit=1)
+        line = {
+          'operating_unit_id': self.operating_unit_id.id,
+          'vehicle_id': self.unit_id.id,
+          'product_id': comb.id,
+          'product_qty': vale,
+          'employee_id': self.employee_id.id,
+        }
+        line_ids += [line]
+        res['value'].update({
+            'fuel_log_ids': line_ids,
         })
         return res
 
@@ -1205,13 +1236,13 @@ class tms_viaje_cargos(models.Model):
     sistema = fields.Boolean(string="Sistema", default=False)  # Indica si es un registro del sistema.
     route_id = fields.Many2one("tms.route", string="Ruta")
 
-    @api.constrains('name')
-    def _check_name(self):
-        obj = self.env['tms.viaje.cargos'].search(
-            [('name', '=', self.name.id), ('line_cargo_id', '=', self.line_cargo_id.id)])
-        if len(obj) > 1:
-            raise UserError(
-                _('Aviso !\nNo se puede crear cargos del mismo tipo mas de 1 vez.'))
+    # @api.constrains('name')
+    # def _check_name(self):
+    #     obj = self.env['tms.viaje.cargos'].search(
+    #         [('name', '=', self.name.id), ('line_cargo_id', '=', self.line_cargo_id.id)])
+    #     if len(obj) > 1:
+    #         raise UserError(
+    #             _('Aviso !\nNo se puede crear cargos del mismo tipo mas de 1 vez.'))
 
 class tms_tipocargosadicionales(models.Model):
     _name = 'tms.tipocargosadicionales'

@@ -9,6 +9,7 @@
                 <field name="tarifa_cliente" />
                 <field name="product" domain="[('tms_product_category','=','charge')]" context="{'default_tms_product_category': 'charge'}"/>
                 <field name="ruta" />
+                <field name="ruta2" />
             </field>
         </field>
     </record>
