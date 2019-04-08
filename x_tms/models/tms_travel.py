@@ -1053,6 +1053,11 @@ class TmsTravel(models.Model):
     viaje_gm = fields.Char(string="Viaje GM")
     ruta_vacia1 = fields.Boolean(string="Ruta 1 sin carga?")
     ruta_vacia2 = fields.Boolean(string="Ruta 2 sin carga?")
+    rendimiento_manual1= fields.Boolean(string="Rendimiento Manual Ruta 1?")
+    rendimiento_manual2= fields.Boolean(string="Rendimiento Manual Ruta 2?")
+    kmlmuno = fields.Float(string="KM/L")
+    kmlm2 = fields.Float(string="KM/L")
+
 
     @api.depends('unit_id')
     @api.one
@@ -1061,11 +1066,38 @@ class TmsTravel(models.Model):
 
     @api.one
     def _com_com_necesario(self):
-        if self.kml > 0:
-            if self.route2_id:
-                self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
-            else:
-                self.update({'com_necesario':self.route_id.distance/self.kml})
+        if self.route2_id:
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                if self.kmlmuno > 0 and self.kml <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                if self.kmlmuno <= 0 and self.kml > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kml)})
+                if self.kmlmuno > 0 and self.kml > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)})
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                if self.kml > 0 and self.kmlm2 <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml)})
+                if self.kml <= 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                if self.kml > 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)})
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                if self.kmlmuno > 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)})
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
+        else:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    self.update({'com_necesario':self.route_id.distance/self.kmlmuno})
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    self.update({'com_necesario':self.route_id.distance/self.kml})
 
     @api.onchange('route_id','route2_id')
     def _onchange_routes(self):
@@ -1093,15 +1125,47 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','unit_id')
+    @api.onchange('route_id','route2_id','unit_id','com_necesario','rendimiento_manual1','rendimiento_manual2','kmlmuno','kmlm2')
     def _onchange_route_unit(self):
         vale = 0
         if self.route2_id:
-            if self.kml > 0:
-                vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                if self.kmlmuno > 0 and self.kml <= 0:
+                    vale = (self.route_id.distance/self.kmlmuno)
+                if self.kmlmuno <= 0 and self.kml > 0:
+                    vale = (self.route2_id.distance/self.kml)
+                if self.kmlmuno > 0 and self.kml > 0:
+                    vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                if self.kml > 0 and self.kmlm2 <= 0:
+                    vale = (self.route_id.distance/self.kml)
+                if self.kml <= 0 and self.kmlm2 > 0:
+                    vale = (self.route2_id.distance/self.kmlm2)
+                if self.kml > 0 and self.kmlm2 > 0:
+                    vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                    vale = (self.route_id.distance/self.kmlmuno)
+                if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                    vale = (self.route2_id.distance/self.kmlm2)
+                if self.kmlmuno > 0 and self.kmlm2 > 0:
+                    vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
         else:
-            if self.kml > 0:
-                vale = self.route_id.distance/self.kml
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    vale = self.route_id.distance/self.kmlmuno
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    vale = self.route_id.distance/self.kml
+        # if self.route2_id:
+        #     if self.kml > 0:
+        #         vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        # else:
+        #     if self.kml > 0:
+        #         vale = self.route_id.distance/self.kml
         line_ids = []
         res = {'value':{
                 'fuel_log_ids':[],
