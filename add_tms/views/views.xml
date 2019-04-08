@@ -213,7 +213,7 @@
         <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/> -->
 
 
-      <record model="ir.actions.act_window" id="add_tms_categorias_porte">
+      <!-- <record model="ir.actions.act_window" id="add_tms_categorias_porte">
       <field name="name">Categoría de Cartas Porte</field>
       <field name="res_model">tms.waybill.category</field>
       <field name="view_mode">tree,form</field>
@@ -227,7 +227,7 @@
       <field name="view_mode">tree,form</field>
       </record>
 
-        <menuitem name="Productos Transportables" id="add_operaciones_menu_16_list" parent="x_tms.menu_tms_settings_r_carta" action="add_tms_productos_transportables"/> 
+        <menuitem name="Productos Transportables" id="add_operaciones_menu_16_list" parent="x_tms.menu_tms_settings_r_carta" action="add_tms_productos_transportables"/>  -->
 
         <record model="ir.actions.act_window" id="add_tms_categorias_contacto">
       <field name="name">Etiquetas de contacto</field>

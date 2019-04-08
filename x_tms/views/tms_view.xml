@@ -409,12 +409,20 @@
         <field name="domain"></field>
         <field name="filter" eval="True"/>
     </record>
-    <menuitem id="menu_tms_settings_products" name="Productos" parent="menu_tms_settings" sequence="105"/>
-    <menuitem action="action_product_category_tms" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/>
+    <menuitem id="menu_tms_settings_products" name="Categorias de Productos" parent="menu_tms_settings" sequence="105"/>
+    <menuitem action="action_product_category_tms" id="menu_tms_open_view_product_list" name="Categorias de Productos" parent="menu_tms_settings_products" sequence="119"/>
 
     <!-- <menuitem action="tms_open_view_product_list" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/> -->
 
     <!-- Records de direccionamiento -->
+    <record id="tms_open_view_products_list" model="ir.actions.act_window">
+        <field name="name">Productos/Servicios</field>
+        <field name="res_model">product.product</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field eval="False" name="view_id"/>
+    </record>
+
     <record id="tms_open_view_product_list1" model="ir.actions.act_window">
         <field name="name">Fletes</field>
         <field name="res_model">product.template</field>
@@ -579,32 +587,33 @@
         <field eval="False" name="view_id"/>
     </record>
 
-
+    <menuitem id="menu_tms_settings_r_carta" name="Productos/Servicios" parent="menu_tms_settings" sequence="106"/>
+    <menuitem action="tms_open_view_products_list" id="menu_tms_open_view_products" name="Productos/Servicios" parent="menu_tms_settings_r_carta" sequence="1"/>
     <!-- SubMenu 6 -->
-    <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
+    <!-- <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
     <menuitem action="tms_open_view_product_list1" id="menu_tms_open_view_product_list1" name="Producto Flete" parent="menu_tms_settings_r_carta" sequence="1"/>
     <menuitem action="tms_open_view_product_list2" id="menu_tms_open_view_product_list2" name="Maniobras de Carga/Descarga" parent="menu_tms_settings_r_carta" sequence="2"/>
-    <menuitem action="tms_open_view_product_list3" id="menu_tms_open_view_product_list3" name="Seguro de carga" parent="menu_tms_settings_r_carta" sequence="3"/>
-    <menuitem action="tms_open_view_product_list16" id="menu_tms_open_view_product_list16" name="Autopistas" parent="menu_tms_settings_r_carta" sequence="16"/>
-    <menuitem action="tms_open_view_product_list12" id="menu_tms_open_view_product_list12" name="Otros Ingresos" parent="menu_tms_settings_r_carta" sequence="12"/>
-    <menuitem action="tms_open_view_product_list18" id="tms_transportable_menu" name="Productos Transportables" parent="menu_tms_settings_r_carta" sequence="100"/>
+    <menuitem action="tms_open_view_product_list3" id="menu_tms_open_view_product_list3" name="Seguro de carga" parent="menu_tms_settings_r_carta" sequence="3"/> -->
+    <!-- <menuitem action="tms_open_view_product_list16" id="menu_tms_open_view_product_list16" name="Autopistas" parent="menu_tms_settings_r_carta" sequence="16"/> -->
+    <!-- <menuitem action="tms_open_view_product_list12" id="menu_tms_open_view_product_list12" name="Otros Ingresos" parent="menu_tms_settings_r_carta" sequence="12"/>
+    <menuitem action="tms_open_view_product_list18" id="tms_transportable_menu" name="Productos Transportables" parent="menu_tms_settings_r_carta" sequence="100"/> -->
 
     <!-- SubMenu 7 -->
-    <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/>
+    <!-- <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/> -->
     <!-- <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/> -->
-    <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
+  <!--   <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
     <menuitem action="tms_open_view_product_list6" id="menu_tms_open_view_product_list6" name="Concepto de Gasto" parent="menu_tms_settings_liquidac" sequence="6"/>
     <menuitem action="tms_open_view_product_list7" id="menu_tms_open_view_product_list7" name="Gastos Indirectos" parent="menu_tms_settings_liquidac" sequence="7"/>
     <menuitem action="tms_open_view_product_list8" id="menu_tms_open_view_product_list8" name="Sueldo Operador" parent="menu_tms_settings_liquidac" sequence="8"/>
     <menuitem action="tms_open_view_product_list9" id="menu_tms_open_view_product_list9" name="Retención de Salario" parent="menu_tms_settings_liquidac" sequence="9"/>
     <menuitem action="tms_open_view_product_list10" id="menu_tms_open_view_product_list10" name="Descuento de Salario" parent="menu_tms_settings_liquidac" sequence="10"/>
-    <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/>
+    <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/> -->
 
-    <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
+    <!-- <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
     <menuitem action="tms_open_view_product_list14" id="menu_tms_open_view_product_list14" name="Balance en Contra" parent="menu_tms_settings_liquidac" sequence="14"/>
     <menuitem action="tms_open_view_product_list15" id="menu_tms_open_view_product_list15" name="Combustible en efectivo" parent="menu_tms_settings_liquidac" sequence="15"/>
 
-    <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/>
+    <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/> -->
 
     <!-- SubMenu 8 -->
     <menuitem id="menu_tms_settings_eve_acc" name="Eventos y Acciones" parent="menu_tms_settings" sequence="108"/>
