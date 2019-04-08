@@ -6,8 +6,8 @@
 
 
     <!-- Menu Solicitud de Transporte -->
-    <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
-    <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/>
+    <!-- <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
+    <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/> -->
 
 
     <!-- Menu Viajes -->
@@ -66,6 +66,7 @@
                             <field name="sucursal_id" />
                             <field name="lineanegocio" />
                             <field name="tipo_lineanegocio" readonly="1"/>
+                            <field name="tipo_negocio" invisible="1"/>
                             <field name="tarifa_cliente" />
                             <field name="flete_cliente" />
                         </group>
@@ -112,7 +113,7 @@
                         </group>
                     </group>
                     <notebook colspan="4">
-                        <page string="Pesos" attrs="{'invisible':[('tipo_lineanegocio','!=','granel')]}">
+                        <page string="Pesos" attrs="{'invisible':[('tipo_negocio','!=','granel')]}">
                             <group>
                                 <group string="Peso Origen">
                                     <field name="peso_origen_remolque_1"/>
@@ -160,7 +161,16 @@
                         </page>
                         <page string="Productos" >
                             <group>
-                                <field name="product" />
+                                <field name="product">
+                                    <tree delete="false" create="false" edit="false">
+                                        <field name="product_id" />
+                                        <field name="name" />
+                                        <field name="product_uom_qty" />
+                                        <field name="price_unit" />
+                                        <field name="tax_id" />
+                                        <field name="price_subtotal" />
+                                    </tree>
+                                </field>
                             </group>
                         </page>
 

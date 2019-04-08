@@ -197,6 +197,7 @@ class TmsTravel(models.Model):
                                   string='Tipo de viaje', default='Normal', required=True)
     tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
     lineanegocio = fields.Many2one(comodel_name='tms.lineanegocio', string='Linea de negocios', store=True)
+    tipo_negocio = fields.Selection([('flete','Flete'),('granel','Granel')], string="Tipo", related='lineanegocio.tipo', required=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
 
