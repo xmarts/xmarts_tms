@@ -25,16 +25,26 @@ class TmsFactor(models.Model):
         ('driver', 'Driver'),
         ('customer', 'Customer'),
         ('supplier', 'Supplier')], 'Type', required=True)
+    # factor_type = fields.Selection([
+    #     ('distance', 'Distance Route (Km/Mi)'),
+    #     ('distance_real', 'Distance Real (Km/Mi)'),
+    #     ('weight', 'Weight'),
+    #     ('travel', 'Travel'),
+    #     ('qty', 'Quantity'),
+    #     ('volume', 'Volume'),
+    #     ('percent', 'Income Percent'),
+    #     ('percent_driver', 'Income Percent per Driver'),
+    #     ('amount_driver', 'Amount Percent per Driver')],
+    #     required=True,
+    #     help='For next options you have to type Ranges or Fixed Amount\n - '
+    #          'Distance Route (Km/mi)\n - Distance Real (Km/Mi)\n - Weight\n'
+    #          ' - Quantity\n - Volume\nFor next option you only have to type'
+    #          ' Fixed Amount:\n - Travel\nFor next option you only have to type'
+    #          ' Factor like 10.5 for 10.50%:\n - Income Percent')
     factor_type = fields.Selection([
-        ('distance', 'Distance Route (Km/Mi)'),
-        ('distance_real', 'Distance Real (Km/Mi)'),
-        ('weight', 'Weight'),
-        ('travel', 'Travel'),
-        ('qty', 'Quantity'),
-        ('volume', 'Volume'),
-        ('percent', 'Income Percent'),
-        ('percent_driver', 'Income Percent per Driver'),
-        ('amount_driver', 'Amount Percent per Driver')],
+        ('costo_fijo', 'Costo Fijo'),
+        ('porcentaje', 'Porcentaje del Flete'),
+        ('weight', 'Weight'),],
         required=True,
         help='For next options you have to type Ranges or Fixed Amount\n - '
              'Distance Route (Km/mi)\n - Distance Real (Km/Mi)\n - Weight\n'
