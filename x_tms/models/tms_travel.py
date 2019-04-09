@@ -1056,7 +1056,14 @@ class TmsTravel(models.Model):
     rendimiento_manual2= fields.Boolean(string="Rendimiento Manual Ruta 2?")
     kmlmuno = fields.Float(string="KM/L")
     kmlm2 = fields.Float(string="KM/L")
+    presupuesto_creado= fields.Boolean(string="Presupuesto creado?", default=False, compute="_com_pres_creado")
 
+    @api.one
+    def _com_pres_creado(self):
+        if self.subpedido_id:
+            self.presupuesto_creado = True
+        if not self.subpedido_id:
+            self.presupuesto_creado = False
 
     @api.depends('unit_id')
     @api.one
@@ -1177,6 +1184,7 @@ class TmsTravel(models.Model):
           'product_id': comb.id,
           'product_qty': vale,
           'employee_id': self.employee_id.id,
+          'state':'draft'
         }
         line_ids += [line]
         res['value'].update({
@@ -1202,9 +1210,42 @@ class TmsTravel(models.Model):
         self.env['sale.order.line'].create({
           'product_id': product_combustible_obj.id,
           'product_uom': product_combustible_obj.uom_id.id,
-          'name': 'Costo del combustible generado en la ruta',
+          'name': 'Costo del combustible generado en el viaje',
           'price_unit': product_combustible_obj.standard_price,
           'product_uom_qty':self.com_necesario,
+          'order_id': so.id
+          })
+
+        product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
+        self.env['sale.order.line'].create({
+          'product_id': product_caseta_obj.id,
+          'product_uom': product_caseta_obj.uom_id.id,
+          'name': 'Costo de casetas generado en viaje',
+          'price_unit': self.costo_casetas,
+          'product_uom_qty':1,
+          'order_id': so.id
+          })
+
+        product_felte_obj = self.env['product.product'].search([('tms_product_category','=','freight')], limit=1)
+        self.env['sale.order.line'].create({
+          'product_id': product_felte_obj.id,
+          'product_uom': product_felte_obj.uom_id.id,
+          'name': 'Costo del flete del viaje',
+          'price_unit': self.flete_cliente,
+          'product_uom_qty':1,
+          'order_id': so.id
+          })
+
+        cargos = 0
+        for x in self.cargo_id:
+            cargos += x.valor
+        product_cargo_obj = self.env['product.product'].search([('es_cargo','=',True)], limit=1)
+        self.env['sale.order.line'].create({
+          'product_id': product_cargo_obj.id,
+          'product_uom': product_cargo_obj.uom_id.id,
+          'name': 'Costo del flete del viaje',
+          'price_unit': cargos,
+          'product_uom_qty':1,
           'order_id': so.id
           })
 
