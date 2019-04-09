@@ -47,7 +47,7 @@
                     <button name="action_draft" icon="fa-reply" type="object"
                             string="Set to draft" states="done,cancel" groups="x_tms.group_traffic,x_tms.group_expenses"/>
                     <button name="create_sale_order" icon="fa-check-square" type="object"
-                            string="Crear Presupuesto" class="oe_highlight"/>
+                            string="Crear Presupuesto" class="oe_highlight" attrs="{'invisible':[('presupuesto_creado','=',True)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -61,7 +61,7 @@
                         <group>
                             <field name="viaje_gm" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="fecha_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="subpedido_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="subpedido_id" readonly="1"/>
                             <field name="cliente_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="costo_producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
@@ -86,6 +86,7 @@
                             <field name="costo_casetas" />
                             <field name="kml" />
                             <field name="com_necesario" />
+                            <field name="presupuesto_creado" />
                         </group>
                         <group>
                             <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
