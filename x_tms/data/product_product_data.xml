@@ -125,4 +125,11 @@
         <field eval="False" name="sale_ok"/>
         <field eval="True" name="es_combustible"/>
     </record>
+    <record id="product_cargo" model="product.product">
+        <field name="name">Costo Cargos</field>
+        <field name="type">consu</field>
+        <field eval="False" name="purchase_ok"/>
+        <field eval="False" name="sale_ok"/>
+        <field eval="True" name="es_cargo"/>
+    </record>
 </odoo>
