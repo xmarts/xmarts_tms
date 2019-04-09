@@ -46,6 +46,8 @@
                             string="Cancel" states="draft,progress" groups="x_tms.group_traffic,x_tms.group_expenses"/>
                     <button name="action_draft" icon="fa-reply" type="object"
                             string="Set to draft" states="done,cancel" groups="x_tms.group_traffic,x_tms.group_expenses"/>
+                    <button name="create_sale_order" icon="fa-check-square" type="object"
+                            string="Crear Presupuesto" class="oe_highlight"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -641,8 +643,8 @@
     <menuitem action="fleet.fleet_vehicle_model_brand_action" id="tms_fleet_vehicle_make" parent="menu_tms_settings_conf_ve" sequence="114"/>    <menuitem id="fleet_vehicle_engine_menu" sequence="117" name="Engines" parent="menu_tms_settings_conf_ve" action="action_fleet_vehicle_engine"/>
 
     <!-- SubMenu 10 -->
-    <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
-    <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/>
+    <!-- <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
+    <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/> -->
 
 
     <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="100"/>
