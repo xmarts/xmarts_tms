@@ -33,15 +33,15 @@ class AccountMoveLine(models.Model):
                            self._context.get('operating_unit_ids')))
         return super(AccountMoveLine, self)._query_get(domain)
 
-    @api.multi
-    @api.constrains('operating_unit_id', 'company_id')
-    def _check_company_operating_unit(self):
-        for rec in self:
-            if (rec.company_id and rec.operating_unit_id and rec.company_id !=
-                    rec.operating_unit_id.company_id):
-                raise UserError(_('Configuration error!\nThe Company in the'
-                                  ' Move Line and in the Operating Unit must '
-                                  'be the same.'))
+    # @api.multi
+    # @api.constrains('operating_unit_id', 'company_id')
+    # def _check_company_operating_unit(self):
+    #     for rec in self:
+    #         if (rec.company_id and rec.operating_unit_id and rec.company_id !=
+    #                 rec.operating_unit_id.company_id):
+    #             raise UserError(_('Configuration error!\nThe Company in the'
+    #                               ' Move Line and in the Operating Unit must '
+    #                               'be the same.'))
 
     @api.multi
     @api.constrains('operating_unit_id', 'move_id')
