@@ -176,8 +176,7 @@ class TmsTravel(models.Model):
 
     fecha_viaje = fields.Date(string='Fecha del viaje', readonly=False, index=True, copy=False,
                               default=fields.Datetime.now, required=True)
-    subpedido_id = fields.Many2one('sale.order', string='Cotización',
-                                   required=True, change_default=True, index=True, track_visibility='always')
+    subpedido_id = fields.Many2one('sale.order', string='Cotización', change_default=True, index=True, track_visibility='always')
     product = fields.One2many('sale.order.line', string='Producto', related="subpedido_id.order_line")
 
     producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
@@ -205,14 +204,14 @@ class TmsTravel(models.Model):
     def onchange_employee_id(self):
         self.celular_operador = self.employee_id.mobile_phone
 
-    @api.onchange('subpedido_id')
-    def onchange_subpedido_id(self):
-        self.tarifa_cliente = self.subpedido_id.tarifa_cliente
-        self.route_id = self.subpedido_id.ruta
-        self.route2_id = self.subpedido_id.ruta2
-        self.producto = self.subpedido_id.product
-        self.costo_producto = self.subpedido_id.product.standard_price
-        self.cliente_id = self.subpedido_id.partner_id
+    # @api.onchange('subpedido_id')
+    # def onchange_subpedido_id(self):
+    #     self.tarifa_cliente = self.subpedido_id.tarifa_cliente
+    #     self.route_id = self.subpedido_id.ruta
+    #     self.route2_id = self.subpedido_id.ruta2
+    #     self.producto = self.subpedido_id.product
+    #     self.costo_producto = self.subpedido_id.product.standard_price
+    #     self.cliente_id = self.subpedido_id.partner_id
 
     @api.constrains('lineanegocio', 'sucursal_id',
                     'peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
@@ -1184,6 +1183,30 @@ class TmsTravel(models.Model):
             'fuel_log_ids': line_ids,
         })
         return res
+
+    @api.multi
+    def create_sale_order(self):
+        so=self.env['sale.order'].create({
+            'name': self.env['ir.sequence'].next_by_code('sale.order') or _('New'),
+            'partner_id':self.cliente_id.id,
+            'tarifa_cliente':self.tarifa_cliente,
+            'product': self.producto.id,
+            'ruta':self.route_id.id,
+            'ruta2':self.route2_id.id,
+            'date_order':fields.datetime.now(),
+            'origin':self.name,
+            })
+        self.subpedido_id = so.id
+
+        product_combustible_obj = self.env['product.product'].search([('es_combustible','=',True)], limit=1)
+        self.env['sale.order.line'].create({
+          'product_id': product_combustible_obj.id,
+          'product_uom': product_combustible_obj.uom_id.id,
+          'name': 'Costo del combustible generado en la ruta',
+          'price_unit': product_combustible_obj.standard_price,
+          'product_uom_qty':self.com_necesario,
+          'order_id': so.id
+          })
 
 class trafitec_slitrack_registro(models.Model):
     _name='tms.slitrack.registro'
