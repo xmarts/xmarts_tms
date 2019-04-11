@@ -10,17 +10,17 @@ from odoo.exceptions import ValidationError, UserError
 import random
 import mygeotab
 
-username = 'javier.ramirez@sli.mx'
-password = 'Javier0318*'
-database = 'GSYEECA'
+# username = 'javier.ramirez@sli.mx'
+# password = 'Javier0318*'
+# database = 'GSYEECA'
 
-geo = mygeotab.API(
-        username=username,
-        password=password,
-        database=database
-    )
+# geo = mygeotab.API(
+#         username=username,
+#         password=password,
+#         database=database
+#     )
 
-authenticate = geo.authenticate()
+# authenticate = geo.authenticate()
 
 
 class tms_sucursal(models.Model):
