@@ -57,16 +57,23 @@
                         <group>
                             <field name="operating_unit_id" />
                             <field name="sucursal_id" />
+                            <field name="cliente_id" />
+                            <field name="tipo_remolque" />
                             <field name="kit_id" />
                             <field name="unit_id" domain="[('fleet_type', '=', 'tractor')]"/>
-                            <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]"/>
-                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
-                            <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]"/>
+                            <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
+                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
+                            <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
                         </group>
                         <group>  
                             <field name="user_id" />
                             <field name="employee_id" />
-                            <field name="framework"/>
+                            <field name="tipo_viaje"/>
+                            <field name="lineanegocio" />
+                            <field name="tipo_lineanegocio" readonly="1"/>
+                            <field name="tipo_negocio" invisible="1"/>
+                            <field name="producto"/>
+                            <field name="costo_producto"/>
                         </group>
                         <group colspan="4">
                             <field name="route_id" />
@@ -103,8 +110,8 @@
                                     <separator colspan="4" string="Fuel Efficiency"/>
                                     <newline/>
                                     <field name="fuel_efficiency_expected" readonly="1"/>
-                                    <field name="fuel_efficiency_travel"/>
-                                    <field name="fuel_efficiency_extraction"/>
+                                    <!-- <field name="fuel_efficiency_travel"/>
+                                    <field name="fuel_efficiency_extraction"/> -->
                                 </group>
                             </group>
                         </page>
