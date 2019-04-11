@@ -38,16 +38,16 @@
                 <header>
                     <button name="action_progress" icon="fa-thumbs-up" type="object"
                             string="Dispatch" states="draft" groups="x_tms.group_traffic,x_tms.group_expenses"
-                            class="oe_highlight"/>
+                            class="oe_highlight oe_read_only"/>
                     <button name="action_done" icon="fa-check-square" type="object"
                             string="Finish" states="progress" groups="x_tms.group_traffic,x_tms.group_expenses"
-                            class="oe_highlight"/>
+                            class="oe_highlight oe_read_only"/>
                     <button name="action_cancel" icon="fa-times" type="object"
-                            string="Cancel" states="draft,progress" groups="x_tms.group_traffic,x_tms.group_expenses"/>
+                            string="Cancel" states="draft,progress" groups="x_tms.group_traffic,x_tms.group_expenses" class="oe_read_only"/>
                     <button name="action_draft" icon="fa-reply" type="object"
-                            string="Set to draft" states="done,cancel" groups="x_tms.group_traffic,x_tms.group_expenses"/>
+                            string="Set to draft" states="done,cancel" groups="x_tms.group_traffic,x_tms.group_expenses" class="oe_read_only" />
                     <button name="create_sale_order" icon="fa-check-square" type="object"
-                            string="Crear Presupuesto" class="oe_highlight" attrs="{'invisible':[('presupuesto_creado','=',True)]}"/>
+                            string="Crear Presupuesto" class="oe_highlight oe_read_only" attrs="{'invisible':[('presupuesto_creado','=',True)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -168,7 +168,7 @@
                         </page>
                         <page string="Productos" >
                             <group>
-                                <field name="product">
+                                <field name="product" nolabel="1">
                                     <tree delete="false" create="false" edit="false">
                                         <field name="product_id" />
                                         <field name="name" />
@@ -184,7 +184,7 @@
 
                         <page string="Evidencias" >
                             <group>
-                                <field name="evidencias_id" />
+                                <field name="evidencias_id" nolabel="1"/>
                                 <field name="documentacion_completa" />
                                 <field name="fecha_documentacion" />
                                 <!-- <field name="dif_dias" /> -->
@@ -213,7 +213,7 @@
 
                         <page string="Cargos Adicionales">
                             <group>
-                                <field name="cargo_id" >
+                                <field name="cargo_id" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="name" required="1" />
                                         <field name="valor" required="1" />
@@ -225,7 +225,7 @@
 
                         <page string="Calificaciones">
                             <group>
-                                <field name="calificaiones" />
+                                <field name="calificaiones" nolabel="1"/>
                             </group>
                         </page>
                         <!-- <page string="SLI TRACK">
@@ -266,13 +266,14 @@
                             </group>
                         </page>
                         <page string="Vehicle log fuel">
-                            <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}">
+                            <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}" >
                               <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
                                     <field name='name'/>
                                     <field name='operating_unit_id'/>
                                     <field name='employee_id'/>
                                     <field name='vendor_id'/>
                                     <field name='vehicle_id'/>
+                                    <field name='product_id'/>
                                     <field name='product_qty'/>
                                     <field name='product_uom_id'/>
                                     <field name='price_total'/>
@@ -281,7 +282,7 @@
                             </field>
                         </page>
                         <page string="Advances">
-                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}"/>
+                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1"/>
                         </page>
                         <page string="Waybills">
                             <group>
@@ -302,10 +303,19 @@
                             </group>
                         </page>
                         <page string="Expense driver factor">
-                            <field name="driver_factor_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_category': 'driver'}"/>
+                            <field name="driver_factor_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_category': 'driver'}" nolabel="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="factor_type" />
+                                    <field name="valor" />
+                                    <field name="valor2" />
+                                    <field name="total" />
+                                    <field name="travel_id" invisible="1" />
+                                </tree>
+                            </field>
                         </page>
                         <page string="History">
-                            <field name="event_ids" context="{'default_travel_id':active_id}"/>
+                            <field name="event_ids" context="{'default_travel_id':active_id}" nolabel="1"/>
                             <group>
                                 <separator colspan="4" string="Notes"/>
                                 <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="notes" nolabel="1"/>
