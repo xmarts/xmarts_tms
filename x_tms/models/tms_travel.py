@@ -10,17 +10,17 @@ from odoo.exceptions import ValidationError, UserError
 import random
 import mygeotab
 
-username = 'javier.ramirez@sli.mx'
-password = 'Javier0318*'
-database = 'GSYEECA'
+# username = 'javier.ramirez@sli.mx'
+# password = 'Javier0318*'
+# database = 'GSYEECA'
 
-geo = mygeotab.API(
-        username=username,
-        password=password,
-        database=database
-    )
+# geo = mygeotab.API(
+#         username=username,
+#         password=password,
+#         database=database
+#     )
 
-authenticate = geo.authenticate()
+# authenticate = geo.authenticate()
 
 
 class tms_sucursal(models.Model):
@@ -74,8 +74,12 @@ class TmsTravel(models.Model):
     distance_route = fields.Float(
         related="route_id.distance",
         string='Route Distance (mi./km)')
-    fuel_efficiency_expected = fields.Float(
-        compute="_compute_fuel_efficiency_expected")
+    fuel_efficiency_expected = fields.Float()
+
+    @api.onchange('unit_id')
+    def _onchange_fuel_efficiency_expected(self):
+        self.fuel_efficiency_expected = self.unit_id.efficiency
+
     kit_id = fields.Many2one(
         'tms.unit.kit', 'Kit')
     unit_id = fields.Many2one(
@@ -660,7 +664,6 @@ class TmsTravel(models.Model):
     # motivo = fields.Text(string='Motivo sin comisión', track_visibility='onchange')
     # porcent_comision = fields.Float(string='Porcentaje de comisión')
     # cant_especifica = fields.Float(string='Cobrar cantidad específica')
-    peso_autorizado = fields.Float(string='Peso autorizado Tons', required=True)
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
     # maniobras = fields.Float(string='Maniobras')
@@ -899,15 +902,15 @@ class TmsTravel(models.Model):
             if count == 3:
                 rec.is_available = True
 
-    @api.depends('route_id', 'framework')
-    def _compute_fuel_efficiency_expected(self):
-        for rec in self:
-            res = self.env['tms.route.fuelefficiency'].search([
-                ('route_id', '=', rec.route_id.id),
-                ('engine_id', '=', rec.unit_id.engine_id.id),
-                ('type', '=', rec.framework)
-            ]).performance
-            rec.fuel_efficiency_expected = res
+    # @api.depends('route_id', 'framework')
+    # def _compute_fuel_efficiency_expected(self):
+    #     for rec in self:
+    #         res = self.env['tms.route.fuelefficiency'].search([
+    #             ('route_id', '=', rec.route_id.id),
+    #             ('engine_id', '=', rec.unit_id.engine_id.id),
+    #             ('type', '=', rec.framework)
+    #         ]).performance
+    #         rec.fuel_efficiency_expected = res
 
     @api.depends('trailer1_id', 'trailer2_id')
     def _compute_framework(self):
@@ -1207,15 +1210,15 @@ class TmsTravel(models.Model):
             })
         self.subpedido_id = so.id
 
-        product_combustible_obj = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
-        self.env['sale.order.line'].create({
-          'product_id': product_combustible_obj.id,
-          'product_uom': product_combustible_obj.uom_id.id,
-          'name': 'Costo del combustible generado en el viaje',
-          'price_unit': product_combustible_obj.standard_price,
-          'product_uom_qty':self.com_necesario,
-          'order_id': so.id
-          })
+        # product_combustible_obj = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
+        # self.env['sale.order.line'].create({
+        #   'product_id': product_combustible_obj.id,
+        #   'product_uom': product_combustible_obj.uom_id.id,
+        #   'name': 'Costo del combustible generado en el viaje',
+        #   'price_unit': product_combustible_obj.standard_price,
+        #   'product_uom_qty':self.com_necesario,
+        #   'order_id': so.id
+        #   })
 
         product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         self.env['sale.order.line'].create({
@@ -1227,12 +1230,15 @@ class TmsTravel(models.Model):
           'order_id': so.id
           })
 
-        product_felte_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
+        product_felte_obj = self.env['product.product'].search([('es_flete','=',True)], limit=1)
+        fuel = 0
+        for x in self.fuel_log_ids:
+            fuel += x.price_total
         self.env['sale.order.line'].create({
           'product_id': product_felte_obj.id,
           'product_uom': product_felte_obj.uom_id.id,
-          'name': 'Costo del flete del viaje',
-          'price_unit': self.flete_cliente,
+          'name': 'Costos del flete del viaje',
+          'price_unit': self.flete_cliente + fuel,
           'product_uom_qty':1,
           'order_id': so.id
           })
