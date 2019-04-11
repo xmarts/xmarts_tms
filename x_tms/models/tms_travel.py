@@ -39,7 +39,7 @@ class tms_lineanegocio(models.Model):
 
     name = fields.Char(string="Nombre", required=True)
     porcentaje = fields.Float(string="Porcentaje de comisión", required=True)
-    tipo = fields.Selection([('flete','Flete'),('granel','Granel')], string="Tipo", required=True)
+    tipo = fields.Selection([('flete','Flete'),('granel','Granel'),('km','Por Kilometro')], string="Tipo", required=True)
 
 class TmsTravel(models.Model):
     _name = 'tms.travel'
@@ -50,8 +50,7 @@ class TmsTravel(models.Model):
     waybill_ids = fields.Many2many(
         'tms.waybill', string='Waybills')
     driver_factor_ids = fields.One2many(
-        'tms.factor', 'travel_id', string='Travel Driver Payment Factors',
-        domain=[('category', '=', 'driver')], related="route_id.driver_factor_ids", readonly=True)
+        'tms.factor', 'travel_id', string='Travel Driver Payment Factors')
     name = fields.Char('Travel Number')
     state = fields.Selection([
         ('draft', 'Pending'), ('progress', 'In Progress'), ('done', 'Done'),
@@ -245,24 +244,24 @@ class TmsTravel(models.Model):
         #             total_viajes, total_subpedido)))
 
         # Pesos
-        if self.lineanegocio.id == 1:  # Si es granel.
-            if self.peso_origen_remolque_1 > 0 and (self.peso_origen_remolque_1 > 70000):
-                raise UserError(_('Alerta !\nEl peso origen del remolque 1 debe estar entre 1 y 70,000.'))
+        # if self.lineanegocio.id == 1:  # Si es granel.
+        #     if self.peso_origen_remolque_1 > 0 and (self.peso_origen_remolque_1 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso origen del remolque 1 debe estar entre 1 y 70,000.'))
 
-            if self.peso_origen_remolque_2 > 0 and (self.peso_origen_remolque_2 > 70000):
-                raise UserError(_('Alerta !\nEl peso origen del remolque 2 debe estar entre 1 y 70,000.'))
+        #     if self.peso_origen_remolque_2 > 0 and (self.peso_origen_remolque_2 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso origen del remolque 2 debe estar entre 1 y 70,000.'))
 
-            if self.peso_destino_remolque_1 > 0 and (self.peso_destino_remolque_1 > 70000):
-                raise UserError(_('Alerta !\nEl peso destino del remolque 1 debe estar entre 1 y 70,000.'))
+        #     if self.peso_destino_remolque_1 > 0 and (self.peso_destino_remolque_1 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso destino del remolque 1 debe estar entre 1 y 70,000.'))
 
-            if self.peso_destino_remolque_2 > 0 and (self.peso_destino_remolque_2 > 70000):
-                raise UserError(_('Alerta !\nEl peso destino del remolque 2 debe estar entre 1 y 70,000.'))
+        #     if self.peso_destino_remolque_2 > 0 and (self.peso_destino_remolque_2 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso destino del remolque 2 debe estar entre 1 y 70,000.'))
 
-            if self.peso_convenido_remolque_1 > 0 and (self.peso_convenido_remolque_1 > 70000):
-                raise UserError(_('Alerta !\nEl peso convenido del remolque 1 debe estar entre 1 y 70,000.'))
+        #     if self.peso_convenido_remolque_1 > 0 and (self.peso_convenido_remolque_1 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso convenido del remolque 1 debe estar entre 1 y 70,000.'))
 
-            if self.peso_convenido_remolque_2 > 0 and (self.peso_convenido_remolque_2 > 70000):
-                raise UserError(_('Alerta !\nEl peso convenido del remolque 2 debe estar entre 1 y 70,000.'))
+        #     if self.peso_convenido_remolque_2 > 0 and (self.peso_convenido_remolque_2 > 70000):
+        #         raise UserError(_('Alerta !\nEl peso convenido del remolque 2 debe estar entre 1 y 70,000.'))
 
     # @api.onchange('lineanegocio')
     # def _onchange_lineanegocio(self):
@@ -314,6 +313,8 @@ class TmsTravel(models.Model):
                     reg.flete_cliente = (reg.peso_destino_total / 1000) * reg.tarifa_cliente
             if self.lineanegocio.tipo == 'flete':
                 reg.flete_cliente = reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'km':
+                reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
 
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')
@@ -1177,7 +1178,7 @@ class TmsTravel(models.Model):
                 'fuel_log_ids':[],
             }
         }
-        comb = self.env['product.product'].search([('tms_product_category','=','fuel')], limit=1)
+        comb = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
         line = {
           'operating_unit_id': self.operating_unit_id.id,
           'vehicle_id': self.unit_id.id,
@@ -1206,7 +1207,7 @@ class TmsTravel(models.Model):
             })
         self.subpedido_id = so.id
 
-        product_combustible_obj = self.env['product.product'].search([('es_combustible','=',True)], limit=1)
+        product_combustible_obj = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
         self.env['sale.order.line'].create({
           'product_id': product_combustible_obj.id,
           'product_uom': product_combustible_obj.uom_id.id,
@@ -1220,13 +1221,13 @@ class TmsTravel(models.Model):
         self.env['sale.order.line'].create({
           'product_id': product_caseta_obj.id,
           'product_uom': product_caseta_obj.uom_id.id,
-          'name': 'Costo de casetas generado en viaje',
+          'name': 'Costo de casetas generado del viaje',
           'price_unit': self.costo_casetas,
           'product_uom_qty':1,
           'order_id': so.id
           })
 
-        product_felte_obj = self.env['product.product'].search([('tms_product_category','=','freight')], limit=1)
+        product_felte_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         self.env['sale.order.line'].create({
           'product_id': product_felte_obj.id,
           'product_uom': product_felte_obj.uom_id.id,
@@ -1243,11 +1244,13 @@ class TmsTravel(models.Model):
         self.env['sale.order.line'].create({
           'product_id': product_cargo_obj.id,
           'product_uom': product_cargo_obj.uom_id.id,
-          'name': 'Costo del flete del viaje',
+          'name': 'Cargos extra del viaje',
           'price_unit': cargos,
           'product_uom_qty':1,
           'order_id': so.id
           })
+
+
 
 class trafitec_slitrack_registro(models.Model):
     _name='tms.slitrack.registro'

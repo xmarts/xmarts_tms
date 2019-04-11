@@ -114,9 +114,9 @@
                                 <field name="total_casetas" nolabel="1" widget="monetary"/>
                             </group> -->
                         </page>
-                        <page string="Driver Factor">
+                        <!-- <page string="Driver Factor">
                             <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
-                        </page>
+                        </page> -->
                         <page string="Cargos">
                             <field name="cargos_id">
                                 <tree editable="bottom">

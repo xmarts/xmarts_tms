@@ -12,6 +12,7 @@ class ProductTemplate(models.Model):
     es_factor_op = fields.Boolean(string="Es producto factor")
     es_combustible = fields.Boolean(string="Es producto combustible")
     es_cargo = fields.Boolean(string="Es producto cargo")
+    es_flete = fields.Boolean(string="Es servicio flete")
     tms_product_category = fields.Selection([
         ('freight', 'Freight (Waybill)'),
         ('move', 'Moves (Waybill)'),
