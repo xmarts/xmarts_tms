@@ -10,17 +10,17 @@ from odoo.exceptions import ValidationError, UserError
 import random
 import mygeotab
 
-username = 'javier.ramirez@sli.mx'
-password = 'Javier0318*'
-database = 'GSYEECA'
+# username = 'javier.ramirez@sli.mx'
+# password = 'Javier0318*'
+# database = 'GSYEECA'
 
-geo = mygeotab.API(
-        username=username,
-        password=password,
-        database=database
-    )
+# geo = mygeotab.API(
+#         username=username,
+#         password=password,
+#         database=database
+#     )
 
-authenticate = geo.authenticate()
+# authenticate = geo.authenticate()
 
 class TmsTravelTemplate(models.Model):
     _name = 'tms.travel.template'
@@ -40,7 +40,12 @@ class TmsTravelTemplate(models.Model):
         related="route_id.distance",
         string='Route Distance (mi./km)')
     fuel_efficiency_expected = fields.Float(
-        compute="")
+        compute="_comp_efficiency")
+
+    @api.one
+    def _comp_efficiency(self):
+        self.fuel_efficiency_expected = self.unit_id.efficiency
+
     kit_id = fields.Many2one(
         'tms.unit.kit', 'Kit')
     unit_id = fields.Many2one(
@@ -67,9 +72,9 @@ class TmsTravelTemplate(models.Model):
         'Distance Empty (mi./km)')
     odometer = fields.Float(
         'Unit Odometer (mi./km)', readonly=True)
-    fuel_efficiency_travel = fields.Float()
-    fuel_efficiency_extraction = fields.Float(
-        compute='')
+    # fuel_efficiency_travel = fields.Float()
+    # fuel_efficiency_extraction = fields.Float(
+    #     compute='')
     departure_id = fields.Many2one(
         'tms.place',
         string='Departure',
@@ -101,11 +106,11 @@ class TmsTravelTemplate(models.Model):
         default=lambda self: self.env.user)
     operating_unit_id = fields.Many2one('operating.unit', 'Operating Unit')
     color = fields.Integer()
-    framework = fields.Selection([
-        ('unit', 'Unit'),
-        ('single', 'Single'),
-        ('double', 'Double')],
-        compute='_compute_framework')
+    # framework = fields.Selection([
+    #     ('unit', 'Unit'),
+    #     ('single', 'Single'),
+    #     ('double', 'Double')],
+    #     compute='_compute_framework')
 
 
 
@@ -115,7 +120,7 @@ class TmsTravelTemplate(models.Model):
                               default=fields.Datetime.now, required=True)
 
     producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
-    costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange')
+    costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange', readonly=True, related="producto.standard_price")
     sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange')
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True, track_visibility='onchange')
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
@@ -172,15 +177,15 @@ class TmsTravelTemplate(models.Model):
             rec.distance_driver = rec.distance_empty + rec.distance_loaded
 
 
-    @api.depends('trailer1_id', 'trailer2_id')
-    def _compute_framework(self):
-        for rec in self:
-            if rec.trailer2_id:
-                rec.framework = 'double'
-            elif rec.trailer1_id:
-                rec.framework = 'single'
-            else:
-                rec.framework = 'unit'
+    # @api.depends('trailer1_id', 'trailer2_id')
+    # def _compute_framework(self):
+    #     for rec in self:
+    #         if rec.trailer2_id:
+    #             rec.framework = 'double'
+    #         elif rec.trailer1_id:
+    #             rec.framework = 'single'
+    #         else:
+    #             rec.framework = 'unit'
 
     cargo_id = fields.One2many('tms.viaje.cargos', 'line_cargo_id', string="Cargos Adicionales")
 
@@ -222,3 +227,47 @@ class TmsTravelTemplate(models.Model):
     kmlmuno = fields.Float(string="KM/L")
     kmlm2 = fields.Float(string="KM/L")
     presupuesto_creado= fields.Boolean(string="Presupuesto creado?", default=False, compute="_com_pres_creado")
+
+
+    @api.multi
+    def create_travel(self):
+        sequence = self.operating_unit_id.travel_sequence_id
+        viaje = self.env['tms.travel'].create(
+            {
+            'name':sequence.next_by_id(),
+            'operating_unit_id':self.operating_unit_id.id,
+            'sucursal_id':self.sucursal_id.id,
+            'cliente_id':self.cliente_id.id,
+            'tipo_remolque':self.tipo_remolque,
+            'kit_id':self.kit_id.id,
+            'unit_id':self.unit_id.id,
+            'trailer1_id':self.trailer1_id.id,
+            'dolly_id':self.dolly_id.id,
+            'trailer2_id':self.trailer2_id.id,
+            'user_id':self.user_id.id,
+            'employee_id':self.employee_id.id,
+            'tipo_viaje':self.tipo_viaje,
+            'producto':self.producto.id,
+            'costo_producto':self.costo_producto,
+            'route_id':self.route_id.id,
+            'ruta_vacia1':self.ruta_vacia1,
+            'rendimiento_manual1':self.rendimiento_manual1,
+            'kmlmuno':self.kmlmuno,
+            'departure_id':self.departure_id.id,
+            'arrival_id':self.arrival_id.id,
+            'route2_id':self.route2_id.id,
+            'ruta_vacia2':self.ruta_vacia2,
+            'rendimiento_manual2':self.rendimiento_manual2,
+            'kmlm2':self.kmlm2,
+            'distance_route':self.distance_route,
+            'distance_loaded':self.distance_loaded,
+            'distance_empty':self.distance_empty,
+            'distance_driver':self.distance_driver,
+            'odometer':self.odometer,
+            'fuel_efficiency_expected':self.fuel_efficiency_expected,
+            'peso_autorizado':0,
+            'lineanegocio':self.lineanegocio.id,
+            })
+        if viaje:
+            raise UserError(
+                         _('Aviso !\nSe creo correctamente el viaje: '+str(viaje.name)))
