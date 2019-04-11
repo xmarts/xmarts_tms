@@ -8,12 +8,8 @@
             <tree string="Billing Factors">
                 <field invisible="1" name="category"/>
                 <field name="name"/>
-                <field name="factor_type"/>
-                <field name="factor"/>
-                <field name="range_start"/>
-                <field name="range_end"/>
-                <field name="fixed_amount"/>
-                <field name="mixed"/>
+                <field name="valor"/>
+                <field name="total"/>
             </tree>
         </field>
     </record>
@@ -25,16 +21,13 @@
                 <sheet>
                     <group col="4" colspan="4">
                         <field name="factor_type"/>
-                        <field invisible="True" name="category"/>
-                        <field name="name"/>
+                        <field name="name" invisible="1"/>
+                        <field name="if_diferentes" attrs="{'invisible':[('factor_type','!=','costokm')]}"/>
                         <newline/>
-                        <field attrs="{'invisible' :[('factor_type','in',('percent_driver','travel','amount_driver'))],'required': [('factor_type','in',('distance','weight','qty','volume','percent'))]}" name="factor"/>
-                        <newline/>
-                        <field attrs="{'invisible': [('factor_type', 'in', ('percent_driver', 'travel', 'percent','amount_driver'))], 'required': [('factor_type', 'in', ('distance','weight','qty','volume'))]}" name="range_start"/>
-                        <field attrs="{'invisible': [('factor_type', 'in', ('percent_driver', 'travel', 'percent', 'amount_driver'))], 'required': [('factor_type', 'in', ('distance', 'weight', 'qty', 'volume'))]}" name="range_end"/>
-                        <field attrs="{'invisible' :[('factor_type','in',('travel', 'amount_driver'))]}" name="mixed"/>
-                        <newline/>
-                        <field name="fixed_amount"/>
+                        
+                        <field name="valor"/>
+                        <field name="valor2" attrs="{'invisible':[('if_diferentes','!=',True)]}"/>
+                        <field name="total"/>
                         <newline/>
                         <field colspan="4" name="notes"/>
                     </group>
