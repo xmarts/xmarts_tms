@@ -121,9 +121,10 @@
     <record id="product_combustible" model="product.product">
         <field name="name">Costo Combustible</field>
         <field name="type">consu</field>
-        <field eval="False" name="purchase_ok"/>
+        <field eval="True" name="purchase_ok"/>
         <field eval="False" name="sale_ok"/>
         <field eval="True" name="es_combustible"/>
+        <field name="tms_product_category">fuel</field>
     </record>
     <record id="product_cargo" model="product.product">
         <field name="name">Costo Cargos</field>
@@ -131,5 +132,12 @@
         <field eval="False" name="purchase_ok"/>
         <field eval="False" name="sale_ok"/>
         <field eval="True" name="es_cargo"/>
+    </record>
+    <record id="servicio_flete" model="product.product">
+        <field name="name">Servicio de Flete</field>
+        <field name="type">service</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="es_flete"/>
     </record>
 </odoo>
