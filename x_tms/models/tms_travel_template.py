@@ -232,9 +232,10 @@ class TmsTravelTemplate(models.Model):
     @api.multi
     def create_travel(self):
         sequence = self.operating_unit_id.travel_sequence_id
+        nombre = sequence.number_next_actual
         viaje = self.env['tms.travel'].create(
             {
-            'name':sequence.next_by_id(),
+            'name':nombre,
             'operating_unit_id':self.operating_unit_id.id,
             'sucursal_id':self.sucursal_id.id,
             'cliente_id':self.cliente_id.id,
@@ -268,6 +269,14 @@ class TmsTravelTemplate(models.Model):
             'peso_autorizado':0,
             'lineanegocio':self.lineanegocio.id,
             })
-        if viaje:
-            raise UserError(
-                         _('Aviso !\nSe creo correctamente el viaje: '+str(viaje.name)))
+        return {
+            'name': _('Viaje'),
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'tms.travel',
+            'res_id': viaje.id,
+            'type': 'ir.actions.act_window',
+        }
+        # if viaje:
+        #     raise UserError(
+        #                  _('Aviso !\nSe creo correctamente el viaje: '+str(viaje.name)))
