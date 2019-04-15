@@ -23,6 +23,18 @@ import mygeotab
 # authenticate = geo.authenticate()
 
 
+class tmstiposcarga(models.Model):
+    _name = 'tms.tipos.carga'
+    name = fields.Char(string="Nombre")
+    carga = fields.Selection([('vacio','Vacio'),('medio','Medio'),('pesado','Pesado')])
+    costo_sencillo = fields.Float(string="Costo por km Viaje Sencillo")
+    costo_doble = fields.Float(string="Costo por km Viaje Doble")
+    tarifa_sencillo = fields.Float(string="Tarifa por Viaje Sencillo")
+    tarifa_doble = fields.Float(string="Tarifa por Viaje Doble")
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'El nombre no se puede repetir.'),
+    ]
+
 class tms_sucursal(models.Model):
     _name = 'tms.sucursal'
 
@@ -40,7 +52,9 @@ class tms_lineanegocio(models.Model):
     name = fields.Char(string="Nombre", required=True)
     porcentaje = fields.Float(string="Porcentaje de comisión", required=True)
     tipo = fields.Selection([('flete','Flete'),('granel','Granel'),('km','Por Kilometro')], string="Tipo", required=True)
-
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'El nombre no se puede repetir.'),
+    ]
 class TmsTravel(models.Model):
     _name = 'tms.travel'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
@@ -162,7 +176,7 @@ class TmsTravel(models.Model):
     is_available = fields.Boolean(
         compute='_compute_is_available',
         string='Travel available')
-    operating_unit_id = fields.Many2one('operating.unit', 'Operating Unit')
+    operating_unit_id = fields.Many2one('operating.unit', 'Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     color = fields.Integer()
     framework = fields.Selection([
         ('unit', 'Unit'),
@@ -183,8 +197,8 @@ class TmsTravel(models.Model):
     product = fields.One2many('sale.order.line', string='Producto', related="subpedido_id.order_line")
 
     producto = fields.Many2one("product.template", string="Producto a transportar",required=True)
-    costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange')
-    sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange')
+    costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange', readonly=True, related="producto.standard_price")
+    sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange',default=lambda self: self.env['tms.sucursal'].search([('name','=','Patio Central')], limit=1).id or '')
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True, track_visibility='onchange')
     #asociado_id = fields.Many2one('res.partner', string="Asociado", required=True, track_visibility='onchange')
 
@@ -198,6 +212,7 @@ class TmsTravel(models.Model):
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
     tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
+    tipo_carga = fields.Many2one("tms.tipos.carga", string="Tipo Carga", required=True)
     lineanegocio = fields.Many2one(comodel_name='tms.lineanegocio', string='Linea de negocios', store=True)
     tipo_negocio = fields.Selection([('flete','Flete'),('granel','Granel')], string="Tipo", related='lineanegocio.tipo', required=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
@@ -307,6 +322,22 @@ class TmsTravel(models.Model):
     @api.one
     @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
     def _compute_flete_cliente(self):
+        for reg in self:
+            if self.lineanegocio.tipo == 'granel':
+                if reg.facturar_con_cliente == 'Peso convenido':
+                    reg.flete_cliente = (reg.peso_convenido_total / 1000) * reg.tarifa_cliente
+                elif reg.facturar_con_cliente == 'Peso origen':
+                    reg.flete_cliente = (reg.peso_origen_total / 1000) * reg.tarifa_cliente
+                elif reg.facturar_con_cliente == 'Peso destino':
+                    reg.flete_cliente = (reg.peso_destino_total / 1000) * reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'flete':
+                reg.flete_cliente = reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'km':
+                reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
+
+    
+    @api.onchange('route_id','route2_id')
+    def onchange_flete_cliente(self):
         for reg in self:
             if self.lineanegocio.tipo == 'granel':
                 if reg.facturar_con_cliente == 'Peso convenido':
