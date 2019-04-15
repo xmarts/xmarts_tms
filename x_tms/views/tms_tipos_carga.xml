@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<record id="view_tms_tipos_carga" model="ir.ui.view">
+        <field name="name">tms.tipos.carga</field>
+        <field name="model">tms.tipos.carga</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de carga">
+                <field name="name"/>
+                <field name="carga"/>
+                <field name="costo_sencillo"/>
+                <field name="costo_doble"/>
+                <field name="tarifa_sencillo"/>
+                <field name="tarifa_doble"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="view_tms_tipos_carga_form" model="ir.ui.view">
+        <field name="name">tms.tipos.carga.form</field>
+        <field name="model">tms.tipos.carga</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de carga">
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>  
+                            <field name="name" />
+                            <field name="carga" />
+                        </group>
+                        <group> 
+                            <field name="costo_sencillo"/>
+                            <field name="costo_doble" />
+                        </group>
+                        <group> 
+                            <field name="tarifa_sencillo"/>
+                            <field name="tarifa_doble"/>
+                        </group>
+                    </group>
+                    <notebook>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
