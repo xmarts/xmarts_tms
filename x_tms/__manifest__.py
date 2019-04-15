@@ -72,6 +72,7 @@
         'views/tms_travel_template_view.xml',
         'views/sale_order.xml',
         'views/tms_view.xml',
+        'views/tms_tipos_carga.xml',
     ],
     "demo": [
         # 'demo/stock_warehouse_orderpoint.xml',
