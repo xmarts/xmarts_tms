@@ -62,10 +62,10 @@
                             <field name="viaje_gm" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="fecha_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="subpedido_id" readonly="1"/>
-                            <field name="cliente_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="cliente_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('customer', '=', True)]"/>
                             <field name="producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="costo_producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="sucursal_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="costo_producto" />
+                            <field name="sucursal_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" />
                             <field name="lineanegocio" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="tipo_lineanegocio" readonly="1"/>
                             <field name="tipo_negocio" invisible="1"/>
@@ -77,6 +77,7 @@
                             <field name="tipo_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="tipo_remolque" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="tipo_carga" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}"/>
                             <field name="unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('fleet_type', '=', 'tractor')]"/>
                             <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)], 'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
