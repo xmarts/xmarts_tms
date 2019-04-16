@@ -238,6 +238,14 @@ class TmsTravel(models.Model):
     def _compute_pesos_origen_total(self):
             self.peso_origen_total = self.peso_origen_remolque_1 + self.peso_origen_remolque_2
 
+    @api.onchange('tipo_carga','tipo_remolque','lineanegocio')
+    def onchange_tipo_carga(self):
+        if self.lineanegocio.tipo == 'km':
+            if self.tipo_remolque == 'sencillo':
+                self.tarifa_cliente = self.tipo_carga.costo_sencillo
+            if self.tipo_remolque == 'doble':
+                self.tarifa_cliente = self.tipo_carga.costo_doble
+
     @api.one
     @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
     def _compute_flete_cliente(self):
