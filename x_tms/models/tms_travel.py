@@ -278,6 +278,31 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'km':
                 reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
 
+    @api.onchange('route_id','route2_id','flete_cliente','employee_id','unit_id','operating_unit_id')
+    def onchange_flete_cliente_anticipo(self):
+        line_ids = []
+        res = {'value':{
+                'advance_ids':[],
+            }
+        }
+        comb = self.env['product.product'].search([('tms_product_category','=','real_expense')], limit=1)
+        line = {
+          'operating_unit_id': self.operating_unit_id.id,
+          'unit_id': self.unit_id.id,
+          'product_id': comb.id,
+          'employee_id': self.employee_id.id,
+          'amount': self.flete_cliente * 0.2,
+          'currency_id': self.env.user.company_id.currency_id,
+          'date':datetime.today(),
+          'notes': "Monto generado automaticamente calculando el 20 porciento del flete del cliente",
+          'state':'draft'
+        }
+        line_ids += [line]
+        res['value'].update({
+            'advance_ids': line_ids,
+        })
+        return res
+
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')
     def _compute_pesos_destino_total(self):
@@ -867,6 +892,13 @@ class TmsTravel(models.Model):
         else:
             self.ejes = self.unit_id.ejes + self.trailer1_id.ejes
 
+    @api.onchange('tipo_remolque','unit_id','trailer1_id','dolly_id','trailer2_id')
+    def _onchange_total_ejes(self):
+        if self.tipo_remolque == 'doble':
+            self.ejes = self.unit_id.ejes + self.trailer1_id.ejes + self.dolly_id.ejes + self.trailer2_id.ejes
+        else:
+            self.ejes = self.unit_id.ejes + self.trailer1_id.ejes
+
     @api.one
     def _costo_casetas(self):
         suma = 0
@@ -879,6 +911,21 @@ class TmsTravel(models.Model):
                 if z.axis == self.ejes:
                     suma += z.cost_cash
         self.costo_casetas = suma
+
+    @api.onchange('route_id','route2_id','ejes')
+    def _onchange_costo_casetas(self):
+        suma = 0
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.costo_casetas = suma
+
+    
 
     kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
     com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
@@ -938,6 +985,41 @@ class TmsTravel(models.Model):
                 if self.kml > 0:
                     self.update({'com_necesario':self.route_id.distance/self.kml})
 
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','','','','','','')
+    def _onchange_com_necesario(self):
+        if self.route2_id:
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                if self.kmlmuno > 0 and self.kml <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                if self.kmlmuno <= 0 and self.kml > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kml)})
+                if self.kmlmuno > 0 and self.kml > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)})
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                if self.kml > 0 and self.kmlm2 <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml)})
+                if self.kml <= 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                if self.kml > 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)})
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                if self.kmlmuno > 0 and self.kmlm2 > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)})
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
+        else:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    self.update({'com_necesario':self.route_id.distance/self.kmlmuno})
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    self.update({'com_necesario':self.route_id.distance/self.kml})
+
     @api.onchange('route_id','route2_id')
     def _onchange_routes(self):
         line_ids = []
@@ -964,7 +1046,7 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','unit_id','com_necesario','rendimiento_manual1','rendimiento_manual2','kmlmuno','kmlm2')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id','com_necesario')
     def _onchange_route_unit(self):
         vale = 0
         if self.route2_id:
@@ -1020,6 +1102,39 @@ class TmsTravel(models.Model):
         })
         return res
 
+
+    si_seguro = fields.Boolean(string="Seguro de carga.", default=False)
+    condiciones_seguro = fields.Text(string="Condiciones del seguro.")
+    cargo_seguro = fields.Float(string="Cargo del seguro")
+
+    lavado = fields.Boolean(string="Lavado de camión", default=False)
+    cargo_lavado = fields.Float(string="Cargo de lavado")
+    plastico = fields.Boolean(string="Plastico del camión", default=False)
+    cargo_plastico = fields.Float(string="Cargo por plastico")
+    fumigado = fields.Boolean(string="Fumigado", default=False)
+    cargo_fumigado = fields.Float(string="Cargo por fumigado")
+    otros = fields.Boolean(string="Otros", default=False)
+    cargo_otros = fields.Float(string="Cargo por otros servicios")
+    des_otros = fields.Text(string="Especificaiones")
+
+    camisa = fields.Boolean(string="Camisa",default=False)
+    camisa_manga = fields.Selection([('corta','Manga Corta'),('larga','Manga Larga')], string="Manga")
+    camisa_mat = fields.Char(string="Material Especial")
+    cargo_camisa = fields.Float(string="Cargo por ")
+
+    chaleco = fields.Boolean(string="Chaleco",default=False)
+    chaleco_color = fields.Char(string="Color")
+    cargo_chaleco = fields.Float(string="Cargo por ")
+
+    guantes = fields.Boolean(string="Guantes",default=False)
+    tipo_guantes = fields.Char(string="Tipo de guantes")
+    cargo_guantes = fields.Float(string="Cargo por ")
+    
+    pantalon = fields.Boolean(string="Pantalon",default=False)
+    pantalon_sua = fields.Char(string="SUA")
+    pantalon_mat = fields.Char(string="Material de pantalon")
+    cargo_pantalon = fields.Float(string="Cargo por ")
+
     @api.multi
     def create_sale_order(self):
         so=self.env['sale.order'].create({
@@ -1034,51 +1149,136 @@ class TmsTravel(models.Model):
             })
         self.subpedido_id = so.id
 
-        # product_combustible_obj = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
+        # product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         # self.env['sale.order.line'].create({
-        #   'product_id': product_combustible_obj.id,
-        #   'product_uom': product_combustible_obj.uom_id.id,
-        #   'name': 'Costo del combustible generado en el viaje',
-        #   'price_unit': product_combustible_obj.standard_price,
-        #   'product_uom_qty':self.com_necesario,
+        #   'product_id': product_caseta_obj.id,
+        #   'product_uom': product_caseta_obj.uom_id.id,
+        #   'name': 'Costo de casetas generado del viaje',
+        #   'price_unit': self.costo_casetas,
+        #   'product_uom_qty':1,
         #   'order_id': so.id
         #   })
 
-        product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
-        self.env['sale.order.line'].create({
-          'product_id': product_caseta_obj.id,
-          'product_uom': product_caseta_obj.uom_id.id,
-          'name': 'Costo de casetas generado del viaje',
-          'price_unit': self.costo_casetas,
-          'product_uom_qty':1,
-          'order_id': so.id
-          })
-
         product_felte_obj = self.env['product.product'].search([('es_flete','=',True)], limit=1)
-        fuel = 0
-        for x in self.fuel_log_ids:
-            fuel += x.price_total
+        # fuel = 0
+        # for x in self.fuel_log_ids:
+        #     fuel += x.price_total
         self.env['sale.order.line'].create({
           'product_id': product_felte_obj.id,
           'product_uom': product_felte_obj.uom_id.id,
           'name': 'Costos del flete del viaje',
-          'price_unit': self.flete_cliente + fuel,
+          'price_unit': self.flete_cliente,
           'product_uom_qty':1,
           'order_id': so.id
           })
+        if self.cargo_id:
+            cargos = 0
+            for x in self.cargo_id:
+                cargos += x.valor
+            product_cargo_obj = self.env['product.product'].search([('es_cargo','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_cargo_obj.id,
+              'product_uom': product_cargo_obj.uom_id.id,
+              'name': 'Cargos extra del viaje',
+              'price_unit': cargos,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
 
-        cargos = 0
-        for x in self.cargo_id:
-            cargos += x.valor
-        product_cargo_obj = self.env['product.product'].search([('es_cargo','=',True)], limit=1)
-        self.env['sale.order.line'].create({
-          'product_id': product_cargo_obj.id,
-          'product_uom': product_cargo_obj.uom_id.id,
-          'name': 'Cargos extra del viaje',
-          'price_unit': cargos,
-          'product_uom_qty':1,
-          'order_id': so.id
-          })
+        #DMC
+        if self.si_seguro:
+            product_dmc_seguro = self.env['product.product'].search([('dmc_seguro','=',True)], limit=1)
+            print("Producto seguro: " + str(product_dmc_seguro.name))
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_seguro.id,
+              'product_uom': product_dmc_seguro.uom_id.id,
+              'name': 'Cargo por Seguro',
+              'price_unit': self.cargo_seguro,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.lavado:
+            product_dmc_lavado = self.env['product.product'].search([('dmc_lavado','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_lavado.id,
+              'product_uom': product_dmc_lavado.uom_id.id,
+              'name': 'Cargo por Lavado',
+              'price_unit': self.cargo_lavado,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.plastico:
+            product_dmc_plastico = self.env['product.product'].search([('dmc_plastico','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_plastico.id,
+              'product_uom': product_dmc_plastico.uom_id.id,
+              'name': 'Cargo por Plastico',
+              'price_unit': self.cargo_plastico,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.fumigado:
+            product_dmc_fumigado = self.env['product.product'].search([('dmc_fumigado','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_fumigado.id,
+              'product_uom': product_dmc_fumigado.uom_id.id,
+              'name': 'Cargo por Fumigado',
+              'price_unit': self.cargo_fumigado,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.otros:
+            product_dmc_otros = self.env['product.product'].search([('dmc_otros','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_otros.id,
+              'product_uom': product_dmc_otros.uom_id.id,
+              'name': 'Cargo por Otros',
+              'price_unit': self.cargo_otros,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.camisa:
+            product_dmc_camisa = self.env['product.product'].search([('dmc_camisa','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_camisa.id,
+              'product_uom': product_dmc_camisa.uom_id.id,
+              'name': 'Cargo por Camisa Operador',
+              'price_unit': self.cargo_camisa,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.chaleco:
+            product_dmc_chaleco = self.env['product.product'].search([('dmc_chaleco','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_chaleco.id,
+              'product_uom': product_dmc_chaleco.uom_id.id,
+              'name': 'Cargo por Chaleco Operador',
+              'price_unit': self.cargo_chaleco,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.pantalon:
+            product_dmc_pantalon = self.env['product.product'].search([('dmc_pantalon','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_pantalon.id,
+              'product_uom': product_dmc_pantalon.uom_id.id,
+              'name': 'Cargo por Pantalon Operador',
+              'price_unit': self.cargo_pantalon,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+        if self.guantes:
+            product_dmc_guantes = self.env['product.product'].search([('dmc_guantes','=',True)], limit=1)
+            self.env['sale.order.line'].create({
+              'product_id': product_dmc_guantes.id,
+              'product_uom': product_dmc_guantes.uom_id.id,
+              'name': 'Cargo por Guantes Operador',
+              'price_unit': self.cargo_guantes,
+              'product_uom_qty':1,
+              'order_id': so.id
+              })
+
+
 
 
 
