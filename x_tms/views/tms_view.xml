@@ -71,6 +71,10 @@
                             <field name="tipo_negocio" invisible="1"/>
                             <field name="tarifa_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="flete_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="framework" invisible="1"/>
                         </group>
                         <group>
                             <field name="celular_operador" />
@@ -88,38 +92,85 @@
                             <field name="kml" />
                             <field name="com_necesario" />
                             <field name="presupuesto_creado" />
+                        </group><hr colspan="4"/>
+                        <group colspan="4" string="Rutas">
+                            <group colspan="4">
+                                <group colspan="4">
+                                    <field name="route_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                </group>
+                                <group colspan="4" col="4">
+                                    <field name='departure_id' />
+                                    <field name="arrival_id"/>
+                                </group>
+                                <group col="6" colspan="4">
+                                    <field name='ruta_vacia1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='rendimiento_manual1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                </group>
+                            </group>
+                            <group colspan="4">
+                                <group colspan="4">
+                                    <field name="route2_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                </group>
+                                <group colspan="4" col="4">
+                                    <field name='departure2_id'/>
+                                    <field name="arrival2_id"/>
+                                </group>
+                                <group col="6" colspan="4">
+                                    <field name='ruta_vacia2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                </group>
+                            </group>
                         </group>
-                        <group>
-                            <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="employee_id" readonly="1"/>
-                            <field name="framework" invisible="1"/>
+                            <hr colspan="4"/>
+                    </group>
+
+                    <group colspan="4" string="Servicios y Adecuaciones">
+                        <group col="6" colspan="4">
+                            <field name="si_seguro" />
+                            <field name="condiciones_seguro" attrs="{'invisible':[('si_seguro','!=',True)],'required':[('si_seguro','=',True)]}"/>
+                            <field name="cargo_seguro" attrs="{'invisible':[('si_seguro','!=',True)],'required':[('si_seguro','=',True)]}"/>
                         </group>
-                        <group colspan="4">
-                            <field name="route_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='ruta_vacia1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='rendimiento_manual1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                        <group col="8" colspan="4">
+                            <field name="lavado" />
+                            <field name="cargo_lavado" attrs="{'invisible':[('lavado','!=',True)],'required':[('lavado','=',True)]}"/>
+                            <field name="plastico" />
+                            <field name="cargo_plastico" attrs="{'invisible':[('plastico','!=',True)],'required':[('plastico','=',True)]}"/>
+                            <field name="fumigado" />
+                            <field name="cargo_fumigado" attrs="{'invisible':[('fumigado','!=',True)],'required':[('fumigado','=',True)]}"/>
                         </group>
-                        <group>
-                            <field name='departure_id' />
-                        </group>
-                        <group>
-                            <field name="arrival_id"/>
-                        </group>
-                        <group colspan="4">
-                            <field name="route2_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='ruta_vacia2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                        </group>
-                        <group>
-                            <field name='departure2_id'/>
-                        </group>
-                        <group>
-                            <field name="arrival2_id"/>
+                        <group col="6" colspan="4">
+                            <field name="otros" />
+                            <field name="cargo_otros" attrs="{'invisible':[('otros','!=',True)],'required':[('otros','=',True)]}"/>
+                            <field name="des_otros" attrs="{'invisible':[('otros','!=',True)],'required':[('otros','=',True)]}"/>
                         </group>
                     </group>
+                    <hr colspan="4"/>
+                    <group colspan="4" string="Generales Chofer">
+                        <group col="8" colspan="4">
+                            <field name="camisa" />
+                            <field name="camisa_manga" attrs="{'invisible':[('camisa','!=',True)],'required':[('camisa','=',True)]}"/>
+                            <field name="camisa_mat" attrs="{'invisible':[('camisa','!=',True)],'required':[('camisa','=',True)]}"/>
+                            <field name="cargo_camisa" attrs="{'invisible':[('camisa','!=',True)],'required':[('camisa','=',True)]}"/>
+                        </group>
+                        <group col="6" colspan="4">
+                            <field name="chaleco" />
+                            <field name="chaleco_color" attrs="{'invisible':[('chaleco','!=',True)],'required':[('chaleco','=',True)]}"/>
+                            <field name="cargo_chaleco" attrs="{'invisible':[('chaleco','!=',True)],'required':[('chaleco','=',True)]}"/>
+                            <field name="guantes" />
+                            <field name="tipo_guantes" attrs="{'invisible':[('guantes','!=',True)],'required':[('guantes','=',True)]}"/>
+                            <field name="cargo_guantes" attrs="{'invisible':[('guantes','!=',True)],'required':[('guantes','=',True)]}"/>
+                        </group>
+                        <group col="8" colspan="4">
+                            <field name="pantalon" />
+                            <field name="pantalon_sua" attrs="{'invisible':[('pantalon','!=',True)],'required':[('pantalon','=',True)]}"/>
+                            <field name="pantalon_mat" attrs="{'invisible':[('pantalon','!=',True)],'required':[('pantalon','=',True)]}"/>
+                            <field name="cargo_pantalon" attrs="{'invisible':[('pantalon','!=',True)],'required':[('pantalon','=',True)]}"/>
+                        </group>
+                    </group>
+
+
                     <notebook colspan="4">
                         <page string="Pesos" attrs="{'invisible':[('tipo_negocio','!=','granel')]}">
                             <group>
@@ -283,7 +334,20 @@
                             </field>
                         </page>
                         <page string="Advances">
-                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1"/>
+                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="operating_unit_id" />
+                                    <field name="unit_id" />
+                                    <field name="employee_id" />
+                                    <field name="date" />
+                                    <field name="product_id" />
+                                    <field name="amount" />
+                                    <field name="auto_expense" />
+                                    <field name="paid" />
+                                    <field name="state" />
+                                </tree>
+                            </field>
                         </page>
                         <page string="Waybills">
                             <group>
