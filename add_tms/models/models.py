@@ -29,37 +29,37 @@ class fleet_vehicle_red_tape(models.Model):
 
 
 
-class add_tms_advances(models.Model):
-	_inherit= 'tms.advance'
+# class add_tms_advances(models.Model):
+# 	_inherit= 'tms.advance'
 
 	
-	vehicle_id = fields.Many2one('fleet.vehicle',string='Unidad Motiriz')
-	product_uom_qty= fields.Float(string='Cantidad')
-	price_unit = fields.Float(string='Precio Unitario') #corregir related='product_id.price_unit' 
-	subtotal = fields.Float(string='Subtotal',compute='_compute_produc_qty')
-	total = fields.Float(string='Total', compute='_compute_produc_total')
-	currency_id = fields.Many2one('res.currency',string='Moneda')
+	#vehicle_id = fields.Many2one('fleet.vehicle',string='Unidad Motiriz')
+	#product_uom_qty= fields.Float(string='Cantidad')
+	#price_unit = fields.Float(string='Precio Unitario') #corregir related='product_id.price_unit' 
+	#subtotal = fields.Float(string='Subtotal',compute='_compute_produc_qty')
+	#total = fields.Float(string='Total', compute='_compute_produc_total')
+	#currency_id = fields.Many2one('res.currency',string='Moneda')
 
-	@api.onchange('product_id','product_tmpl_id')
-	@api.depends('product_id','product_tmpl_id')
-	def _onchange_country_id(self):
-		self.price_unit = self.product_id.product_tmpl_id.standard_price
+	# @api.onchange('product_id','product_tmpl_id')
+	# @api.depends('product_id','product_tmpl_id')
+	# def _onchange_country_id(self):
+	# 	self.price_unit = self.product_id.product_tmpl_id.standard_price
 	
 	# @api.onchange('product_id')
 	# def _onchange_contry_id(self):
 	# 	self.price_unit = self.product_id.weight
 
-	@api.one
-	@api.depends('product_uom_qty', 'price_unit')
-	def _compute_produc_qty(self):
-		self.subtotal = self.product_uom_qty * self.price_unit
-		return True
+	# @api.one
+	# @api.depends('product_uom_qty', 'price_unit')
+	# def _compute_produc_qty(self):
+	# 	self.subtotal = self.product_uom_qty * self.price_unit
+	# 	return True
 
-	@api.one
-	@api.depends('amount', 'subtotal')
-	def _compute_produc_total(self):
-		self.total = self.amount + self.subtotal
-		return True
+	# @api.one
+	# @api.depends('amount', 'subtotal')
+	# def _compute_produc_total(self):
+	# 	self.total = self.amount + self.subtotal
+	# 	return True
 
 	# @api.model
 	# def create(self):
