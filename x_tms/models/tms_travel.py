@@ -335,7 +335,6 @@ class TmsTravel(models.Model):
     @api.onchange('peso_origen_total', 'peso_destino_total', 'tipo_remolque')
     def _onchange_merma_pesos(self):
         if self.peso_origen_total and self.peso_destino_total:
-            # if 'Contenedor' in self.tipo_remolque.name:
             if self.lineanegocio.tipo == 'flete':  # Contenedores.
                 self.merma_pesos = 0
             else:
@@ -370,45 +369,6 @@ class TmsTravel(models.Model):
                             self.merma_permitida_kg = 0
         else:
             self.merma_permitida_kg = 0
-
-    # @api.onchange('peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
-    #               'peso_destino_remolque_2')
-    # def _calcula_cargosx(self):
-    #     pesoo_r1 = 0
-    #     pesoo_r2 = 0
-    #     pesod_r1 = 0
-    #     pesod_r2 = 0
-    #     pesoo = 0
-    #     pesod = 0
-
-    #     merma_kg = 0
-    #     merma_m = 0
-
-    #     merma_c_kg = 0
-    #     merma_c_m = 0
-
-    #     if self.peso_origen_remolque_1:
-    #         pesoo_r1 = self.peso_origen_remolque_1
-
-    #     if self.peso_origen_remolque_2:
-    #         pesoo_r2 = self.peso_origen_remolque_2
-
-    #     if self.peso_destino_remolque_1:
-    #         pesod_r1 = self.peso_destino_remolque_1
-
-    #     if self.peso_destino_remolque_2:
-    #         pesod_r2 = self.peso_destino_remolque_2
-
-    #     if pesoo_r1 > 0 and pesod_r1 > 0 and pesoo_r1 > pesod_r1:
-    #         merma_kg += pesoo_r1 - pesod_r1
-
-    #     if pesoo_r2 > 0 and pesod_r2 > 0 and pesoo_r2 > pesod_r2:
-    #         merma_kg += pesoo_r2 - pesod_r2
-
-    #     pesoo = pesoo_r1 + pesoo_r2
-    #     pesod = pesod_r1 + pesod_r2
-
-    #     print("**********MERMA KG: " + str(merma_kg))
 
     @api.one
     def _compute_merma_permitida_kg(self):
@@ -576,82 +536,15 @@ class TmsTravel(models.Model):
     def _compute_merma_cobrar_pesos(self):
         if self.merma_cobrar_kg > 0:
             self.merma_cobrar_pesos = self.merma_cobrar_kg * self.costo_producto
-            # self.merma_cobrar_pesos = merma_cobrar_pesos
-            # valores = {'viaje_id': self.id, 'monto': self.merma_cobrar_pesos, 'tipo_cargo': 'merma',
-            #            'asociado_id': self.asociado_id.id}
-            # obc_cargos = self.env['trafitec.cargos'].search(
-            #     ['&', ('viaje_id', '=', self.id), ('tipo_cargo', '=', 'merma')])
-            # if len(obc_cargos) == 0:
-            #     self.env['trafitec.cargos'].create(valores)
-            # else:
-            #     obc_cargos.write(valores)
         else:
             self.merma_cobrar_pesos = 0
 
     merma_cobrar_pesos = fields.Float(string='Merma cobrar $', readonly=True, compute="_compute_merma_cobrar_pesos")
 
-
-
-
-    # comision_linea = fields.Float(string='Porcentaje linea negocio', readonly=True, related='lineanegocio.porcentaje')
-    # regla_comision = fields.Selection([('No cobrar', 'No cobrar'),
-    #                                    ('Con % linea transportista y peso origen',
-    #                                     'Con % linea transportista y peso origen'),
-    #                                    ('Con % linea transportista y peso destino',
-    #                                     'Con % linea transportista y peso destino'),
-    #                                    ('Con % linea transportista y peso convenido',
-    #                                     'Con % linea transportista y peso convenido'),
-    #                                    ('Con % linea transportista y capacidad de remolque',
-    #                                     'Con % linea transportista y capacidad de remolque'),
-    #                                    ('Con % especifico y peso origen', 'Con % especifico y peso origen'),
-    #                                    ('Con % especifico y peso destino', 'Con % especifico y peso destino'),
-    #                                    ('Con % especifico y peso convenido', 'Con % especifico y peso convenido'),
-    #                                    ('Con % especifico y capacidad de remolque',
-    #                                     'Con % especifico y capacidad de remolque'),
-    #                                    ('Cobrar cantidad especifica', 'Cobrar cantidad específica')],
-    #                                   string='Regla de Comisión', default='Con % linea transportista y peso origen',
-    #                                   required=True, track_visibility='onchange')
-    # comision = fields.Selection([('No cobrar', 'No cobrar'), ('Cobrar en contra-recibo', 'Cobrar en contra-recibo'), (
-    # 'Cobrar en contra recibo-porcentaje especifico', 'Cobrar en contra recibo-porcentaje específico'),
-    #                              ('Cobrar cantidad especifica', 'Cobrar cantidad específica')], string='Comisión',
-    #                             default='Cobrar en contra-recibo', required=True, track_visibility='onchange')
-
-    # pronto_pago = fields.Boolean(sring='Pronto pago', default=False)
-
-    # comision_calculada = fields.Float(string='Comisión calculada', readonly=True)
-    # motivo = fields.Text(string='Motivo sin comisión', track_visibility='onchange')
-    # porcent_comision = fields.Float(string='Porcentaje de comisión')
-    # cant_especifica = fields.Float(string='Cobrar cantidad específica')
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
-    # maniobras = fields.Float(string='Maniobras')
-    # regla_maniobra = fields.Selection(
-    #     [('Pagar en contrarecibo y cobrar en factura', 'Pagar en contrarecibo y cobrar en factura'),
-    #      ('Pagar en contrarecibo y no cobrar en factura', 'Pagar en contrarecibo y no cobrar en factura'),
-    #      ('No pagar en contrarecibo y cobrar en factura', 'No pagar en contrarecibo y cobrar en factura'),
-    #      ('No pagar en contrarecibo y no cobrar en factura', 'No pagar en contrarecibo y no cobrar en factura')],
-    #     string='Regla de maniobra', default='Pagar en contrarecibo y cobrar en factura', required=True,
-    #     track_visibility='onchange')
-
-    # @api.constrains('regla_comision', 'motivo', 'porcent_comision', 'cant_especifica')
-    # def _check_comision_motivo(self):
-    #     if self.regla_comision == 'No cobrar':
-    #         if self.motivo == False:
-    #             raise UserError(
-    #                 _('Aviso !\nDebe capturar el motivo por el cual no se cobra comisión'))
-    #     if 'Con % especifico' in self.regla_comision:
-    #         if self.porcent_comision == 0 or self.porcent_comision == 0.00:
-    #             raise UserError(
-    #                 _('Aviso !\nDebe capturar el porcentaje de la comisión'))
-    #     if self.regla_comision == 'Cobrar cantidad especifica':
-    #         if self.cant_especifica == 0 or self.cant_especifica == 0.00:
-    #             raise UserError(
-    #                 _('Aviso !\nDebe capturar la cantidad especifica'))
-
 
     #Agregando campos
-
-
     @api.depends('waybill_ids')
     def _compute_partner_ids(self):
         for rec in self:
@@ -722,7 +615,6 @@ class TmsTravel(models.Model):
         self.trailer2_id = self.kit_id.trailer2_id.id
         self.trailer1_id = self.kit_id.trailer1_id.id
         self.dolly_id = self.kit_id.dolly_id.id
-        #self.employee_id = self.kit_id.employee_id.id
 
     @api.onchange('route_id')
     def _onchange_route(self):
@@ -860,16 +752,6 @@ class TmsTravel(models.Model):
             if count == 3:
                 rec.is_available = True
 
-    # @api.depends('route_id', 'framework')
-    # def _compute_fuel_efficiency_expected(self):
-    #     for rec in self:
-    #         res = self.env['tms.route.fuelefficiency'].search([
-    #             ('route_id', '=', rec.route_id.id),
-    #             ('engine_id', '=', rec.unit_id.engine_id.id),
-    #             ('type', '=', rec.framework)
-    #         ]).performance
-    #         rec.fuel_efficiency_expected = res
-
     @api.depends('trailer1_id', 'trailer2_id')
     def _compute_framework(self):
         for rec in self:
@@ -925,7 +807,6 @@ class TmsTravel(models.Model):
     evidencias_id = fields.One2many(string="Evidencias",comodel_name="tms.viajes.evidencias", inverse_name="linea_id", track_visibility='onchange')
     documentacion_completa = fields.Boolean(string='Documentanción completa', default=False)
     fecha_documentacion = fields.Date(string="Fecha documentación")
-    #dif_dias = fields.Integer(string="Dias", default=0)
     asignadoa_id = fields.Many2one("res.users", string="Asignado a")
     boletas_id = fields.One2many(comodel_name="tms.viajes.boletas", inverse_name="linea_id",track_visibility='onchange', string="Boletas")
 
@@ -935,19 +816,12 @@ class TmsTravel(models.Model):
     fecha_hora_carga = fields.Datetime(string="Fecha y hora de carga")
     fecha_hora_descarga = fields.Datetime(string="Fecha y hora de descarga")
     detalles_cita = fields.Text(string="Detalles de cita")
-
     cargo_id = fields.One2many('tms.viaje.cargos', 'line_cargo_id', string="Cargos Adicionales")
-
     calificaiones = fields.One2many(string = 'Calificaciones',inverse_name='viaje_id', comodel_name = 'tms.calificacionesgxviaje', track_visibility='onchange')
-
-
-
-
     observaciones = fields.Text(string="Observaciones")
     especificaciones = fields.Text(string="Especificaciones")
     folio_cliente = fields.Char(string="Folio del cliente")
     suger_pago = fields.Boolean(string="Sugerir pago inmediato")
-
     @api.constrains('evidencia_id', 'documentacion_completa', 'name')
     def _check_evidencia(self):
         if self.documentacion_completa == True:
@@ -956,8 +830,6 @@ class TmsTravel(models.Model):
             if len(obj_eviden) == 0:
                 raise UserError(
                     _('Aviso !\nNo puede aplicar como documentación completa, si no tiene ninguna evidencia de viaje'))
-
-
 
     #--------------------------------------------------------------------------------------------------------------------------------------
     #SLI TRACK
@@ -977,7 +849,6 @@ class TmsTravel(models.Model):
 
     def action_slitrack_codigo(self):
         codigo = str(self.id)+str(random.randrange(10000, 99999))
-        #self.slitrack_codigo = codigo
         self.write({'slitrack_codigo':codigo})
 
     def action_slitrack_activa(self):
@@ -1128,12 +999,7 @@ class TmsTravel(models.Model):
             if self.rendimiento_manual1 != True:
                 if self.kml > 0:
                     vale = self.route_id.distance/self.kml
-        # if self.route2_id:
-        #     if self.kml > 0:
-        #         vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
-        # else:
-        #     if self.kml > 0:
-        #         vale = self.route_id.distance/self.kml
+
         line_ids = []
         res = {'value':{
                 'fuel_log_ids':[],
