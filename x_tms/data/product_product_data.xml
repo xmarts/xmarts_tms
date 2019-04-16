@@ -140,4 +140,69 @@
         <field eval="True" name="sale_ok"/>
         <field eval="True" name="es_flete"/>
     </record>
+
+    
+    <record id="dmc_seguro" model="product.product">
+        <field name="name">dmc_seguro</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_seguro"/>
+    </record>
+    <record id="dmc_lavado" model="product.product">
+        <field name="name">dmc_lavado</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_lavado"/>
+    </record>
+    <record id="dmc_plastico" model="product.product">
+        <field name="name">dmc_plastico</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_plastico"/>
+    </record>
+    <record id="dmc_fumigado" model="product.product">
+        <field name="name">dmc_fumigado</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_fumigado"/>
+    </record>
+    <record id="dmc_otros" model="product.product">
+        <field name="name">dmc_otros</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_otros"/>
+    </record>
+    <record id="dmc_camisa" model="product.product">
+        <field name="name">dmc_camisa</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_camisa"/>
+    </record>
+    <record id="dmc_chaleco" model="product.product">
+        <field name="name">dmc_chaleco</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_chaleco"/>
+    </record>
+    <record id="dmc_pantalon" model="product.product">
+        <field name="name">dmc_pantalon</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_pantalon"/>
+    </record>
+    <record id="dmc_guantes" model="product.product">
+        <field name="name">dmc_guantes</field>
+        <field name="type">consu</field>
+        <field eval="True" name="purchase_ok"/>
+        <field eval="True" name="sale_ok"/>
+        <field eval="True" name="dmc_guantes"/>
+    </record>
 </odoo>
