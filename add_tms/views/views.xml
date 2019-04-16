@@ -52,7 +52,7 @@
 
 <!-- cambio a la vista advances -->
 
- <record model='ir.ui.view' id="xmarts_advances">
+ <!-- <record model='ir.ui.view' id="xmarts_advances">
       <field name="name">xmarts_advances</field>
       <field name="model">tms.advance</field>
       <field name="inherit_id" ref="x_tms.view_tms_advance_form" />
@@ -84,7 +84,7 @@
            </xpath>
           
       </field>
-     </record>
+     </record> -->
 
 <!-- Fin -->
 
