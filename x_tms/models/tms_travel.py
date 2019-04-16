@@ -215,89 +215,15 @@ class TmsTravel(models.Model):
     def onchange_employee_id(self):
         self.celular_operador = self.employee_id.mobile_phone
 
-    # @api.onchange('subpedido_id')
-    # def onchange_subpedido_id(self):
-    #     self.tarifa_cliente = self.subpedido_id.tarifa_cliente
-    #     self.route_id = self.subpedido_id.ruta
-    #     self.route2_id = self.subpedido_id.ruta2
-    #     self.producto = self.subpedido_id.product
-    #     self.costo_producto = self.subpedido_id.product.standard_price
-    #     self.cliente_id = self.subpedido_id.partner_id
-
     @api.constrains('lineanegocio', 'sucursal_id',
                     'peso_origen_remolque_1', 'peso_origen_remolque_2', 'peso_destino_remolque_1',
                     'peso_destino_remolque_2', 'peso_convenido_remolque_1', 'peso_convenido_remolque_2')
     def _valida(self):
-        # if not self.cliente_id:
-        #     raise UserError(_('Alerta !\n--Debe especificar el cliente.'))
-
         if not self.lineanegocio:
             raise UserError(_('Alerta !\nDebe especificar la línea de negocio.'))
 
-        # if not self.asociado_id:
-        #     raise UserError(_('Alerta !\nDebe especificar el asociado.'))
-
         if not self.sucursal_id:
             raise UserError(_('Alerta !\nDebe especificar la sucursal.'))
-
-        # if not self.placas_id:
-        #     raise UserError(_('Alerta !\nDebe especificar el vehículo.'))
-
-        # if not self.asociado_id:
-        #     raise UserError(_('Alerta !\nDebe especificar el asociado.'))
-
-        # total_viajes = self.total_viajes()
-        # total_subpedido = self.subpedido_id.cantidad
-
-        # print("================Total viajes:: " + str(total_viajes) + " Total subpedido:: " + str(total_subpedido))
-        # if total_viajes > 0 and total_subpedido > 0 and total_viajes > total_subpedido:
-        #     raise UserError(_(
-        #         'Alerta..\nCon el viaje actual se excede el peso de lo especificado en la cotización ({}/{}).'.format(
-        #             total_viajes, total_subpedido)))
-
-        # Pesos
-        # if self.lineanegocio.id == 1:  # Si es granel.
-        #     if self.peso_origen_remolque_1 > 0 and (self.peso_origen_remolque_1 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso origen del remolque 1 debe estar entre 1 y 70,000.'))
-
-        #     if self.peso_origen_remolque_2 > 0 and (self.peso_origen_remolque_2 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso origen del remolque 2 debe estar entre 1 y 70,000.'))
-
-        #     if self.peso_destino_remolque_1 > 0 and (self.peso_destino_remolque_1 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso destino del remolque 1 debe estar entre 1 y 70,000.'))
-
-        #     if self.peso_destino_remolque_2 > 0 and (self.peso_destino_remolque_2 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso destino del remolque 2 debe estar entre 1 y 70,000.'))
-
-        #     if self.peso_convenido_remolque_1 > 0 and (self.peso_convenido_remolque_1 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso convenido del remolque 1 debe estar entre 1 y 70,000.'))
-
-        #     if self.peso_convenido_remolque_2 > 0 and (self.peso_convenido_remolque_2 > 70000):
-        #         raise UserError(_('Alerta !\nEl peso convenido del remolque 2 debe estar entre 1 y 70,000.'))
-
-    # @api.onchange('lineanegocio')
-    # def _onchange_lineanegocio(self):
-    #     if self.lineanegocio:
-    #         if self.lineanegocio.id == 3:
-    #             # if self.tipo_remolque.tipo == 'sencillo':
-    #             #     self.peso_origen_remolque_1 = 1000
-    #             #     self.peso_origen_remolque_2 = 0
-    #             #     self.peso_destino_remolque_1 = 1000
-    #             #     self.peso_destino_remolque_2 = 0
-    #             # else:
-    #             #     self.peso_origen_remolque_1 = 500
-    #             #     self.peso_origen_remolque_2 = 500
-    #             #     self.peso_destino_remolque_1 = 500
-    #             #     self.peso_destino_remolque_2 = 500
-    #             self.peso_origen_remolque_1 = 500
-    #             self.peso_origen_remolque_2 = 500
-    #             self.peso_destino_remolque_1 = 500
-    #             self.peso_destino_remolque_2 = 500
-    #         else:
-    #             self.peso_origen_remolque_1 = 0
-    #             self.peso_origen_remolque_2 = 0
-    #             self.peso_destino_remolque_1 = 0
-    #             self.peso_destino_remolque_2 = 0
 
     peso_origen_remolque_1 = fields.Float(string='Peso remolque 1 Kg', track_visibility='onchange')
     peso_origen_remolque_2 = fields.Float(string='Peso remolque 2 Kg', track_visibility='onchange')
