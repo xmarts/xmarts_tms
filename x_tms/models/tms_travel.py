@@ -200,14 +200,7 @@ class TmsTravel(models.Model):
     costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange', readonly=True, related="producto.standard_price")
     sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange',default=lambda self: self.env['tms.sucursal'].search([('name','=','Patio Central')], limit=1).id or '')
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True, track_visibility='onchange')
-    #asociado_id = fields.Many2one('res.partner', string="Asociado", required=True, track_visibility='onchange')
-
-    #porcentaje_comision = fields.Float(string='Porcentaje de comisión', readonly=True)
-    #usar_porcentaje = fields.Boolean(string='Usar porcentaje de línea de negocio', readonly=True)
-    #tarifa_asociado = fields.Float(string='Tarifa asociado', default=0, track_visibility='onchange', required=True)
     tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
-
-    #celular_asociado = fields.Char(string='Celular asociado', required=True)
     celular_operador = fields.Char(string='Celular operador', readonly=True, related="employee_id.mobile_phone")
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
