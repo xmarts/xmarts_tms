@@ -38,6 +38,16 @@ class TmsFactor(models.Model):
     valor2 = fields.Float(string="Valor para 2da ruta", default=0)
     total = fields.Float(string="Total de Factor", compute="_cal_total")
 
+    @api.onchange('factor_type')
+    def _onchange_type(self):
+        if self.factor_type == 'costokm':
+            if self.travel_id.tipo_remolque == 'sencillo':
+                self.valor = self.travel_id.tipo_carga.tarifa_sencillo
+                self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo
+            if self.travel_id.tipo_remolque == 'doble':
+                self.valor = self.travel_id.tipo_carga.tarifa_doble
+                self.valor2 = self.travel_id.tipo_carga.tarifa_doble
+
     @api.one
     def _cal_total(self):
         if self.factor_type == 'costo_fijo':
