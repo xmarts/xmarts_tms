@@ -42,14 +42,72 @@ class TmsFactor(models.Model):
     def _onchange_type(self):
         if self.factor_type == 'costokm':
             if self.travel_id.tipo_remolque == 'sencillo':
-                self.valor = self.travel_id.tipo_carga.tarifa_sencillo
-                self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_pesado
             if self.travel_id.tipo_remolque == 'doble':
-                self.valor = self.travel_id.tipo_carga.tarifa_doble
-                self.valor2 = self.travel_id.tipo_carga.tarifa_doble
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_pesado
+            if self.travel_id.tipo_remolque == 'torton':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_pesado
+            if self.travel_id.tipo_remolque == 'rabon':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_rabon_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_pesado
 
     @api.one
     def _cal_total(self):
+        if self.factor_type == 'costo_fijo':
+            self.total = self.valor
+        if self.factor_type == 'porcentaje':
+            self.total = (self.travel_id.flete_cliente/100) * self.valor
+        if self.factor_type == 'costokm':
+            if self.if_diferentes != True:
+                self.total = self.valor * (self.travel_id.route_id.distance + self.travel_id.route2_id.distance)
+            if self.if_diferentes == True:
+                self.total = (self.valor * self.travel_id.route_id.distance) + (self.valor2 * self.travel_id.route2_id.distance)
+    
+    @api.onchange('factor_type','valor','valor2','if_diferentes')
+    def _onchange_cal_total(self):
         if self.factor_type == 'costo_fijo':
             self.total = self.valor
         if self.factor_type == 'porcentaje':
@@ -87,6 +145,7 @@ class TmsFactor(models.Model):
         default=10)
     notes = fields.Text()
 
+    @api.model
     @api.onchange('factor_type')
     def _onchange_factor_type(self):
         values = {

@@ -7,11 +7,6 @@
         <field name="arch" type="xml">
             <tree string="Tipos de carga">
                 <field name="name"/>
-                <field name="carga"/>
-                <field name="costo_sencillo"/>
-                <field name="costo_doble"/>
-                <field name="tarifa_sencillo"/>
-                <field name="tarifa_doble"/>
             </tree>
         </field>
     </record>
@@ -26,18 +21,54 @@
                 </header>
                 <sheet>
                     <group>
-                        <group>  
+                        <group colspan="4">  
                             <field name="name" />
-                            <field name="carga" />
+                        </group><hr colspan="4"/>
+                        <group colspan="4" string="COSTOS PARA EL FLETE">
+                            <group col="6" colspan="4"> 
+                                <field name="costo_sencillo_vacio"/>
+                                <field name="costo_sencillo_medido" />
+                                <field name="costo_sencillo_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="costo_doble_vacio"/>
+                                <field name="costo_doble_medido" />
+                                <field name="costo_doble_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="costo_torton_vacio"/>
+                                <field name="costo_torton_medido" />
+                                <field name="costo_torton_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="costo_rabon_vacio"/>
+                                <field name="costo_rabon_medido" />
+                                <field name="costo_rabon_pesado"/>
+                            </group>
+                        </group><hr colspan="4"/>
+                        <group colspan="4" string="TARIFAS PARA EL OPERADOR">
+                            <group col="6" colspan="4"> 
+                                <field name="tarifa_sencillo_vacio"/>
+                                <field name="tarifa_sencillo_medido" />
+                                <field name="tarifa_sencillo_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="tarifa_doble_vacio"/>
+                                <field name="tarifa_doble_medido" />
+                                <field name="tarifa_doble_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="tarifa_torton_vacio"/>
+                                <field name="tarifa_torton_medido" />
+                                <field name="tarifa_torton_pesado"/>
+                            </group>
+                            <group col="6" colspan="4"> 
+                                <field name="tarifa_rabon_vacio"/>
+                                <field name="tarifa_rabon_medido" />
+                                <field name="tarifa_rabon_pesado"/>
+                            </group>
                         </group>
-                        <group> 
-                            <field name="costo_sencillo"/>
-                            <field name="costo_doble" />
-                        </group>
-                        <group> 
-                            <field name="tarifa_sencillo"/>
-                            <field name="tarifa_doble"/>
-                        </group>
+
                     </group>
                     <notebook>
                     </notebook>

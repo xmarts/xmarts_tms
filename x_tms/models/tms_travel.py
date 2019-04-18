@@ -25,12 +25,40 @@ import mygeotab
 
 class tmstiposcarga(models.Model):
     _name = 'tms.tipos.carga'
-    name = fields.Char(string="Nombre")
-    carga = fields.Selection([('vacio','Vacio'),('medio','Medio'),('pesado','Pesado')])
-    costo_sencillo = fields.Float(string="Costo por km Viaje Sencillo")
-    costo_doble = fields.Float(string="Costo por km Viaje Doble")
-    tarifa_sencillo = fields.Float(string="Tarifa por Viaje Sencillo")
-    tarifa_doble = fields.Float(string="Tarifa por Viaje Doble")
+    name = fields.Char(string="Nombre", required=True)
+
+    #carga = fields.Selection([('vacio','Vacio'),('medio','Medio'),('pesado','Pesado')])
+
+    costo_sencillo_vacio = fields.Float(string="Costo por km Viaje Sencillo/Vacio")
+    costo_doble_vacio = fields.Float(string="Costo por km Viaje Doble/Vacio")
+    costo_torton_vacio = fields.Float(string="Costo por km Viaje Tortón/Vacio")
+    costo_rabon_vacio = fields.Float(string="Costo por km Viaje Rabón/Vacio")
+
+    costo_sencillo_medido = fields.Float(string="Costo por km Viaje Sencillo/Medido")
+    costo_doble_medido = fields.Float(string="Costo por km Viaje Doble/Medido")
+    costo_torton_medido = fields.Float(string="Costo por km Viaje Tortón/Medido")
+    costo_rabon_medido = fields.Float(string="Costo por km Viaje Rabón/Medido")
+
+    costo_sencillo_pesado = fields.Float(string="Costo por km Viaje Sencillo/Pesado")
+    costo_doble_pesado = fields.Float(string="Costo por km Viaje Doble/Pesado")
+    costo_torton_pesado = fields.Float(string="Costo por km Viaje Tortón/Pesado")
+    costo_rabon_pesado = fields.Float(string="Costo por km Viaje Rabón/Pesado")
+
+    tarifa_sencillo_vacio = fields.Float(string="Tarifa por Viaje Sencillo/Vacio")
+    tarifa_doble_vacio = fields.Float(string="Tarifa por Viaje Doble/Vacio")
+    tarifa_torton_vacio = fields.Float(string="Tarifa por Viaje Tortón/Vacio")
+    tarifa_rabon_vacio = fields.Float(string="Tarifa por Viaje Rabón/Vacio")
+
+    tarifa_sencillo_medido = fields.Float(string="Tarifa por Viaje Sencillo/Medido")
+    tarifa_doble_medido = fields.Float(string="Tarifa por Viaje Doble/Medido")
+    tarifa_torton_medido = fields.Float(string="Tarifa por Viaje Tortón/Medido")
+    tarifa_rabon_medido = fields.Float(string="Tarifa por Viaje Rabón/Medido")
+
+    tarifa_sencillo_pesado = fields.Float(string="Tarifa por Viaje Sencillo/Pesado")
+    tarifa_doble_pesado = fields.Float(string="Tarifa por Viaje Doble/Pesado")
+    tarifa_torton_pesado = fields.Float(string="Tarifa por Viaje Tortón/Pesado")
+    tarifa_rabon_pesado = fields.Float(string="Tarifa por Viaje Rabón/Pesado")
+
     _sql_constraints = [
         ('name_uniq', 'unique(name)', 'El nombre no se puede repetir.'),
     ]
@@ -200,14 +228,15 @@ class TmsTravel(models.Model):
     costo_producto = fields.Float(string='Costo del producto', track_visibility='onchange', readonly=True, related="producto.standard_price")
     sucursal_id = fields.Many2one('tms.sucursal', string='Sucursal', required=True, track_visibility='onchange',default=lambda self: self.env['tms.sucursal'].search([('name','=','Patio Central')], limit=1).id or '')
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True, track_visibility='onchange')
-    tarifa_cliente = fields.Float(string='Tarifa cliente', default=0,required=True)
+    tarifa_cliente = fields.Float(string='Tarifa cliente 1', default=0,required=True)
+    tarifa_cliente2 = fields.Float(string='Tarifa cliente 2', default=0,required=True)
     celular_operador = fields.Char(string='Celular operador', readonly=True, related="employee_id.mobile_phone")
     tipo_viaje = fields.Selection([('Normal', 'Normal'), ('Directo', 'Directo'), ('Cobro destino', 'Cobro destino')],
                                   string='Tipo de viaje', default='Normal', required=True)
-    tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble')], string="Tipo de remolque", required=True)
+    tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble'),('torton','Tortón'),('rabon','Rabón')], string="Tipo de remolque", required=True)
     tipo_carga = fields.Many2one("tms.tipos.carga", string="Tipo Carga", required=True)
     lineanegocio = fields.Many2one(comodel_name='tms.lineanegocio', string='Linea de negocios', store=True)
-    tipo_negocio = fields.Selection([('flete','Flete'),('granel','Granel')], string="Tipo", related='lineanegocio.tipo', required=True)
+    tipo_negocio = fields.Selection([('flete','Flete'),('granel','Granel'),('km','Por Kilometro')], string="Tipo", related='lineanegocio.tipo', required=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
 
@@ -238,29 +267,81 @@ class TmsTravel(models.Model):
     def _compute_pesos_origen_total(self):
             self.peso_origen_total = self.peso_origen_remolque_1 + self.peso_origen_remolque_2
 
-    @api.onchange('tipo_carga','tipo_remolque','lineanegocio')
+    @api.onchange('tipo_carga','modalidad_ruta1','modalidad_ruta2','lineanegocio','tipo_remolque','route_id','route2_id')
     def onchange_tipo_carga(self):
-        if self.lineanegocio.tipo == 'km':
+        if self.lineanegocio.tipo == 'km' and self.modalidad_ruta1 == 'vacio':
             if self.tipo_remolque == 'sencillo':
-                self.tarifa_cliente = self.tipo_carga.costo_sencillo
+                self.tarifa_cliente = self.tipo_carga.costo_sencillo_vacio
             if self.tipo_remolque == 'doble':
-                self.tarifa_cliente = self.tipo_carga.costo_doble
+                self.tarifa_cliente = self.tipo_carga.costo_doble_vacio
+            if self.tipo_remolque == 'torton':
+                self.tarifa_cliente = self.tipo_carga.costo_torton_vacio
+            if self.tipo_remolque == 'rabon':
+                self.tarifa_cliente = self.tipo_carga.costo_rabon_vacio
+        if self.lineanegocio.tipo == 'km' and self.modalidad_ruta1 == 'medido':
+            if self.tipo_remolque == 'sencillo':
+                self.tarifa_cliente = self.tipo_carga.costo_sencillo_medido
+            if self.tipo_remolque == 'doble':
+                self.tarifa_cliente = self.tipo_carga.costo_doble_medido
+            if self.tipo_remolque == 'torton':
+                self.tarifa_cliente = self.tipo_carga.costo_torton_medido
+            if self.tipo_remolque == 'rabon':
+                self.tarifa_cliente = self.tipo_carga.costo_rabon_medido
+        if self.lineanegocio.tipo == 'km' and self.modalidad_ruta1 == 'pesado':
+            if self.tipo_remolque == 'sencillo':
+                self.tarifa_cliente = self.tipo_carga.costo_sencillo_pesado
+            if self.tipo_remolque == 'doble':
+                self.tarifa_cliente = self.tipo_carga.costo_doble_pesado
+            if self.tipo_remolque == 'torton':
+                self.tarifa_cliente = self.tipo_carga.costo_torton_pesado
+            if self.tipo_remolque == 'rabon':
+                self.tarifa_cliente = self.tipo_carga.costo_rabon_pesado
+        if not self.route2_id:
+            self.tarifa_cliente2 = 0
+        if self.route2_id:
+            if self.lineanegocio.tipo == 'km' and self.modalidad_ruta2 == 'vacio':
+                if self.tipo_remolque == 'sencillo':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_sencillo_vacio
+                if self.tipo_remolque == 'doble':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_doble_vacio
+                if self.tipo_remolque == 'torton':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_torton_vacio
+                if self.tipo_remolque == 'rabon':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_rabon_vacio
+            if self.lineanegocio.tipo == 'km' and self.modalidad_ruta2 == 'medido':
+                if self.tipo_remolque == 'sencillo':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_sencillo_medido
+                if self.tipo_remolque == 'doble':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_doble_medido
+                if self.tipo_remolque == 'torton':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_torton_medido
+                if self.tipo_remolque == 'rabon':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_rabon_medido
+            if self.lineanegocio.tipo == 'km' and self.modalidad_ruta2 == 'pesado':
+                if self.tipo_remolque == 'sencillo':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_sencillo_pesado
+                if self.tipo_remolque == 'doble':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_doble_pesado
+                if self.tipo_remolque == 'torton':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_torton_pesado
+                if self.tipo_remolque == 'rabon':
+                    self.tarifa_cliente2 = self.tipo_carga.costo_rabon_pesado
 
     @api.one
-    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
     def _compute_flete_cliente(self):
         for reg in self:
             if self.lineanegocio.tipo == 'granel':
                 if reg.facturar_con_cliente == 'Peso convenido':
-                    reg.flete_cliente = (reg.peso_convenido_total / 1000) * reg.tarifa_cliente
+                    reg.flete_cliente = ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente) + ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente2)
                 elif reg.facturar_con_cliente == 'Peso origen':
-                    reg.flete_cliente = (reg.peso_origen_total / 1000) * reg.tarifa_cliente
+                    reg.flete_cliente = ((reg.peso_origen_total / 1000) * reg.tarifa_cliente) + ((reg.peso_origen_total / 1000) * reg.tarifa_cliente2)
                 elif reg.facturar_con_cliente == 'Peso destino':
-                    reg.flete_cliente = (reg.peso_destino_total / 1000) * reg.tarifa_cliente
+                    reg.flete_cliente = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente) + ((reg.peso_destino_total / 1000) * reg.tarifa_cliente2)
             if self.lineanegocio.tipo == 'flete':
                 reg.flete_cliente = reg.tarifa_cliente
             if self.lineanegocio.tipo == 'km':
-                reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
+                reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance)) + (reg.tarifa_cliente2 * (self.route2_id.distance))
 
     
     @api.onchange('route_id','route2_id')
@@ -278,30 +359,42 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'km':
                 reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
 
-    @api.onchange('route_id','route2_id','flete_cliente','employee_id','unit_id','operating_unit_id')
+    @api.onchange('driver_factor_ids')
     def onchange_flete_cliente_anticipo(self):
-        line_ids = []
-        res = {'value':{
-                'advance_ids':[],
+        if self.driver_factor_ids:
+            line_ids = []
+            res = {'value':{
+                    'advance_ids':[],
+                }
             }
-        }
-        comb = self.env['product.product'].search([('tms_product_category','=','real_expense')], limit=1)
-        line = {
-          'operating_unit_id': self.operating_unit_id.id,
-          'unit_id': self.unit_id.id,
-          'product_id': comb.id,
-          'employee_id': self.employee_id.id,
-          'amount': self.flete_cliente * 0.2,
-          'currency_id': self.env.user.company_id.currency_id,
-          'date':datetime.today(),
-          'notes': "Monto generado automaticamente calculando el 20 porciento del flete del cliente",
-          'state':'draft'
-        }
-        line_ids += [line]
-        res['value'].update({
-            'advance_ids': line_ids,
-        })
-        return res
+            comb = self.env['product.product'].search([('tms_product_category','=','real_expense')], limit=1)
+            total = 0
+            for x in self.driver_factor_ids:
+                if x.factor_type == 'costo_fijo':
+                    total = x.valor
+                if x.factor_type == 'porcentaje':
+                    total = (self.flete_cliente/100) * x.valor
+                if x.factor_type == 'costokm':
+                    if x.if_diferentes != True:
+                        total = x.valor * (self.route_id.distance + self.route2_id.distance)
+                    if x.if_diferentes == True:
+                        total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+                line = {
+                  'operating_unit_id': self.operating_unit_id.id,
+                  'unit_id': self.unit_id.id,
+                  'product_id': comb.id,
+                  'employee_id': self.employee_id.id,
+                  'amount': total * 0.2,
+                  'currency_id': self.env.user.company_id.currency_id,
+                  'date':datetime.today(),
+                  'notes': "Monto generado automaticamente calculando el 20 porciento del flete del cliente",
+                  'state':'draft'
+                }
+            line_ids += [line]
+            res['value'].update({
+                'advance_ids': line_ids,
+            })
+            return res
 
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')
@@ -661,6 +754,12 @@ class TmsTravel(models.Model):
     @api.multi
     def action_progress(self):
         for rec in self:
+            if not self.subpedido_id:
+                raise ValidationError(
+                    _('Aun no hay un pedido asociado'))
+            if self.subpedido_id.state not in ['sale','done']:
+                raise ValidationError(
+                    _('El pedido no esta autorizado'))
             val = True
             for x in self.fuel_log_ids:
                 if x.state != 'approved' and x.state != 'confirmed':
@@ -891,6 +990,9 @@ class TmsTravel(models.Model):
             self.ejes = self.unit_id.ejes + self.trailer1_id.ejes + self.dolly_id.ejes + self.trailer2_id.ejes
         else:
             self.ejes = self.unit_id.ejes + self.trailer1_id.ejes
+        if self.tipo_remolque != 'doble':
+            self.dolly_id = ''
+            self.trailer2_id = ''
 
     @api.onchange('tipo_remolque','unit_id','trailer1_id','dolly_id','trailer2_id')
     def _onchange_total_ejes(self):
@@ -898,6 +1000,9 @@ class TmsTravel(models.Model):
             self.ejes = self.unit_id.ejes + self.trailer1_id.ejes + self.dolly_id.ejes + self.trailer2_id.ejes
         else:
             self.ejes = self.unit_id.ejes + self.trailer1_id.ejes
+        if self.tipo_remolque != 'doble':
+            self.dolly_id = ''
+            self.trailer2_id = ''
 
     @api.one
     def _costo_casetas(self):
@@ -930,8 +1035,8 @@ class TmsTravel(models.Model):
     kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
     com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
     viaje_gm = fields.Char(string="Viaje GM")
-    ruta_vacia1 = fields.Boolean(string="Ruta 1 sin carga?")
-    ruta_vacia2 = fields.Boolean(string="Ruta 2 sin carga?")
+    modalidad_ruta1 = fields.Selection([('vacio','Vacio'),('medido','Medido'),('pesado','Pesado')],string="Modalidad de ruta 1",default='medido')
+    modalidad_ruta2 = fields.Selection([('vacio','Vacio'),('medido','Medido'),('pesado','Pesado')],string="Modalidad de ruta 2",default='medido')
     rendimiento_manual1= fields.Boolean(string="Rendimiento Manual Ruta 1?")
     rendimiento_manual2= fields.Boolean(string="Rendimiento Manual Ruta 2?")
     kmlmuno = fields.Float(string="KM/L")

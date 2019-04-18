@@ -70,6 +70,7 @@
                             <field name="tipo_lineanegocio" readonly="1"/>
                             <field name="tipo_negocio" invisible="1"/>
                             <field name="tarifa_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="tarifa_cliente2" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="flete_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
@@ -85,7 +86,7 @@
                             <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}"/>
                             <field name="unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('fleet_type', '=', 'tractor')]"/>
                             <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)], 'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
-                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
+                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
                             <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
                             <field name="ejes" />
                             <field name="costo_casetas" />
@@ -103,7 +104,7 @@
                                     <field name="arrival_id"/>
                                 </group>
                                 <group col="6" colspan="4">
-                                    <field name='ruta_vacia1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='modalidad_ruta1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='rendimiento_manual1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
@@ -117,7 +118,7 @@
                                     <field name="arrival2_id"/>
                                 </group>
                                 <group col="6" colspan="4">
-                                    <field name='ruta_vacia2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                                    <field name='modalidad_ruta2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>

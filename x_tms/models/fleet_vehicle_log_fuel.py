@@ -104,6 +104,11 @@ class FleetVehicleLogFuel(models.Model):
             # if rec.tax_amount > 0:
             #     rec.price_subtotal = rec.tax_amount / 0.16
 
+    @api.onchange('tax_amount','product_qty','product_id')
+    def _onchange_price_subtotal(self):
+        for rec in self:
+            rec.price_subtotal = rec.price_unit * rec.product_qty
+
     @api.multi
     def _compute_price_unit(self):
         for rec in self:
@@ -120,6 +125,14 @@ class FleetVehicleLogFuel(models.Model):
                 tax += t.amount
             rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
 
+    @api.onchange('product_id','tax_amount','product_qty')
+    def _onchange_taxes(self):
+        for rec in self:
+            tax = 0
+            for t in rec.product_id.supplier_taxes_id:
+                tax += t.amount
+            rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
+
     @api.multi
     def _compute_total(self):
         for rec in self:
@@ -128,6 +141,11 @@ class FleetVehicleLogFuel(models.Model):
             # for t in rec.product_id.supplier_taxes_id:
             #     tax += t.amount
             # rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
+
+    @api.onchange('price_total','tax_amount','price_subtotal','product_qty')
+    def _onchange_total(self):
+        for rec in self:
+            rec.price_total = rec.tax_amount + rec.price_subtotal
 
 
     @api.multi
