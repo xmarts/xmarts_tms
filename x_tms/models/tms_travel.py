@@ -1516,7 +1516,79 @@ class TmsTravel(models.Model):
               'order_id': so.id
               })
 
+    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2')
+    def _onchange_type_factor(self):
+        for x in self.driver_factor_ids:
+            if x.factor_type == 'costokm':
+                if self.tipo_remolque == 'sencillo':
+                    if self.modalidad_ruta1 == 'vacio':
+                        x.valor = self.tipo_carga.tarifa_sencillo_vacio
+                    if self.modalidad_ruta1 == 'medido':
+                        x.valor = self.tipo_carga.tarifa_sencillo_medido
+                    if self.modalidad_ruta1 == 'pesado':
+                        x.valor = self.tipo_carga.tarifa_sencillo_pesado
+                    if self.modalidad_ruta2 == 'vacio':
+                        x.valor2 = self.tipo_carga.tarifa_sencillo_vacio
+                    if self.modalidad_ruta2 == 'medido':
+                        x.valor2 = self.tipo_carga.tarifa_sencillo_medido
+                    if self.modalidad_ruta2 == 'pesado':
+                        x.valor2 = self.tipo_carga.tarifa_sencillo_pesado
+                if self.tipo_remolque == 'doble':
+                    if self.modalidad_ruta1 == 'vacio':
+                        x.valor = self.tipo_carga.tarifa_doble_vacio
+                    if self.modalidad_ruta1 == 'medido':
+                        x.valor = self.tipo_carga.tarifa_doble_medido
+                    if self.modalidad_ruta1 == 'pesado':
+                        x.valor = self.tipo_carga.tarifa_doble_pesado
+                    if self.modalidad_ruta2 == 'vacio':
+                        x.valor2 = self.tipo_carga.tarifa_doble_vacio
+                    if self.modalidad_ruta2 == 'medido':
+                        x.valor2 = self.tipo_carga.tarifa_doble_medido
+                    if self.modalidad_ruta2 == 'pesado':
+                        x.valor2 = self.tipo_carga.tarifa_doble_pesado
+                if self.tipo_remolque == 'torton':
+                    if self.modalidad_ruta1 == 'vacio':
+                        x.valor = self.tipo_carga.tarifa_torton_vacio
+                    if self.modalidad_ruta1 == 'medido':
+                        x.valor = self.tipo_carga.tarifa_torton_medido
+                    if self.modalidad_ruta1 == 'pesado':
+                        x.valor = self.tipo_carga.tarifa_torton_pesado
+                    if self.modalidad_ruta2 == 'vacio':
+                        x.valor2 = self.tipo_carga.tarifa_torton_vacio
+                    if self.modalidad_ruta2 == 'medido':
+                        x.valor2 = self.tipo_carga.tarifa_torton_medido
+                    if self.modalidad_ruta2 == 'pesado':
+                        x.valor2 = self.tipo_carga.tarifa_torton_pesado
+                if self.tipo_remolque == 'rabon':
+                    if self.modalidad_ruta1 == 'vacio':
+                        x.valor = self.tipo_carga.tarifa_rabon_vacio
+                    if self.modalidad_ruta1 == 'medido':
+                        x.valor = self.tipo_carga.tarifa_rabon_medido
+                    if self.modalidad_ruta1 == 'pesado':
+                        x.valor = self.tipo_carga.tarifa_rabon_pesado
+                    if self.modalidad_ruta2 == 'vacio':
+                        x.valor2 = self.tipo_carga.tarifa_rabon_vacio
+                    if self.modalidad_ruta2 == 'medido':
+                        x.valor2 = self.tipo_carga.tarifa_sencillo_medido
+                    if self.modalidad_ruta2 == 'pesado':
+                        x.valor2 = self.tipo_carga.tarifa_sencillo_pesado
+                if x.if_diferentes != True:
+                    x.valor2 = x.valor
+            if x.factor_type != 'costokm':
+                x.if_diferentes == False
 
+    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2')
+    def _onchange_cal_total_factor(self):
+        for x in self.driver_factor_ids:
+            if x.factor_type == 'costo_fijo':
+                x.total = x.valor
+            if x.factor_type == 'porcentaje':
+                x.total = (self.flete_cliente/100) * x.valor
+            if x.factor_type == 'costokm':
+                if x.if_diferentes != True:
+                    x.total = x.valor * (self.route_id.distance + self.route2_id.distance)
+                if x.if_diferentes == True:
+                    x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
 
 
 

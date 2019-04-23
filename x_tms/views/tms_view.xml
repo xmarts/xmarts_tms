@@ -220,6 +220,7 @@
                                     <field name="name" />
                                     <field name="factor_type" />
                                     <field name="valor" />
+                                    <field name="if_diferentes" />
                                     <field name="valor2" />
                                     <field name="total" />
                                     <field name="travel_id" invisible="1" />

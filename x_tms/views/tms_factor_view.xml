@@ -26,7 +26,7 @@
                         <newline/>
                         
                         <field name="valor"/>
-                        <field name="valor2" attrs="{'invisible':[('if_diferentes','!=',True)],'invisible':[('factor_type','!=','costokm')]}"/>
+                        <field name="valor2" attrs="{'invisible':[('if_diferentes','!=',True)]}"/>
                         <field name="total"/>
                         <newline/>
                         <field colspan="4" name="notes"/>

@@ -93,6 +93,10 @@ class TmsFactor(models.Model):
                     self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_medido
                 if self.travel_id.modalidad_ruta2 == 'pesado':
                     self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_pesado
+            if self.if_diferentes != True:
+                self.valor2 = self.valor
+        if self.factor_type != 'costokm':
+            self.if_diferentes == False
 
     @api.one
     def _cal_total(self):
