@@ -1036,6 +1036,8 @@ class TmsTravel(models.Model):
 
     ejes = fields.Integer(string="Total de ejes.", compute="_total_ejes")
     costo_casetas = fields.Float(string="Costo Total de Casetas", compute="_costo_casetas")
+    casetas1 = fields.Float(string="Costo de Casetas Ruta 1", compute="_costo_casetas1")
+    casetas2 = fields.Float(string="Costo de Casetas Ruta 2", compute="_costo_casetas2")
 
     @api.one
     def _total_ejes(self):
@@ -1070,6 +1072,24 @@ class TmsTravel(models.Model):
                     suma += z.cost_cash
         self.costo_casetas = suma
 
+    @api.one
+    def _costo_casetas1(self):
+        suma = 0
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.casetas1 = suma
+
+    @api.one
+    def _costo_casetas2(self):
+        suma = 0
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.casetas2 = suma
+
     @api.onchange('route_id','route2_id','ejes')
     def _onchange_costo_casetas(self):
         suma = 0
@@ -1083,10 +1103,30 @@ class TmsTravel(models.Model):
                     suma += z.cost_cash
         self.costo_casetas = suma
 
+    @api.onchange('route_id','ejes')
+    def _onchange_costo_casetas1(self):
+        suma = 0
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.casetas1 = suma
+
+    @api.onchange('route_id','ejes')
+    def _onchange_costo_casetas2(self):
+        suma = 0
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    suma += z.cost_cash
+        self.casetas2 = suma
+
     
 
     kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
     com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
+    combustible1 = fields.Float(string="Combustible necesario ruta 1", compute="_com_com_necesario1")
+    combustible2 = fields.Float(string="Combustible necesario ruta 2", compute="_com_com_necesario2")
     viaje_gm = fields.Char(string="Viaje GM")
     modalidad_ruta1 = fields.Selection([('vacio','Vacio'),('medido','Medido'),('pesado','Pesado')],string="Modalidad de ruta 1",default='medido')
     modalidad_ruta2 = fields.Selection([('vacio','Vacio'),('medido','Medido'),('pesado','Pesado')],string="Modalidad de ruta 2",default='medido')
