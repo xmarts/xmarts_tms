@@ -24,6 +24,7 @@ class TmsUnitKit(models.Model):
     date_end = fields.Datetime()
     notes = fields.Text()
     active = fields.Boolean(default=True)
+    tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble'),('torton','Tortón'),('rabon','Rabón')], string="Tipo de remolque", required=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(unit_id,name)',
