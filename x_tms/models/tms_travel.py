@@ -21,7 +21,32 @@ import mygeotab
 #     )
 
 # authenticate = geo.authenticate()
-
+def calculate_litres_per_km(from_date, to_date, serial):
+    username = 'javier.ramirez@sli.mx'
+    password = 'Javier0318*'
+    database = 'GSYEECA'
+    geo = mygeotab.API(
+            username=username,
+            password=password,
+            database=database
+        )
+    authenticate = geo.authenticate()
+    xxx = geo.get('Device', engineVehicleIdentificationNumber=serial)[0]
+    odometer_records = geo.get('StatusData', 
+                                  diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
+                                  deviceSearch=dict(id=xxx['id']),
+                                  toDate=to_date,
+                                  fromDate=from_date)
+    fuel_records = geo.get('StatusData',
+                              diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
+                              deviceSearch=dict(id=xxx['id']),
+                              toDate=to_date,
+                              fromDate=from_date)
+    if len(odometer_records) == 0 or len(fuel_records) == 0:
+        raise Exception('Device has not travelled in this time period or no fuel usage reported')
+    odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
+    fuel_change = fuel_records[-1]['data'] - fuel_records[0]['data']
+    return fuel_change / (odometer_change / 1000)
 
 class tmstiposcarga(models.Model):
     _name = 'tms.tipos.carga'
