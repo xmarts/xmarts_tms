@@ -766,12 +766,26 @@ class TmsTravel(models.Model):
         self.trailer1_id = self.kit_id.trailer1_id.id
         self.dolly_id = self.kit_id.dolly_id.id
 
-    @api.onchange('route_id')
+    @api.onchange('route_id','route2_id','modalidad_ruta1','modalidad_ruta2')
     def _onchange_route(self):
-        self.travel_duration = self.route_id.travel_time
-        self.distance_route = self.route_id.distance
-        self.distance_loaded = self.route_id.distance_loaded
-        self.distance_empty = self.route_id.distance_empty
+        self.travel_duration = self.route_id.travel_time + self.route2_id.travel_time
+        self.distance_route = self.route_id.distance + self.route2_id.distance
+        cargado = 0
+        vacio = 0
+        if self.modalidad_ruta1 != 'vacio':
+            cargado += self.route_id.distance_loaded
+            vacio += self.route_id.distance_empty
+        if self.route2_id and self.modalidad_ruta2 != 'vacio':
+            cargado += self.route2_id.distance_loaded
+            vacio += self.route_id.distance_empty
+
+        self.distance_loaded = cargado
+        
+        if self.modalidad_ruta1 == 'vacio':
+            vacio += self.route_id.distance
+        if self.route2_id and self.modalidad_ruta2 == 'vacio':
+            vacio += self.route2_id.distance
+        self.distance_empty = vacio
 
     @api.depends('distance_empty', 'distance_loaded')
     def _compute_distance_driver(self):
