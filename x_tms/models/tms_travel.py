@@ -845,8 +845,9 @@ class TmsTravel(models.Model):
             })
             rec.state = "done"
             rec.odometer = odometer.current_odometer
-            rec.date_end_real = fields.Datetime.now()
+            rec.date_end_real = ahora
             rec.message_post('Travel Finished')
+
 
     @api.depends('route_id','fuel_log_ids')
     @api.onchange('route_id')
