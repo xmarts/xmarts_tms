@@ -1183,6 +1183,46 @@ class TmsTravel(models.Model):
                 if self.kml > 0:
                     self.update({'com_necesario':self.route_id.distance/self.kml})
 
+    @api.one
+    def _com_com_necesario1(self):
+        if self.route_id:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    self.update({'combustible1':self.route_id.distance/self.kml})
+
+    @api.one
+    def _com_com_necesario2(self):
+        if self.route2_id:
+            if self.rendimiento_manual2 == True:
+                if self.kmlm2 > 0:
+                    self.update({'combustible2':self.route2_id.distance/self.kmlm2})
+            if self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    self.update({'combustible2':self.route2_id.distance/self.kml})
+
+    @api.onchange('route_id','rendimiento_manual1','kml','kmlmuno')
+    def _onchange_necesario1(self):
+        if self.route_id:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    self.update({'combustible1':self.route_id.distance/self.kml})
+
+    @api.onchange('route2_id','rendimiento_manual2','kml','kmlm2')
+    def _onchenge_necesario2(self):
+        if self.route2_id:
+            if self.rendimiento_manual2 == True:
+                if self.kmlm2 > 0:
+                    self.update({'combustible2':self.route2_id.distance/self.kmlm2})
+            if self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    self.update({'combustible2':self.route2_id.distance/self.kml})
+
     @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','','','','','','')
     def _onchange_com_necesario(self):
         if self.route2_id:
