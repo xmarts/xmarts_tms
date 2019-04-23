@@ -826,8 +826,14 @@ class TmsTravel(models.Model):
             rec.date_start_real = fields.Datetime.now()
             rec.message_post('Travel Dispatched')
 
+
+    
+
     @api.multi
     def action_done(self):
+        ahora = fields.Datetime.now()
+        if self.unit_id.serial_number:
+            self.fuel_efficiency_travel = calculate_litres_per_km(self.date_start_real, ahora, str(self.unit_id.serial_number))
         for rec in self:
             odometer = self.env['fleet.vehicle.odometer'].create({
                 'travel_id': rec.id,
