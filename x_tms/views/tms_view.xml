@@ -12,7 +12,7 @@
 
     <!-- Menu Viajes -->
     <menuitem id="menu_tms_travels" name="Freights" parent="menu_tms" sequence="2"/>
-    <menuitem action="open_view_tms_travel_form" id="menu_tms_travel_form" name="Travels" parent="menu_tms_travels" sequence="21"/>
+    <menuitem action="open_view_tms_travel_form" id="menu_tms_travel_form" name="Travels" parent="menu_tms_travels" sequence="1"/>
     <menuitem action="action_tms_waybill_form" id="menu_tms_waybill" parent="menu_tms_travels" sequence="22" groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic"/>
     <menuitem action="open_view_tms_advance_form" id="menu_tms_advance_form" name="Advances" parent="menu_tms_travels" sequence="23"/>
     <menuitem action="fleet.fleet_vehicle_log_fuel_action" id="fuel_vehicle_log_menu" name="Fuel Voucher" parent="menu_tms_travels" sequence="24"/>
@@ -67,68 +67,78 @@
                             <field name="costo_producto" />
                             <field name="sucursal_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" />
                             <field name="lineanegocio" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="tipo_lineanegocio" readonly="1"/>
+                            <field name="tipo_lineanegocio" readonly="1" invisible="1"/>
                             <field name="tipo_negocio" invisible="1"/>
-                            <field name="tarifa_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="tarifa_cliente2" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            
                             <field name="flete_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="employee_id" readonly="1"/>
+                            
                             <field name="framework" invisible="1"/>
+                            <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                         </group>
                         <group>
+                            
+                            <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="employee_id" readonly="1"/>
                             <field name="celular_operador" />
-                            <field name="tipo_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="tipo_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" groups="x_tms.group_travel_admon"/>
+                            <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" groups="x_tms.group_travel_admon"/>
                             <field name="tipo_remolque" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="tipo_carga" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}"/>
+                            <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}" domain="[('tipo_remolque','=',tipo_remolque)]"/>
                             <field name="unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('fleet_type', '=', 'tractor')]"/>
                             <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)], 'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
                             <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
                             <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
-                            <field name="ejes" />
-                            <field name="costo_casetas" />
-                            <field name="kml" />
-                            <field name="com_necesario" />
-                            <field name="presupuesto_creado" />
-                        </group><hr colspan="4"/>
-                        <group colspan="4" string="Rutas">
+                            <field name="ejes" invisible="1"/>
+                            <field name="costo_casetas" invisible="1"/>
+                            <field name="kml" string="Litros/km aproximados"/>
+                            <field name="com_necesario" invisible="1"/>
+                            <field name="presupuesto_creado" invisible="1"/>
+                        </group>
+                        <group colspan="4">
                             <group colspan="4">
                                 <group colspan="4">
                                     <field name="route_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
-                                <group colspan="4" col="4">
+                                <group colspan="4" col="6">
                                     <field name='departure_id' />
                                     <field name="arrival_id"/>
+                                    <field name="tarifa_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
                                 <group col="6" colspan="4">
                                     <field name='modalidad_ruta1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='rendimiento_manual1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
+                                <group col="6" colspan="4">
+                                    <field name='combustible1' />
+                                    <field name='casetas1' />
+                                </group>
                             </group>
                             <group colspan="4">
                                 <group colspan="4">
                                     <field name="route2_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
-                                <group colspan="4" col="4">
+                                <group colspan="4" col="6">
                                     <field name='departure2_id'/>
                                     <field name="arrival2_id"/>
+                                    <field name="tarifa_cliente2" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
                                 <group col="6" colspan="4">
                                     <field name='modalidad_ruta2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
+                                <group col="6" colspan="4">
+                                    <field name='combustible2' />
+                                    <field name='casetas2' />
+                                </group>
                             </group>
                         </group>
-                            <hr colspan="4"/>
                     </group>
 
                     <group colspan="4" string="Servicios y Adecuaciones">
-                        <group col="6" colspan="4">
+                        <group col="6" colspan="4" groups="x_tms.group_travel_admon">
                             <field name="si_seguro" />
                             <field name="condiciones_seguro" attrs="{'invisible':[('si_seguro','!=',True)],'required':[('si_seguro','=',True)]}"/>
                             <field name="cargo_seguro" attrs="{'invisible':[('si_seguro','!=',True)],'required':[('si_seguro','=',True)]}"/>
@@ -147,7 +157,6 @@
                             <field name="des_otros" attrs="{'invisible':[('otros','!=',True)],'required':[('otros','=',True)]}"/>
                         </group>
                     </group>
-                    <hr colspan="4"/>
                     <group colspan="4" string="Generales Chofer">
                         <group col="8" colspan="4">
                             <field name="camisa" />
@@ -173,6 +182,64 @@
 
 
                     <notebook colspan="4">
+                        <page string="Vehicle log fuel">
+                            <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}" >
+                              <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
+                                    <field name='name'/>
+                                    <field name='operating_unit_id'/>
+                                    <field name='employee_id'/>
+                                    <field name='vendor_id'/>
+                                    <field name='vehicle_id'/>
+                                    <field name='product_id'/>
+                                    <field name='product_qty'/>
+                                    <field name='product_uom_id'/>
+                                    <field name='price_total'/>
+                                    <field name='state'/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Advances">
+                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="operating_unit_id" />
+                                    <field name="unit_id" />
+                                    <field name="employee_id" />
+                                    <field name="date" />
+                                    <field name="product_id" />
+                                    <field name="amount" />
+                                    <field name="auto_expense" />
+                                    <field name="paid" />
+                                    <field name="state" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Expense driver factor">
+                            <field name="driver_factor_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_category': 'driver'}" nolabel="1">
+                                <tree>
+                                    <field name="name" />
+                                    <field name="factor_type" />
+                                    <field name="valor" />
+                                    <field name="valor2" />
+                                    <field name="total" />
+                                    <field name="travel_id" invisible="1" />
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Productos" >
+                            <group>
+                                <field name="product" nolabel="1">
+                                    <tree delete="false" create="false" edit="false">
+                                        <field name="product_id" />
+                                        <field name="name" />
+                                        <field name="product_uom_qty" />
+                                        <field name="price_unit" />
+                                        <field name="tax_id" />
+                                        <field name="price_subtotal" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
                         <page string="Pesos" attrs="{'invisible':[('tipo_negocio','!=','granel')]}">
                             <group>
                                 <group string="Peso Origen">
@@ -219,20 +286,7 @@
                                 </group> -->
                             </group>
                         </page>
-                        <page string="Productos" >
-                            <group>
-                                <field name="product" nolabel="1">
-                                    <tree delete="false" create="false" edit="false">
-                                        <field name="product_id" />
-                                        <field name="name" />
-                                        <field name="product_uom_qty" />
-                                        <field name="price_unit" />
-                                        <field name="tax_id" />
-                                        <field name="price_subtotal" />
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
+                        
 
 
                         <page string="Evidencias" >
@@ -318,38 +372,7 @@
                                 <field name="suger_pago" />
                             </group>
                         </page>
-                        <page string="Vehicle log fuel">
-                            <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}" >
-                              <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
-                                    <field name='name'/>
-                                    <field name='operating_unit_id'/>
-                                    <field name='employee_id'/>
-                                    <field name='vendor_id'/>
-                                    <field name='vehicle_id'/>
-                                    <field name='product_id'/>
-                                    <field name='product_qty'/>
-                                    <field name='product_uom_id'/>
-                                    <field name='price_total'/>
-                                    <field name='state'/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Advances">
-                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
-                                <tree>
-                                    <field name="name" />
-                                    <field name="operating_unit_id" />
-                                    <field name="unit_id" />
-                                    <field name="employee_id" />
-                                    <field name="date" />
-                                    <field name="product_id" />
-                                    <field name="amount" />
-                                    <field name="auto_expense" />
-                                    <field name="paid" />
-                                    <field name="state" />
-                                </tree>
-                            </field>
-                        </page>
+                        
                         <page string="Waybills">
                             <group>
                                 <field name="waybill_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1">
@@ -368,18 +391,7 @@
                                 </field>
                             </group>
                         </page>
-                        <page string="Expense driver factor">
-                            <field name="driver_factor_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_category': 'driver'}" nolabel="1">
-                                <tree>
-                                    <field name="name" />
-                                    <field name="factor_type" />
-                                    <field name="valor" />
-                                    <field name="valor2" />
-                                    <field name="total" />
-                                    <field name="travel_id" invisible="1" />
-                                </tree>
-                            </field>
-                        </page>
+                        
                         <page string="History">
                             <field name="event_ids" context="{'default_travel_id':active_id}" nolabel="1"/>
                             <group>
@@ -401,7 +413,7 @@
                                 <group>
                                     <separator colspan="4" string="Fuel Efficiency"/>
                                     <newline/>
-                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="fuel_efficiency_expected" readonly="1"/>
+                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="fuel_efficiency_expected"/>
                                     <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="fuel_efficiency_travel"/>
                                     <field name="fuel_efficiency_extraction"/>
                                 </group>
