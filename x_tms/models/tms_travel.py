@@ -1577,7 +1577,7 @@ class TmsTravel(models.Model):
             if x.factor_type != 'costokm':
                 x.if_diferentes == False
 
-    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2')
+    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2','flete_cliente')
     def _onchange_cal_total_factor(self):
         for x in self.driver_factor_ids:
             if x.factor_type == 'costo_fijo':
