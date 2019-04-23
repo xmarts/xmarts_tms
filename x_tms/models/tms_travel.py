@@ -143,9 +143,16 @@ class TmsTravel(models.Model):
         string='Route Distance (mi./km)')
     fuel_efficiency_expected = fields.Float()
 
-    @api.onchange('unit_id')
+    @api.onchange('unit_id','rendimiento_manual1','rendimiento_manual2','kmlmuno','kmlm2')
     def _onchange_fuel_efficiency_expected(self):
-        self.fuel_efficiency_expected = self.unit_id.efficiency
+        if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+            self.fuel_efficiency_expected = self.unit_id.efficiency
+        if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+            self.fuel_efficiency_expected = (self.unit_id.efficiency + self.kmlmuno)/2
+        if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+            self.fuel_efficiency_expected = (self.unit_id.efficiency + self.kmlm2)/2
+        if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+            self.fuel_efficiency_expected = (self.kmlm2 + self.kmlmuno)/2
 
     kit_id = fields.Many2one(
         'tms.unit.kit', 'Kit')
