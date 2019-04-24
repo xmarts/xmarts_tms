@@ -271,6 +271,8 @@ class TmsTravel(models.Model):
     tipo_negocio = fields.Selection([('flete','Flete'),('granel','Granel'),('km','Por Kilometro')], string="Tipo", related='lineanegocio.tipo', required=True)
     tipo_lineanegocio = fields.Char('Tipo de linea de negocio', related='lineanegocio.name', store=True)
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
+    flete_1 = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente1')
+    flete_2 = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente2')
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -375,21 +377,53 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'km':
                 reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance)) + (reg.tarifa_cliente2 * (self.route2_id.distance))
 
+    @api.one
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
+    def _compute_flete_cliente1(self):
+        for reg in self:
+            if self.lineanegocio.tipo == 'granel':
+                if reg.facturar_con_cliente == 'Peso convenido':
+                    reg.flete_cliente = ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente) 
+                elif reg.facturar_con_cliente == 'Peso origen':
+                    reg.flete_cliente = ((reg.peso_origen_total / 1000) * reg.tarifa_cliente)
+                elif reg.facturar_con_cliente == 'Peso destino':
+                    reg.flete_cliente = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente)
+            if self.lineanegocio.tipo == 'flete':
+                reg.flete_cliente = reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'km':
+                reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance))
+
+    @api.one
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
+    def _compute_flete_cliente2(self):
+        for reg in self:
+            if self.lineanegocio.tipo == 'granel':
+                if reg.facturar_con_cliente == 'Peso convenido':
+                    reg.flete_1 = ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente) 
+                elif reg.facturar_con_cliente == 'Peso origen':
+                    reg.flete_1 = ((reg.peso_origen_total / 1000) * reg.tarifa_cliente)
+                elif reg.facturar_con_cliente == 'Peso destino':
+                    reg.flete_1 = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente)
+            if self.lineanegocio.tipo == 'flete':
+                reg.flete_1 = reg.tarifa_cliente
+            if self.lineanegocio.tipo == 'km':
+                reg.flete_1 = (reg.tarifa_cliente * (self.route_id.distance))
+
     
     @api.onchange('route_id','route2_id')
     def onchange_flete_cliente(self):
         for reg in self:
             if self.lineanegocio.tipo == 'granel':
                 if reg.facturar_con_cliente == 'Peso convenido':
-                    reg.flete_cliente = (reg.peso_convenido_total / 1000) * reg.tarifa_cliente
+                    reg.flete_2 = (reg.peso_convenido_total / 1000) * reg.tarifa_cliente2
                 elif reg.facturar_con_cliente == 'Peso origen':
-                    reg.flete_cliente = (reg.peso_origen_total / 1000) * reg.tarifa_cliente
+                    reg.flete_2 = (reg.peso_origen_total / 1000) * reg.tarifa_cliente2
                 elif reg.facturar_con_cliente == 'Peso destino':
-                    reg.flete_cliente = (reg.peso_destino_total / 1000) * reg.tarifa_cliente
+                    reg.flete_2 = (reg.peso_destino_total / 1000) * reg.tarifa_cliente2
             if self.lineanegocio.tipo == 'flete':
-                reg.flete_cliente = reg.tarifa_cliente
+                reg.flete_2 = reg.tarifa_cliente2
             if self.lineanegocio.tipo == 'km':
-                reg.flete_cliente = reg.tarifa_cliente * (self.route_id.distance + self.route2_id.distance)
+                reg.flete_2 = reg.tarifa_cliente2 * (self.route_id.distance + self.route2_id.distance)
 
     @api.onchange('driver_factor_ids')
     def onchange_flete_cliente_anticipo(self):
