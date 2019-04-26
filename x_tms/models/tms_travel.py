@@ -373,29 +373,13 @@ class TmsTravel(models.Model):
                 elif reg.facturar_con_cliente == 'Peso destino':
                     reg.flete_cliente = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente) + ((reg.peso_destino_total / 1000) * reg.tarifa_cliente2)
             if self.lineanegocio.tipo == 'flete':
-                reg.flete_cliente = reg.tarifa_cliente
+                reg.flete_cliente = reg.tarifa_cliente + reg.tarifa_cliente2
             if self.lineanegocio.tipo == 'km':
                 reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance)) + (reg.tarifa_cliente2 * (self.route2_id.distance))
 
     @api.one
     @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
     def _compute_flete_cliente1(self):
-        for reg in self:
-            if self.lineanegocio.tipo == 'granel':
-                if reg.facturar_con_cliente == 'Peso convenido':
-                    reg.flete_cliente = ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente) 
-                elif reg.facturar_con_cliente == 'Peso origen':
-                    reg.flete_cliente = ((reg.peso_origen_total / 1000) * reg.tarifa_cliente)
-                elif reg.facturar_con_cliente == 'Peso destino':
-                    reg.flete_cliente = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente)
-            if self.lineanegocio.tipo == 'flete':
-                reg.flete_cliente = reg.tarifa_cliente
-            if self.lineanegocio.tipo == 'km':
-                reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance))
-
-    @api.one
-    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
-    def _compute_flete_cliente2(self):
         for reg in self:
             if self.lineanegocio.tipo == 'granel':
                 if reg.facturar_con_cliente == 'Peso convenido':
@@ -408,6 +392,22 @@ class TmsTravel(models.Model):
                 reg.flete_1 = reg.tarifa_cliente
             if self.lineanegocio.tipo == 'km':
                 reg.flete_1 = (reg.tarifa_cliente * (self.route_id.distance))
+
+    @api.one
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
+    def _compute_flete_cliente2(self):
+        for reg in self:
+            if self.lineanegocio.tipo == 'granel':
+                if reg.facturar_con_cliente == 'Peso convenido':
+                    reg.flete_2 = ((reg.peso_convenido_total / 1000) * reg.tarifa_cliente2) 
+                elif reg.facturar_con_cliente == 'Peso origen':
+                    reg.flete_2 = ((reg.peso_origen_total / 1000) * reg.tarifa_cliente2)
+                elif reg.facturar_con_cliente == 'Peso destino':
+                    reg.flete_2 = ((reg.peso_destino_total / 1000) * reg.tarifa_cliente2)
+            if self.lineanegocio.tipo == 'flete':
+                reg.flete_2 = reg.tarifa_cliente2
+            if self.lineanegocio.tipo == 'km':
+                reg.flete_2 = (reg.tarifa_cliente2 * (self.route2_id.distance))
 
     
     @api.onchange('route_id','route2_id')
