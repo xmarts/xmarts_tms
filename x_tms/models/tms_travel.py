@@ -830,10 +830,19 @@ class TmsTravel(models.Model):
     def action_draft(self):
         for rec in self:
             rec.state = "draft"
+    odometro_inicial = fields.Float("Odometro Inicial")
+    odometro_final = fields.Float("Odometro Final")
+
+    @api.onchange('unit_id','route_id','route2_id')
+    def _onchange_odo_inicial(self):
+        for rec in self:
+            rec.odometro_inicial = rec.unit_id.odometer
+            rec.odometro_final = rec.unit_id.odometer + rec.distance_driver
 
     @api.multi
     def action_progress(self):
         for rec in self:
+
             if not self.subpedido_id:
                 raise ValidationError(
                     _('Aun no hay un pedido asociado'))
@@ -858,6 +867,8 @@ class TmsTravel(models.Model):
                     _('The unit or driver are already in use!'))
             rec.state = "progress"
             rec.date_start_real = fields.Datetime.now()
+            rec.odometro_inicial = rec.unit_id.odometer
+            rec.odometro_final = rec.unit_id.odometer + rec.distance_driver
             rec.message_post('Travel Dispatched')
 
 
