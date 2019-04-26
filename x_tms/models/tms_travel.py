@@ -1157,7 +1157,7 @@ class TmsTravel(models.Model):
                     suma += z.cost_cash
         self.casetas1 = suma
 
-    @api.onchange('route_id','ejes')
+    @api.onchange('route2_id','ejes')
     def _onchange_costo_casetas2(self):
         suma = 0
         for x in self.route2_id.tollstation_ids:
