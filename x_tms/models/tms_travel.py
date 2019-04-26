@@ -1268,7 +1268,7 @@ class TmsTravel(models.Model):
                 if self.kml > 0:
                     self.update({'combustible2':self.route2_id.distance/self.kml})
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','','','','','','')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2')
     def _onchange_com_necesario(self):
         if self.route2_id:
             if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
