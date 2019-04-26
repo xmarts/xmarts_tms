@@ -1392,10 +1392,13 @@ class TmsTravel(models.Model):
 
     lavado = fields.Boolean(string="Lavado de camión", default=False)
     cargo_lavado = fields.Float(string="Cargo de lavado")
+
     plastico = fields.Boolean(string="Plastico del camión", default=False)
     cargo_plastico = fields.Float(string="Cargo por plastico")
+
     fumigado = fields.Boolean(string="Fumigado", default=False)
     cargo_fumigado = fields.Float(string="Cargo por fumigado")
+
     otros = fields.Boolean(string="Otros", default=False)
     cargo_otros = fields.Float(string="Cargo por otros servicios")
     des_otros = fields.Text(string="Especificaiones")
@@ -1407,16 +1410,16 @@ class TmsTravel(models.Model):
 
     chaleco = fields.Boolean(string="Chaleco",default=False)
     chaleco_color = fields.Char(string="Color")
-    cargo_chaleco = fields.Float(string="Cargo por ")
+    cargo_chaleco = fields.Float(string="Cargo por chaleco")
 
     guantes = fields.Boolean(string="Guantes",default=False)
     tipo_guantes = fields.Char(string="Tipo de guantes")
-    cargo_guantes = fields.Float(string="Cargo por ")
+    cargo_guantes = fields.Float(string="Cargo por guantes")
     
     pantalon = fields.Boolean(string="Pantalon",default=False)
     pantalon_sua = fields.Char(string="SUA")
     pantalon_mat = fields.Char(string="Material de pantalon")
-    cargo_pantalon = fields.Float(string="Cargo por ")
+    cargo_pantalon = fields.Float(string="Cargo por pantalon")
 
     @api.multi
     def create_sale_order(self):
