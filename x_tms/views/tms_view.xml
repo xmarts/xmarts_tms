@@ -89,11 +89,13 @@
                             <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)], 'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
                             <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
                             <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
-                            <field name="ejes" invisible="1"/>
+                            <field name="ejes" invisible="0"/>
                             <field name="costo_casetas" invisible="1"/>
                             <field name="kml" string="Litros/km aproximados"/>
                             <field name="com_necesario" invisible="1"/>
                             <field name="presupuesto_creado" invisible="1"/>
+                            <field name="odometro_inicial" invisible="1"/>
+                            <field name="odometro_final" invisible="1"/>
                         </group>
                         <group colspan="4">
                             <group colspan="4">
@@ -120,17 +122,17 @@
                                 <group colspan="4">
                                     <field name="route2_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
-                                <group colspan="4" col="6">
+                                <group colspan="4" col="6" attrs="{'invisible':[('route2_id','=',False)]}">
                                     <field name='departure2_id'/>
                                     <field name="arrival2_id"/>
                                     <field name="tarifa_cliente2" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
-                                <group col="6" colspan="4">
+                                <group col="6" colspan="4" attrs="{'invisible':[('route2_id','=',False)]}">
                                     <field name='modalidad_ruta2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                     <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                                 </group>
-                                <group col="6" colspan="4">
+                                <group col="6" colspan="4" attrs="{'invisible':[('route2_id','=',False)]}">
                                     <field name='combustible2' />
                                     <field name='casetas2' />
                                     <field name='flete_2' />
@@ -204,6 +206,7 @@
                             <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
                                 <tree>
                                     <field name="name" />
+                                    <field name="notes" invisible="1" />
                                     <field name="operating_unit_id" />
                                     <field name="unit_id" />
                                     <field name="employee_id" />
