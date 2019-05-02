@@ -938,7 +938,6 @@ class TmsTravel(models.Model):
               'product_id': x.product_id,
               'product_qty': x.product_qty,
               'state': 'approved',
-              'currency_id': self.env.user.company_id.currency_id.id,
             }
             line_ids += [lines]
         res['value'].update({
@@ -1429,6 +1428,7 @@ class TmsTravel(models.Model):
           'product_id': comb.id,
           'product_qty': vale,
           'employee_id': self.employee_id.id,
+          'currency_id': self.env.user.company_id.currency_id.id,
           'state':'draft'
         }
         line_ids += [line]
