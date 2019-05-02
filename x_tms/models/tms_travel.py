@@ -1137,11 +1137,17 @@ class TmsTravel(models.Model):
         for x in self.route_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         for x in self.route2_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.costo_casetas = suma
 
     @api.one
