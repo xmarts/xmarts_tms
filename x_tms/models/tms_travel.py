@@ -1156,7 +1156,10 @@ class TmsTravel(models.Model):
         for x in self.route_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.casetas1 = suma
 
     @api.one
@@ -1165,7 +1168,10 @@ class TmsTravel(models.Model):
         for x in self.route2_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.casetas2 = suma
 
     @api.onchange('route_id','route2_id','ejes')
@@ -1174,11 +1180,17 @@ class TmsTravel(models.Model):
         for x in self.route_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         for x in self.route2_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.costo_casetas = suma
 
     @api.onchange('route_id','ejes')
@@ -1187,7 +1199,10 @@ class TmsTravel(models.Model):
         for x in self.route_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.casetas1 = suma
 
     @api.onchange('route2_id','ejes')
@@ -1196,13 +1211,16 @@ class TmsTravel(models.Model):
         for x in self.route2_id.tollstation_ids:
             for z in x.cost_per_axis_ids:
                 if z.axis == self.ejes:
-                    suma += z.cost_cash
+                    if x.credit == True:
+                        suma += z.cost_credit
+                    if not x.credit == True:
+                        suma += z.cost_cash
         self.casetas2 = suma
 
     
 
     kml = fields.Float(string="KM/L", compute="_comp_fuel_kml")
-    com_necesario = fields.Float(string="Combustible necesario", compute="_com_com_necesario")
+    com_necesario = fields.Float(string="Combustible necesario")
     combustible1 = fields.Float(string="Combustible necesario ruta 1", compute="_com_com_necesario1")
     combustible2 = fields.Float(string="Combustible necesario ruta 2", compute="_com_com_necesario2")
     viaje_gm = fields.Char(string="Viaje GM")
