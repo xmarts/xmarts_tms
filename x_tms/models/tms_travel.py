@@ -1245,40 +1245,40 @@ class TmsTravel(models.Model):
     def _comp_fuel_kml(self):
         self.kml = self.unit_id.efficiency
 
-    @api.one
-    def _com_com_necesario(self):
-        if self.route2_id:
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
-                if self.kmlmuno > 0 and self.kml <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
-                if self.kmlmuno <= 0 and self.kml > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kml)})
-                if self.kmlmuno > 0 and self.kml > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)})
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
-                if self.kml > 0 and self.kmlm2 <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml)})
-                if self.kml <= 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
-                if self.kml > 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)})
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
-                if self.kmlmuno > 0 and self.kmlm2 <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
-                if self.kmlmuno <= 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
-                if self.kmlmuno > 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)})
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
-                if self.kml > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
-        else:
-            if self.rendimiento_manual1 == True:
-                if self.kmlmuno > 0:
-                    self.update({'com_necesario':self.route_id.distance/self.kmlmuno})
-            if self.rendimiento_manual1 != True:
-                if self.kml > 0:
-                    self.update({'com_necesario':self.route_id.distance/self.kml})
+    # @api.one
+    # def _com_com_necesario(self):
+    #     if self.route2_id:
+    #         if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+    #             if self.kmlmuno > 0 and self.kml <= 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kmlmuno)
+    #             if self.kmlmuno <= 0 and self.kml > 0:
+    #                 self.com_necesario = (self.route2_id.distance/self.kml)
+    #             if self.kmlmuno > 0 and self.kml > 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+    #         if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+    #             if self.kml > 0 and self.kmlm2 <= 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kml)
+    #             if self.kml <= 0 and self.kmlm2 > 0:
+    #                 self.com_necesario = (self.route2_id.distance/self.kmlm2)
+    #             if self.kml > 0 and self.kmlm2 > 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+    #         if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+    #             if self.kmlmuno > 0 and self.kmlm2 <= 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kmlmuno)
+    #             if self.kmlmuno <= 0 and self.kmlm2 > 0:
+    #                 self.com_necesario = (self.route2_id.distance/self.kmlm2)
+    #             if self.kmlmuno > 0 and self.kmlm2 > 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+    #         if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+    #             if self.kml > 0:
+    #                 self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+    #     else:
+    #         if self.rendimiento_manual1 == True:
+    #             if self.kmlmuno > 0:
+    #                 self.com_necesario = self.route_id.distance/self.kmlmuno
+    #         if self.rendimiento_manual1 != True:
+    #             if self.kml > 0:
+    #                 self.com_necesario = self.route_id.distance/self.kml
 
     @api.one
     def _com_com_necesario1(self):
