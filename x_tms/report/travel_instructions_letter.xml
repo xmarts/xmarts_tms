@@ -146,12 +146,12 @@
             <t t-foreach="docs" t-as="o">
                 <t t-call="report.external_layout">
                     <div class="page">
-                        <table class="table table-striped" style="border: solid gray 1px; font-size: 12px;">
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
                             <tr>
                                 <th width="20%">OPERADOR:</th>
                                 <td width="30%"><span t-field="o.employee_id"/></td>
                                 <th width="20%">NO. DE LIQUIDACIÓN:</th>
-                                <td width="30%"/>
+                                <td width="30%"><span t-field="o.expense_id.name" /></td>
                             </tr>
                             <tr>
                                 <th>CTA. BANCARIA:</th>
@@ -169,7 +169,7 @@
                                 <th>KMS. SALIDA</th>
                                 <td><span t-esc="'%.2f'% o.odometro_inicial"/></td>
                                 <th>FECHA LIQUIDACIÓN:</th>
-                                <td/>
+                                <td><span t-field="o.expense_id.date"/></td>
                             </tr>
                             <tr>
                                 <th>KMS. LLEGADA:</th>
@@ -184,7 +184,7 @@
                                 <td><span t-if="o.peso_convenido_total > 0" t-esc="'%.2f'% o.peso_convenido_total"/></td>
                             </tr>
                         </table>
-                        <table class="table table-striped" style="border: solid gray 1px; font-size: 11px;">
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
                             <tr>
                                 <th colspan="12" class="text-center" style="background: lightgray;">ITINERARIO</th>
                             </tr>
@@ -252,8 +252,8 @@
                                 <!--<td><span t-field="o.distance_empty"/></td>-->
                                 <td colspan="6"/>
                                 <td colspan="6">
-                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 12px;">
-                                        <tr><th colspan="2" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
+                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr><th colspan="2" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
                                         <tr>
                                             <th colspan="6">CONCEPTO</th>
                                             <!--<th colspan="2">IMPORTE</th>-->
@@ -298,10 +298,10 @@
                                 </td>
                             </tr>
                         </table>
-                        <table class="table table-striped" style="border: solid gray 1px; font-size: 12px;">
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
                             <tr>
-                                <th class="text-center" style="background: lightgray; font-size: 16px;" width="50%">GASTOS A CREDITO</th>
-                                <th class="text-center" style="background: lightgray; font-size: 16px; border-left: solid gray 1px;" width="50%">GASTOS AUTORIZADOS</th>
+                                <th class="text-center" style="background: lightgray; font-size: 12px;" width="50%">GASTOS A CREDITO</th>
+                                <th class="text-center" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">GASTOS AUTORIZADOS</th>
                             </tr>
                             <tr>
                                 <td>
@@ -317,6 +317,32 @@
                                             <td>$<span t-esc="'%.2f'% x.price_subtotal"/></td>
                                             <td>$<span t-esc="'%.2f'% x.price_total"/></td>
                                             <t t-set="sumco" t-value="sumco + x.price_total"/>
+                                        </tr>
+                                        <t t-set="sumcas" t-value="0"/>
+                                        <t t-foreach="o.route_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="z">
+                                                <t t-if="z.axis == o.ejes">
+                                                    <t t-if="x.credit" >
+                                                        <t t-set="sumcas" t-value="sumcas + z.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + z.cost_credit"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-foreach="o.route2_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="z">
+                                                <t t-if="z.axis == o.ejes">
+                                                    <t t-if="x.credit == True">
+                                                        <t t-set="sumcas" t-value="sumcas + z.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + z.cost_credit"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <tr t-if="sumcas > 0">
+                                            <td>Costo a credito de las casetas</td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
                                         </tr>
                                         <tr>
                                             <th width="60%">TOTAL</th>
@@ -367,9 +393,9 @@
                                 </td>
                             </tr>
                         </table>
-                        <table class="table table-striped" style="border: solid gray 1px; width: 50%;  font-size: 12px;">
+                        <table class="table table-striped" style="border: solid gray 1px; width: 50%; font-size: 10px;">
                             <tr>
-                                <th class="text-center" style="background: lightgray;" width="50%">CALCULO DE LIQUIDACIÓN</th>
+                                <th class="text-center" style="background: lightgray; font-size: 12px;" width="50%">CALCULO DE LIQUIDACIÓN</th>
                             </tr>
                             <tr>
                                 <td/>
