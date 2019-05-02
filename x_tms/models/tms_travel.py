@@ -1325,35 +1325,35 @@ class TmsTravel(models.Model):
         if self.route2_id:
             if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
                 if self.kmlmuno > 0 and self.kml <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                    self.com_necesario = (self.route_id.distance/self.kmlmuno)
                 if self.kmlmuno <= 0 and self.kml > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kml)})
+                    self.com_necesario = (self.route2_id.distance/self.kml)
                 if self.kmlmuno > 0 and self.kml > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)})
+                    self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
             if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
                 if self.kml > 0 and self.kmlm2 <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml)})
+                    self.com_necesario = (self.route_id.distance/self.kml)
                 if self.kml <= 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                    self.com_necesario = (self.route2_id.distance/self.kmlm2)
                 if self.kml > 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)})
+                    self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
             if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
                 if self.kmlmuno > 0 and self.kmlm2 <= 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno)})
+                    self.com_necesario = (self.route_id.distance/self.kmlmuno)
                 if self.kmlmuno <= 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route2_id.distance/self.kmlm2)})
+                    self.com_necesario = (self.route2_id.distance/self.kmlm2)
                 if self.kmlmuno > 0 and self.kmlm2 > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)})
+                    self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
             if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
                 if self.kml > 0:
-                    self.update({'com_necesario':(self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)})
+                    self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
         else:
             if self.rendimiento_manual1 == True:
                 if self.kmlmuno > 0:
-                    self.update({'com_necesario':self.route_id.distance/self.kmlmuno})
+                    self.com_necesario = self.route_id.distance/self.kmlmuno
             if self.rendimiento_manual1 != True:
                 if self.kml > 0:
-                    self.update({'com_necesario':self.route_id.distance/self.kml})
+                    self.com_necesario = self.route_id.distance/self.kml
 
     @api.onchange('route_id','route2_id')
     def _onchange_routes(self):
@@ -1381,7 +1381,7 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id','com_necesario')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id')
     def _onchange_route_unit(self):
         vale = 0
         if self.route2_id:
