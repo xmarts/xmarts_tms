@@ -457,6 +457,33 @@ class TmsTravel(models.Model):
                   'state':'draft'
                 }
             line_ids += [line]
+
+
+            product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
+            suma = 0
+            for x in self.route_id.tollstation_ids:
+                for z in x.cost_per_axis_ids:
+                    if z.axis == self.ejes:
+                        if not x.credit == True:
+                            suma += z.cost_cash
+            for x in self.route2_id.tollstation_ids:
+                for z in x.cost_per_axis_ids:
+                    if z.axis == self.ejes:
+                        if not x.credit == True:
+                            suma += z.cost_cash
+            line = {
+              'operating_unit_id': self.operating_unit_id.id,
+              'unit_id': self.unit_id.id,
+              'product_id': product_caseta_obj.id,
+              'employee_id': self.employee_id.id,
+              'amount': suma,
+              'currency_id': self.env.user.company_id.currency_id,
+              'date':datetime.today(),
+              'notes': "Monto generado automaticamente para pagar casetas sin opcion de credito activa",
+              'state':'draft'
+            }
+            line_ids += [line]
+
             res['value'].update({
                 'advance_ids': line_ids,
             })
