@@ -1381,7 +1381,7 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id'.'com_necesario')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id','com_necesario')
     def _onchange_route_unit(self):
         vale = 0
         if self.route2_id:
