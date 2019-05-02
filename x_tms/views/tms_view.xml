@@ -93,9 +93,11 @@
                             <field name="costo_casetas" invisible="1"/>
                             <field name="kml" string="Litros/km aproximados"/>
                             <field name="com_necesario" invisible="1"/>
+                            <field name="com_solicitado" invisible="1"/>
                             <field name="presupuesto_creado" invisible="1"/>
                             <field name="odometro_inicial" invisible="1"/>
                             <field name="odometro_final" invisible="1"/>
+                            <field name="expense_id" invisible="1"/>
                         </group>
                         <group colspan="4">
                             <group colspan="4">
@@ -198,6 +200,7 @@
                                     <field name='product_qty'/>
                                     <field name='product_uom_id'/>
                                     <field name='price_total'/>
+                                    <field name='currency_id'/>
                                     <field name='state'/>
                                 </tree>
                             </field>
