@@ -921,7 +921,7 @@ class TmsTravel(models.Model):
             rec.message_post('Travel Finished')
 
 
-    @api.depends('route_id','fuel_log_ids','com_necesario','combustible1','combustible2')
+    @api.depends('route_id','fuel_log_ids')
     @api.onchange('route_id')
     def _onchange_ruta_fuel(self):
         line_ids = []
@@ -1381,7 +1381,7 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id'.'com_necesario')
     def _onchange_route_unit(self):
         vale = 0
         if self.route2_id:
