@@ -1690,6 +1690,70 @@ class TmsTravel(models.Model):
                 if x.if_diferentes == True:
                     x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
 
+    com_solicitado = fields.Float()
+
+    @api.onchange('fuel_log_ids','route_id','route2_id')
+    def _onchange_com_soli(self):
+        tot_comb = 0
+        for l in self.fuel_log_ids:
+            tot_comb += l.product_qty
+        self.com_solicitado = tot_comb
+
+
+    @api.one
+    def _compute_com_soli(self):
+        tot_comb = 0
+        for l in self.fuel_log_ids:
+            tot_comb += l.product_qty
+        self.com_solicitado = tot_comb
+
+    
+    @api.multi
+    def write(self, vals):
+        necesario = 0
+        res = super(TmsTravel, self).write(vals)
+        if self.route2_id:
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                if self.kmlmuno > 0 and self.kml <= 0:
+                    necesario = (self.route_id.distance/self.kmlmuno)
+                if self.kmlmuno <= 0 and self.kml > 0:
+                    necesario = (self.route2_id.distance/self.kml)
+                if self.kmlmuno > 0 and self.kml > 0:
+                    necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                if self.kml > 0 and self.kmlm2 <= 0:
+                    necesario = (self.route_id.distance/self.kml)
+                if self.kml <= 0 and self.kmlm2 > 0:
+                    necesario = (self.route2_id.distance/self.kmlm2)
+                if self.kml > 0 and self.kmlm2 > 0:
+                    necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                    necesario = (self.route_id.distance/self.kmlmuno)
+                if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                    necesario = (self.route2_id.distance/self.kmlm2)
+                if self.kmlmuno > 0 and self.kmlm2 > 0:
+                    necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                if self.kml > 0:
+                    necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        else:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    necesario = self.route_id.distance/self.kmlmuno
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    necesario = self.route_id.distance/self.kml
+        print(vals.get('com_solicitado'))
+        print(necesario)
+        if vals.get('com_solicitado') > necesario:
+            raise UserError(
+                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(necesario) + ' Litros)'))
+        return res
+
+    @api.model
+    def _get_com_necesario(self, vals):
+        return vals.get('com_necesario')
 
 
 class trafitec_slitrack_registro(models.Model):
