@@ -31,22 +31,31 @@ def calculate_litres_per_km(from_date, to_date, serial):
             database=database
         )
     authenticate = geo.authenticate()
-    xxx = geo.get('Device', engineVehicleIdentificationNumber=serial)[0]
-    odometer_records = geo.get('StatusData', 
-                                  diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
+    print(serial)
+    xxx = None
+    try:
+        xxx = geo.get('Device', engineVehicleIdentificationNumber=serial)[0]
+    except IndexError:
+        xxx = None
+    if xxx != None:
+        odometer_records = geo.get('StatusData', 
+                                      diagnosticSearch=dict(id='DiagnosticOdometerAdjustmentId'),
+                                      deviceSearch=dict(id=xxx['id']),
+                                      toDate=to_date,
+                                      fromDate=from_date)
+        fuel_records = geo.get('StatusData',
+                                  diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
                                   deviceSearch=dict(id=xxx['id']),
                                   toDate=to_date,
                                   fromDate=from_date)
-    fuel_records = geo.get('StatusData',
-                              diagnosticSearch=dict(id='DiagnosticDeviceTotalFuelId'),
-                              deviceSearch=dict(id=xxx['id']),
-                              toDate=to_date,
-                              fromDate=from_date)
-    if len(odometer_records) == 0 or len(fuel_records) == 0:
-        raise Exception('Device has not travelled in this time period or no fuel usage reported')
-    odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
-    fuel_change = fuel_records[-1]['data'] - fuel_records[0]['data']
-    return fuel_change / (odometer_change / 1000)
+        if len(odometer_records) == 0 or len(fuel_records) == 0:
+            raise Exception('Device has not travelled in this time period or no fuel usage reported')
+        odometer_change = odometer_records[-1]['data'] - odometer_records[0]['data']
+        fuel_change = fuel_records[-1]['data'] - fuel_records[0]['data']
+        if fuel_change == 0 or odometer_change == 0:
+            return 0
+        else:
+            return fuel_change / (odometer_change / 1000)
 
 class tmstiposcarga(models.Model):
     _name = 'tms.tipos.carga'
@@ -425,14 +434,15 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'km':
                 reg.flete_2 = reg.tarifa_cliente2 * (self.route_id.distance + self.route2_id.distance)
 
-    @api.onchange('driver_factor_ids')
+    @api.onchange('driver_factor_ids','com_necesario')
     def onchange_flete_cliente_anticipo(self):
-        if self.driver_factor_ids:
-            line_ids = []
-            res = {'value':{
-                    'advance_ids':[],
-                }
+        line_ids = []
+        res = {'value':{
+                'advance_ids':[],
             }
+        }
+        if self.driver_factor_ids:
+            
             comb = self.env['product.product'].search([('tms_product_category','=','real_expense')], limit=1)
             total = 0
             for x in self.driver_factor_ids:
@@ -459,18 +469,19 @@ class TmsTravel(models.Model):
             line_ids += [line]
 
 
-            product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
-            suma = 0
-            for x in self.route_id.tollstation_ids:
-                for z in x.cost_per_axis_ids:
-                    if z.axis == self.ejes:
-                        if not x.credit == True:
-                            suma += z.cost_cash
-            for x in self.route2_id.tollstation_ids:
-                for z in x.cost_per_axis_ids:
-                    if z.axis == self.ejes:
-                        if not x.credit == True:
-                            suma += z.cost_cash
+        product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
+        suma = 0
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    if not x.credit == True:
+                        suma += z.cost_cash
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    if not x.credit == True:
+                        suma += z.cost_cash
+        if suma > 0:
             line = {
               'operating_unit_id': self.operating_unit_id.id,
               'unit_id': self.unit_id.id,
@@ -484,10 +495,10 @@ class TmsTravel(models.Model):
             }
             line_ids += [line]
 
-            res['value'].update({
-                'advance_ids': line_ids,
-            })
-            return res
+        res['value'].update({
+            'advance_ids': line_ids,
+        })
+        return res
 
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')
@@ -965,6 +976,12 @@ class TmsTravel(models.Model):
     @api.model
     def create(self, values):
         travel = super(TmsTravel, self).create(values)
+        print(values.get('com_solicitado'))
+        print(values.get('com_necesario'))
+        if values.get('com_solicitado') > values.get('com_necesario'):
+            raise UserError(
+                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(values.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(values.get('com_necesario')) + ' Litros)'))
+        
         if not travel.operating_unit_id.travel_sequence_id:
             raise ValidationError(_(
                 'You need to define the sequence for travels in base %s' %
@@ -1424,6 +1441,7 @@ class TmsTravel(models.Model):
         comb = self.env['product.product'].search([('tms_product_category','=','fuel'),('es_combustible','=',True)], limit=1)
         line = {
           'operating_unit_id': self.operating_unit_id.id,
+          'vendor_id': self.operating_unit_id.default_provider_fuel.id,
           'vehicle_id': self.unit_id.id,
           'product_id': comb.id,
           'product_qty': vale,
@@ -1745,10 +1763,10 @@ class TmsTravel(models.Model):
                 if self.kml > 0:
                     necesario = self.route_id.distance/self.kml
         print(vals.get('com_solicitado'))
-        print(necesario)
-        if vals.get('com_solicitado') > necesario:
+        print(round(necesario, 2))
+        if vals.get('com_solicitado') > round(necesario, 2):
             raise UserError(
-                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(necesario) + ' Litros)'))
+                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + str(round(necesario, 2)) + ' Litros)'))
         return res
 
     @api.model

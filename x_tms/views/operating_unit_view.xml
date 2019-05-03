@@ -27,6 +27,9 @@
                 <group string="Products for TMS">
                     <field name="ieps_product_id" required="1"/>
                 </group>
+                <group string="Proveedor Combustible">
+                    <field name="default_provider_fuel"/>
+                </group>
             </field>
         </field>
     </record>

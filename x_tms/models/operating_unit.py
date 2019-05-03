@@ -38,3 +38,4 @@ class OperatingUnit(models.Model):
     ieps_product_id = fields.Many2one(
         'product.product', string='IEPS Product')
     credit_limit = fields.Float()
+    default_provider_fuel = fields.Many2one('res.partner', string="Proveedor de combustible por default")
