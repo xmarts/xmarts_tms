@@ -13,6 +13,7 @@ class TmsAdvance(models.Model):
     _description = 'Money advance payments for Travel expenses'
     _order = "name desc, date desc"
 
+    adelanto_factor = fields.Boolean(string="Es adelando de salario?", default=False)
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit', required=True)
     name = fields.Char(string='Advance Number')

@@ -34,6 +34,7 @@
                                 <field name="ticket_number" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}"/>
                                 <field name="currency_id" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))], 'required': True}" groups="base.group_multi_currency"/>
                                 <field name="prepaid_id" invisible="1"/>
+                                <field name="permite_exceso" invisible="0" groups="x_tms.group_travel_admon_fuel"/>
                             </group>
                         </group>
                         <group>
@@ -61,6 +62,10 @@
                                     <group>
                                         <field name="invoice_id" readonly='1'/>
                                         <field name="invoice_paid" readonly='1'/>
+                                    </group>
+                                    <group col="2">
+                                        <field name="folio_ficha" readonly='0'/>
+                                        <field name="adj_ficha" readonly='0'/>
                                     </group>
                                     <group>
                                         <field name="expense_id" readonly="1" attrs="{'invisible': [('expense_id', '=', False)]}"/>

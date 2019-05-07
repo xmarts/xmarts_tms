@@ -31,4 +31,9 @@
          <field name="implied_ids" eval="[(4, ref('base.group_erp_manager'))]"/>
          <field name="category_id" ref="tms_group_category"/>
     </record>
+    <record id="group_travel_admon_fuel" model="res.groups">
+        <field name="name">Group Fuel Administration</field>
+         <field name="implied_ids" eval="[(4, ref('base.group_erp_manager'))]"/>
+         <field name="category_id" ref="tms_group_category"/>
+    </record>
 </odoo>

@@ -157,11 +157,31 @@ class FleetVehicleLogFuel(models.Model):
                 rec.special_tax_amount = (
                     rec.price_total - rec.price_subtotal - rec.tax_amount)
 
+
+    permite_exceso = fields.Boolean(string="Permitir Excedente de combustible?", default=False)
+    folio_ficha = fields.Char(string="Ficha de deposito")
+    adj_ficha = fields.Binary(string="Comprobante")
+
     @api.multi
     def action_approved(self):
         for rec in self:
-            rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
-            rec.state = 'approved'
+            vales = self.env['fleet.vehicle.log.fuel'].search([('travel_id','=',self.travel_id.id),('state','in',['approved','confirmed','closed'])])
+            sumva = 0
+            for x in vales:
+                sumva += x.product_qty
+            sumva += self.product_qty
+            if sumva > self.travel_id.com_necesario:
+                if self.permite_exceso != True:
+                    raise ValidationError(
+                    _("Al aprovar este vale excede el combustible necesario ("+str(self.travel_id.com_necesario)+" litros), solicite la autorizacion para exceso de combustible."))
+                else:
+                    rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
+                    rec.state = 'approved'
+            else:
+                rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
+                rec.state = 'approved'
+            # rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
+            # rec.state = 'approved'
 
     @api.multi
     def action_cancel(self):

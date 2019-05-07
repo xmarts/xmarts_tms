@@ -389,7 +389,7 @@ class TmsExpense(models.Model):
             rec.amount_advance = 0
             for travel in rec.travel_ids:
                 for advance in travel.advance_ids:
-                    if advance.payment_move_id:
+                    if advance.payment_move_id and advance.adelanto_factor:
                         rec.amount_advance += advance.amount
 
     @api.depends('travel_ids', 'expense_line_ids')
@@ -472,10 +472,11 @@ class TmsExpense(models.Model):
             else:
                 travels = self.env['tms.travel'].search(
                     [('expense_id', '=', rec.id)])
-                travels.write({
-                    'expense_id': False,
-                    'state': 'done'
-                })
+                for x in travels:
+                    x.write({
+                        'expense_id': False,
+                        'state': 'done'
+                    })
                 advances = self.env['tms.advance'].search(
                     [('expense_id', '=', rec.id)])
                 advances.write({
@@ -879,31 +880,30 @@ class TmsExpense(models.Model):
                     fuel_log.name +
                     '\n State: ' + fuel_log.state))
             else:
-                fuel_expense = rec.expense_line_ids.create({
-                    'name': _(
-                        "Fuel voucher: ") + str(fuel_log.name),
-                    'travel_id': travel.id,
-                    'expense_id': rec.id,
-                    'line_type': 'fuel',
-                    'product_id': fuel_log.product_id.id,
-                    'product_qty': fuel_log.product_qty,
-                    'product_uom_id': (
-                        fuel_log.product_id.uom_id.id),
-                    'unit_price': fuel_log.price_total,
-                    'is_invoice': fuel_log.invoice_paid,
-                    'invoice_id': fuel_log.invoice_id.id,
-                    'control': True,
-                    'partner_id': fuel_log.vendor_id.id or False,
-                    'date': fuel_log.date,
-                    'invoice_number': fuel_log.ticket_number,
-                })
-                if fuel_log.expense_control:
-                    fuel_expense.name = fuel_expense.product_id.name
+                # fuel_expense = rec.expense_line_ids.create({
+                #     'name': _(
+                #         "Fuel voucher: ") + str(fuel_log.name),
+                #     'travel_id': travel.id,
+                #     'expense_id': rec.id,
+                #     'line_type': 'fuel',
+                #     'product_id': fuel_log.product_id.id,
+                #     'product_qty': fuel_log.product_qty,
+                #     'product_uom_id': (
+                #         fuel_log.product_id.uom_id.id),
+                #     'unit_price': fuel_log.price_total,
+                #     'is_invoice': fuel_log.invoice_paid,
+                #     'invoice_id': fuel_log.invoice_id.id,
+                #     'control': True,
+                #     'partner_id': fuel_log.vendor_id.id or False,
+                #     'date': fuel_log.date,
+                #     'invoice_number': fuel_log.ticket_number,
+                # })
+                # if fuel_log.expense_control:
+                #     fuel_expense.name = fuel_expense.product_id.name
                 fuel_log.write({
                     'state': 'closed',
                     'expense_id': rec.id
                 })
-        return fuel_expense
 
     @api.multi
     def create_salary_line(self, travel):
@@ -1035,39 +1035,40 @@ class TmsExpense(models.Model):
     def get_driver_salary(self, travel):
         for rec in self:
             driver_salary = 0.0
-            for waybill in travel.waybill_ids:
-                income = 0.0
-                for line in waybill.waybill_line_ids:
-                    if line.product_id.apply_for_salary:
-                        income += line.price_subtotal
-                if waybill.currency_id.name == 'USD':
-                    income = (income *
-                              self.env.user.company_id.expense_currency_rate)
-                if waybill.driver_factor_ids:
-                    for factor in waybill.driver_factor_ids:
-                        driver_salary += factor.get_amount(
-                            weight=waybill.product_weight,
-                            distance=waybill.distance_route,
-                            distance_real=waybill.distance_real,
-                            qty=waybill.product_qty,
-                            volume=waybill.product_volume,
-                            income=income,
-                            employee=rec.employee_id)
-                elif travel.driver_factor_ids:
-                    for factor in travel.driver_factor_ids:
-                        driver_salary += factor.get_amount(
-                            weight=waybill.product_weight,
-                            distance=waybill.distance_route,
-                            distance_real=waybill.distance_real,
-                            qty=waybill.product_qty,
-                            volume=waybill.product_volume,
-                            income=income,
-                            employee=rec.employee_id)
-                else:
-                    raise ValidationError(_(
-                        'Oops! You have not defined a Driver factor in '
-                        'the Travel or the Waybill\nTravel: %s' %
-                        travel.name))
+            for factor in travel.driver_factor_ids:
+                driver_salary += factor.total
+            #     income = 0.0
+            #     for line in waybill.waybill_line_ids:
+            #         if line.product_id.apply_for_salary:
+            #             income += line.price_subtotal
+            #     if waybill.currency_id.name == 'USD':
+            #         income = (income *
+            #                   self.env.user.company_id.expense_currency_rate)
+            #     if waybill.driver_factor_ids:
+            #         for factor in waybill.driver_factor_ids:
+            #             driver_salary += factor.get_amount(
+            #                 weight=waybill.product_weight,
+            #                 distance=waybill.distance_route,
+            #                 distance_real=waybill.distance_real,
+            #                 qty=waybill.product_qty,
+            #                 volume=waybill.product_volume,
+            #                 income=income,
+            #                 employee=rec.employee_id)
+            #     elif travel.driver_factor_ids:
+            #         for factor in travel.driver_factor_ids:
+            #             driver_salary += factor.get_amount(
+            #                 weight=waybill.product_weight,
+            #                 distance=waybill.distance_route,
+            #                 distance_real=waybill.distance_real,
+            #                 qty=waybill.product_qty,
+            #                 volume=waybill.product_volume,
+            #                 income=income,
+            #                 employee=rec.employee_id)
+            #     else:
+            #         raise ValidationError(_(
+            #             'Oops! You have not defined a Driver factor in '
+            #             'the Travel or the Waybill\nTravel: %s' %
+            #             travel.name))
             return driver_salary
 
     @api.multi

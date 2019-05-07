@@ -463,8 +463,9 @@ class TmsTravel(models.Model):
                   'amount': total * 0.2,
                   'currency_id': self.env.user.company_id.currency_id,
                   'date':datetime.today(),
-                  'notes': "Monto generado automaticamente calculando el 20 porciento del flete del cliente",
-                  'state':'draft'
+                  'notes': "Monto generado automaticamente calculando el 20 porciento del factor del operador",
+                  'state':'draft',
+                  'adelanto_factor': True,
                 }
             line_ids += [line]
 
@@ -1730,7 +1731,7 @@ class TmsTravel(models.Model):
     def write(self, vals):
         necesario = 0
         res = super(TmsTravel, self).write(vals)
-        if self.route2_id:
+        if vals.get('route2_id'):
             if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
                 if self.kmlmuno > 0 and self.kml <= 0:
                     necesario = (self.route_id.distance/self.kmlmuno)
