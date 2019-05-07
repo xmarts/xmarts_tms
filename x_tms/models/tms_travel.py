@@ -1731,7 +1731,7 @@ class TmsTravel(models.Model):
     def write(self, vals):
         necesario = 0
         res = super(TmsTravel, self).write(vals)
-        if vals.get('route2_id'):
+        if self.route2_id:
             if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
                 if self.kmlmuno > 0 and self.kml <= 0:
                     necesario = (self.route_id.distance/self.kmlmuno)
