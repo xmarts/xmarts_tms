@@ -188,6 +188,10 @@ class TmsExpense(models.Model):
     fuel_efficiency_real = fields.Float(
     )
 
+    cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
+    n_transaccion = fields.Char(string="Número de Transacción", related="payment_move_id.n_transaccion")
+    adjunto_compro = fields.Binary(string="Comprobante", related="payment_move_id.adjunto_compro")
+    filename = fields.Char('file name', related="payment_move_id.filename")
     @api.depends('travel_ids')
     def _compute_income_km(self):
         for rec in self:

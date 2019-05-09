@@ -57,6 +57,7 @@
         'views/tms_waybill_view.xml',
         'views/tms_extradata_view.xml',
         'views/account_invoice_view.xml',
+        'views/account_move_view.xml',
         'views/tms_route_tollstation_view.xml',
         'views/fleet_vehicle_engine_view.xml',
         'views/tms_route_note_view.xml',

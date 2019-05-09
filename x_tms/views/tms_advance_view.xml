@@ -60,6 +60,7 @@
                     <button name="action_confirm" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
                     <button name="action_authorized" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
                     <field name="state" statusbar_visible="draft,approved,authorized,confirmed,cancel,closed" widget="statusbar"/>
+                    <button name="action_test_read" icon="fa-thumbs-up" class="oe_highlight" string="Test" type="object"/>
                 </header>
                 <sheet>
                     <h1>
@@ -99,6 +100,10 @@
                                     <field name="paid"/>
                                     <field name="expense_id"/>
                                     <field name="payment_move_id"/>
+                                    <field name="cuenta_banc" readonly="1"/>
+                                    <field name="n_transaccion" readonly="1"/>
+                                    <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
+                                    <field name="filename" invisible="1"/>
                                 </group>
                             </page>
                         </notebook>

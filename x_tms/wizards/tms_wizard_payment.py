@@ -18,6 +18,10 @@ class TmsWizardPayment(models.TransientModel):
     date = fields.Date(required=True, default=fields.Date.context_today)
     notes = fields.Text()
 
+    cuenta_banc = fields.Char(string="Cuenta Bancaria")
+    n_transaccion = fields.Char(string="Número de Transacción")
+    adjunto_compro = fields.Binary(string="Comprobante")
+    filename = fields.Char('file name')
     @api.depends('journal_id')
     def _compute_amount_total(self):
         for rec in self:
@@ -159,6 +163,10 @@ class TmsWizardPayment(models.TransientModel):
     @api.multi
     def create_moves_and_reconciles(self, move, active_ids):
         move_id = self.env['account.move'].create(move)
+        move_id.cuenta_banc = self.cuenta_banc
+        move_id.n_transaccion = self.n_transaccion
+        move_id.adjunto_compro = self.adjunto_compro
+        move_id.filename= self.filename
         move_id.post()
         journal_id = active_ids.mapped('move_id.journal_id')
         for move_line in move_id.line_ids.filtered(

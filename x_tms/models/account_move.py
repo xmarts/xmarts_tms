@@ -2,11 +2,16 @@
 # Copyright 2017, Jarsa Sistemas, S.A. de C.V.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import api, models
+from odoo import api, models, fields
 
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
+
+    cuenta_banc = fields.Char(string="Cuenta Bancaria")
+    n_transaccion = fields.Char(string="Número de Transacción")
+    adjunto_compro = fields.Binary(string="Comprobante")
+    filename = fields.Char('file name')
 
     @api.multi
     def unlink(self):

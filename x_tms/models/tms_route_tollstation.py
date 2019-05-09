@@ -10,6 +10,7 @@ class TmsRouteTollstation(models.Model):
     _name = 'tms.route.tollstation'
 
     name = fields.Char(required=True)
+    subname = fields.Char(compute="compute_subname")
     place_id = fields.Many2one('tms.place', string="Place", required=True)
     partner_id = fields.Many2one('res.partner', string="Partner")
     route_ids = fields.Many2many('tms.route', string="Routes")
@@ -19,6 +20,11 @@ class TmsRouteTollstation(models.Model):
         'tollstation_id',
         string='Cost per Axis')
     active = fields.Boolean(default=True)
+
+    @api.one
+    def compute_subname(self):
+        self.subname = str(self.name).upper()
+
 
     # @api.model
     # def _get_field_axis(self):

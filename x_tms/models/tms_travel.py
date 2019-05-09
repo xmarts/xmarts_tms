@@ -9,6 +9,9 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError, UserError
 import random
 import mygeotab
+import tempfile
+import base64
+import os
 
 # username = 'javier.ramirez@sli.mx'
 # password = 'Javier0318*'
@@ -117,11 +120,118 @@ class tms_lineanegocio(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', 'El nombre no se puede repetir.'),
     ]
+
+
+class tms_cruce_casetas(models.Model):
+    """docstring for tms_cruce_casetas"""
+    _name = "tms.cruce.casetas"
+    _description = "Tabla para comparar el cruce de las casetas del viaje"
+    name = fields.Char(string="Cruce")
+    unidad = fields.Char(string="Unidad")
+    fecha = fields.Char(string="Fecha")
+    hora = fields.Char(string="Hora")
+    caseta = fields.Char(string="Caseta")
+    caseta_id = fields.Many2one("tms.route.tollstation", string="Caseta", compute="_compute_caseta")
+    travel_id = fields.Many2one("tms.travel", string="Viaje")
+    travel2_id = fields.Many2one("tms.travel", string="Viaje")
+    travel3_id = fields.Many2one("tms.travel", string="Viaje")
+
+    @api.one
+    def _compute_caseta(self):
+        objcaseta = self.env['tms.route.tollstation'].search([])
+        for x in objcaseta:
+            nom = str(x.name).upper()
+            print(nom)
+            if nom == str(self.caseta):
+                self.caseta_id = x.id
+
 class TmsTravel(models.Model):
     _name = 'tms.travel'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
     _description = 'Travel'
     _order = "date desc"
+
+    file_casetas = fields.Binary(string="Archivo de casetas.")
+    filename = fields.Char('file name')
+
+    cruce_casetas = fields.One2many("tms.cruce.casetas","travel_id")
+    cruce_casetas_planeado = fields.One2many("tms.cruce.casetas","travel2_id")
+    cruce_casetas_faltantes = fields.One2many("tms.cruce.casetas","travel_id")
+
+
+
+    @api.onchange('file_casetas')
+    def onchange_file_casetas(self):
+        if self.file_casetas:
+            data = base64.decodestring(self.file_casetas)
+            fobj = tempfile.NamedTemporaryFile(delete=False)
+            fname = fobj.name
+            fobj.write(data)
+            fobj.close()
+            image = open(fname,"r")
+            cont = 0
+            line_ids = []
+            res = {'value':{
+                    'cruce_casetas':[],
+                }
+            }
+            for x in image:
+                if cont>0:
+                    lista = x.split("|")
+                    nom = lista[4]
+                    print(nom)
+                    cc = 0
+                    for z in nom:
+                        if z.isdigit():
+                            nom = nom[0:cc-1]
+                            break
+                        cc += 1
+
+
+                    if self.unit_id.name == lista[1]:
+                        line = {
+                          'name': lista[0],
+                          'unidad': lista[1],
+                          'fecha': lista[2],
+                          'hora': lista[3],
+                          'caseta': nom,
+                          'travel_id': self.id,
+                        }
+                        line_ids += [line]
+                cont += 1
+            res['value'].update({
+                'cruce_casetas': line_ids,
+            })
+            return res
+    @api.onchange('route_id','route2_id','file_casetas')
+    def compute_casetas_plan(self):
+        line_ids = []
+        res = {'value':{
+                'cruce_casetas_planeado':[],
+            }
+        }
+        for x in self.route_id.tollstation_ids:
+            if x.credit == True:
+                line = {
+                  'name': self.name + " - " + x.name,
+                  'unidad': self.unit_id.name,
+                  'caseta': str(x.name).upper(),
+                  'travel2_id': self.id,
+                }
+                line_ids += [line]
+        for x in self.route2_id.tollstation_ids:
+            if x.credit == True:
+                line = {
+                  'name': self.name + " - " + x.name,
+                  'unidad': self.unit_id.name,
+                  'caseta': str(x.name).upper(),
+                  'travel2_id': self.id,
+                }
+                line_ids += [line]
+        res['value'].update({
+            'cruce_casetas_planeado': line_ids,
+        })
+        return res
 
     waybill_ids = fields.Many2many(
         'tms.waybill', string='Waybills')
