@@ -221,7 +221,7 @@ class TmsTravel(models.Model):
             for x in self.route_id.tollstation_ids:
                 if x.credit == True:
                     line = {
-                      'name': self.name + " - " + x.name,
+                      'name':"Ruta - " + x.name,
                       'unidad': self.unit_id.name,
                       'caseta': str(x.name).upper(),
                       'travel2_id': self.id,
@@ -231,7 +231,7 @@ class TmsTravel(models.Model):
             for x in self.route2_id.tollstation_ids:
                 if x.credit == True:
                     line = {
-                      'name': self.name + " - " + x.name,
+                      'name':"Ruta - " + x.name,
                       'unidad': self.unit_id.name,
                       'caseta': str(x.name).upper(),
                       'travel2_id': self.id,
