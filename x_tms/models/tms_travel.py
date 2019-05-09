@@ -156,7 +156,7 @@ class TmsTravel(models.Model):
 
     cruce_casetas = fields.One2many("tms.cruce.casetas","travel_id")
     cruce_casetas_planeado = fields.One2many("tms.cruce.casetas","travel2_id")
-    cruce_casetas_faltantes = fields.One2many("tms.cruce.casetas","travel_id")
+    cruce_casetas_faltantes = fields.One2many("tms.cruce.casetas","travel3_id")
 
 
 
@@ -203,6 +203,13 @@ class TmsTravel(models.Model):
                 'cruce_casetas': line_ids,
             })
             return res
+        else:
+            line_ids = []
+            res = {'value':{
+                    'cruce_casetas':[],
+                }
+            }
+            return res
     @api.onchange('route_id','route2_id','file_casetas')
     def compute_casetas_plan(self):
         line_ids = []
@@ -210,24 +217,26 @@ class TmsTravel(models.Model):
                 'cruce_casetas_planeado':[],
             }
         }
-        for x in self.route_id.tollstation_ids:
-            if x.credit == True:
-                line = {
-                  'name': self.name + " - " + x.name,
-                  'unidad': self.unit_id.name,
-                  'caseta': str(x.name).upper(),
-                  'travel2_id': self.id,
-                }
-                line_ids += [line]
-        for x in self.route2_id.tollstation_ids:
-            if x.credit == True:
-                line = {
-                  'name': self.name + " - " + x.name,
-                  'unidad': self.unit_id.name,
-                  'caseta': str(x.name).upper(),
-                  'travel2_id': self.id,
-                }
-                line_ids += [line]
+        if self.route_id:
+            for x in self.route_id.tollstation_ids:
+                if x.credit == True:
+                    line = {
+                      'name': self.name + " - " + x.name,
+                      'unidad': self.unit_id.name,
+                      'caseta': str(x.name).upper(),
+                      'travel2_id': self.id,
+                    }
+                    line_ids += [line]
+        if self.route2_id:
+            for x in self.route2_id.tollstation_ids:
+                if x.credit == True:
+                    line = {
+                      'name': self.name + " - " + x.name,
+                      'unidad': self.unit_id.name,
+                      'caseta': str(x.name).upper(),
+                      'travel2_id': self.id,
+                    }
+                    line_ids += [line]
         res['value'].update({
             'cruce_casetas_planeado': line_ids,
         })
