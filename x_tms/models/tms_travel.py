@@ -135,6 +135,7 @@ class tms_cruce_casetas(models.Model):
     travel_id = fields.Many2one("tms.travel", string="Viaje")
     travel2_id = fields.Many2one("tms.travel", string="Viaje")
     travel3_id = fields.Many2one("tms.travel", string="Viaje")
+    marcada = fields.Boolean(default=False)
 
     @api.one
     def _compute_caseta(self):
@@ -160,7 +161,7 @@ class TmsTravel(models.Model):
 
 
 
-    @api.onchange('file_casetas')
+    @api.onchange('file_casetas','unit_id')
     def onchange_file_casetas(self):
         if self.file_casetas:
             data = base64.decodestring(self.file_casetas)
@@ -210,8 +211,9 @@ class TmsTravel(models.Model):
                 }
             }
             return res
+
     @api.onchange('route_id','route2_id','file_casetas')
-    def compute_casetas_plan(self):
+    def onchange_casetas_plan(self):
         line_ids = []
         res = {'value':{
                 'cruce_casetas_planeado':[],
@@ -241,6 +243,37 @@ class TmsTravel(models.Model):
             'cruce_casetas_planeado': line_ids,
         })
         return res
+
+    @api.onchange('cruce_casetas','cruce_casetas_planeado','file_casetas')
+    def onchange_casetas_real(self):
+        for x in self.cruce_casetas:
+            if x.marcada != True:
+                for z in self.cruce_casetas_planeado:
+                    if z.marcada != True:
+                        if x.caseta_id == z.caseta_id:
+                            x.marcada = True
+                            z.marcada = True
+        line_ids = []
+        res = {'value':{
+                'cruce_casetas_faltantes':[],
+            }
+        }
+        for y in self.cruce_casetas_planeado:
+            if y.marcada != True:
+                
+                line = {
+                  'name':y.name,
+                  'unidad': self.unit_id.name,
+                  'caseta': y.caseta,
+                  'travel3_id': self.id,
+                }
+                line_ids += [line]
+        res['value'].update({
+            'cruce_casetas_faltantes': line_ids,
+        })
+        return res
+
+
 
     waybill_ids = fields.Many2many(
         'tms.waybill', string='Waybills')

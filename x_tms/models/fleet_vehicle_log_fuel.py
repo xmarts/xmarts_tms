@@ -74,7 +74,10 @@ class FleetVehicleLogFuel(models.Model):
         string='Prepaid',
         compute="_compute_prepaid"
     )
-
+    tax_amount2 = fields.Float(string='Taxes',compute="_compute_taxes2")
+    price_total2 = fields.Float(string='Total', compute="_compute_total2")
+    price_subtotal2 = fields.Float(
+        string="Subtotal", compute='_compute_price_subtotal2')
     @api.depends('vendor_id')
     def _compute_prepaid(self):
         for rec in self:
@@ -104,6 +107,14 @@ class FleetVehicleLogFuel(models.Model):
             # if rec.tax_amount > 0:
             #     rec.price_subtotal = rec.tax_amount / 0.16
 
+    @api.multi
+    @api.depends('tax_amount')
+    def _compute_price_subtotal2(self):
+        for rec in self:
+            rec.price_subtotal2 = (rec.price_unit * rec.product_qty) - rec.special_tax_amount
+            # if rec.tax_amount > 0:
+            #     rec.price_subtotal = rec.tax_amount / 0.16
+
     @api.onchange('tax_amount','product_qty','product_id')
     def _onchange_price_subtotal(self):
         for rec in self:
@@ -125,6 +136,14 @@ class FleetVehicleLogFuel(models.Model):
                 tax += t.amount
             rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
 
+    @api.multi
+    def _compute_taxes2(self):
+        for rec in self:
+            tax = 0
+            for t in rec.product_id.supplier_taxes_id:
+                tax += t.amount
+            rec.tax_amount2 = (rec.price_subtotal2) * (tax/100)
+
     @api.onchange('product_id','tax_amount','product_qty')
     def _onchange_taxes(self):
         for rec in self:
@@ -141,6 +160,14 @@ class FleetVehicleLogFuel(models.Model):
             # for t in rec.product_id.supplier_taxes_id:
             #     tax += t.amount
             # rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
+    @api.multi
+    def _compute_total2(self):
+        for rec in self:
+            rec.price_total2 = rec.tax_amount2 + rec.price_subtotal2
+            # tax = 0
+            # for t in rec.product_id.supplier_taxes_id:
+            #     tax += t.amount
+            # rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
 
     @api.onchange('price_total','tax_amount','price_subtotal','product_qty')
     def _onchange_total(self):
@@ -152,10 +179,11 @@ class FleetVehicleLogFuel(models.Model):
     @api.depends('price_subtotal', 'tax_amount', 'price_total')
     def _compute_special_tax_amount(self):
         for rec in self:
-            rec.special_tax_amount = 0
-            if rec.price_subtotal and rec.price_total and rec.tax_amount > 0:
-                rec.special_tax_amount = (
-                    rec.price_total - rec.price_subtotal - rec.tax_amount)
+            rec.special_tax_amount = rec.product_qty * 0.3521
+            # rec.special_tax_amount = 0
+            # if rec.price_subtotal and rec.price_total and rec.tax_amount > 0:
+            #     rec.special_tax_amount = (
+            #         rec.price_total - rec.price_subtotal - rec.tax_amount)
 
 
     permite_exceso = fields.Boolean(string="Permitir Excedente de combustible?", default=False)

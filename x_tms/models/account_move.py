@@ -8,7 +8,8 @@ from odoo import api, models, fields
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    cuenta_banc = fields.Char(string="Cuenta Bancaria")
+    #cuenta_banc = fields.Char(string="Cuenta Bancaria")
+    cuenta_b = fields.Many2one("res.partner.bank", string="Cuenta Bancaria")
     n_transaccion = fields.Char(string="Número de Transacción")
     adjunto_compro = fields.Binary(string="Comprobante")
     filename = fields.Char('file name')

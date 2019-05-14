@@ -444,7 +444,7 @@
                                 <field name="filename" invisible="1"/>
                                 
                             </group>
-                            <group colspan="4">
+                            <group colspan="4" invisible="1">
                                 <field name="cruce_casetas" nolabel="1">
                                     <tree  string="Cruces">
                                         <field name="name"/>
@@ -453,11 +453,25 @@
                                         <field name="hora"/>
                                         <field name="caseta"/>
                                         <field name="caseta_id"/>
+                                        <field name="marcada"/>
                                         <field name="travel_id" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>
                             <group colspan="4">
+                                <field name="cruce_casetas_faltantes" nolabel="1">
+                                    <tree  string="Cruces">
+                                        <field name="name"/>
+                                        <field name="unidad"/>
+                                        <!-- <field name="fecha"/>
+                                        <field name="hora"/> -->
+                                        <field name="caseta"/>
+                                        <field name="caseta_id"/>
+                                        <field name="travel2_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <group colspan="4" invisible="1">
                                 <field name="cruce_casetas_planeado" nolabel="1">
                                     <tree  string="Cruces">
                                         <field name="name"/>
@@ -466,6 +480,7 @@
                                         <field name="hora"/> -->
                                         <field name="caseta"/>
                                         <field name="caseta_id"/>
+                                        <field name="marcada"/>
                                         <field name="travel2_id" invisible="1"/>
                                     </tree>
                                 </field>

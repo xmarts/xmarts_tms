@@ -13,7 +13,8 @@ class TmsAdvance(models.Model):
     _description = 'Money advance payments for Travel expenses'
     _order = "name desc, date desc"
 
-    cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
+    #cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
+    cuenta_b = fields.Many2one("res.partner.bank", string="Cuenta Bancaria", related="payment_move_id.cuenta_b")
     n_transaccion = fields.Char(string="Número de Transacción", related="payment_move_id.n_transaccion")
     adjunto_compro = fields.Binary(string="Comprobante", related="payment_move_id.adjunto_compro")
     filename = fields.Char('file name', related="payment_move_id.filename")

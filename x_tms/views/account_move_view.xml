@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="cuenta_banc"/>
+                <field name="cuenta_b"/>
                 <field name="n_transaccion"/>
                 <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
                 <field name="filename" invisible="1"/>

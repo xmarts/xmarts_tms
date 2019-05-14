@@ -156,7 +156,7 @@
                                     <field name='paid'/>
                                     <field name='payment_move_id'/>
                                     
-                                    <field name="cuenta_banc" readonly="1"/>
+                                    <field name="cuenta_b" readonly="1"/>
                                     <field name="n_transaccion" readonly="1"/>
                                     <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
                                     <field name="filename" invisible="1"/>
