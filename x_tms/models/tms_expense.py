@@ -11,6 +11,14 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
+class ExpenseDiferences(models.Model):
+    """docstring for ExpenseDiferences"""
+    _name = "expense.diference"
+    name = fields.Char(string="Concepto")
+    tipo = fields.Selection([('reembolso','Reembolso'),('sobrante','Cambio')], string="Tipo")
+    valor = fields.Float(string="Valor")
+    expense_id = fields.Many2one("tms.expense")
+
 class TmsExpense(models.Model):
     _name = 'tms.expense'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
@@ -18,10 +26,11 @@ class TmsExpense(models.Model):
     _order = 'name desc'
 
     name = fields.Char(readonly=True)
+    expense_dif_ids = fields.One2many("expense.diference", "expense_id")
     operating_unit_id = fields.Many2one(
         'operating.unit', string="Operating Unit", required=True)
     employee_id = fields.Many2one(
-        'hr.employee', 'Driver', required=True,)
+        'hr.employee', 'Driver', readonly=True, related="unit_id.employee_id")
     travel_ids = fields.Many2many('tms.travel',string='Travels')
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
@@ -301,6 +310,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'refund':
                     rec.amount_refund += line.price_total
+            for line in rec.expense_dif_ids:
+                if line.tipo == 'reembolso':
+                    rec.amount_refund += line.valor
 
     @api.depends('expense_line_ids')
     def _compute_amount_other_income(self):
@@ -325,6 +337,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'salary_discount':
                     rec.amount_salary_discount += line.price_total
+            for line in rec.expense_dif_ids:
+                if line.tipo != 'reembolso':
+                    rec.amount_salary_discount += (line.valor * -1)
 
     @api.depends('expense_line_ids')
     def _compute_amount_loan(self):
@@ -349,6 +364,7 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'real_expense':
                     rec.amount_real_expense += line.price_subtotal
+            
 
     @api.depends('travel_ids', 'expense_line_ids')
     def _compute_amount_subtotal_real(self):

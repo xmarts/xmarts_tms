@@ -142,7 +142,6 @@ class tms_cruce_casetas(models.Model):
         objcaseta = self.env['tms.route.tollstation'].search([])
         for x in objcaseta:
             nom = str(x.name).upper()
-            print(nom)
             if nom == str(self.caseta):
                 self.caseta_id = x.id
 
@@ -163,7 +162,7 @@ class TmsTravel(models.Model):
 
     @api.onchange('file_casetas','unit_id')
     def onchange_file_casetas(self):
-        if self.file_casetas:
+        if self.file_casetas and self.unit_id:
             data = base64.decodestring(self.file_casetas)
             fobj = tempfile.NamedTemporaryFile(delete=False)
             fname = fobj.name
@@ -180,7 +179,6 @@ class TmsTravel(models.Model):
                 if cont>0:
                     lista = x.split("|")
                     nom = lista[4]
-                    print(nom)
                     cc = 0
                     for z in nom:
                         if z.isdigit():
@@ -588,6 +586,10 @@ class TmsTravel(models.Model):
 
     @api.onchange('driver_factor_ids','com_necesario')
     def onchange_flete_cliente_anticipo(self):
+        for x in self.advance_ids:
+            l = []
+            l.append(x)
+            print(l)
         line_ids = []
         res = {'value':{
                 'advance_ids':[],

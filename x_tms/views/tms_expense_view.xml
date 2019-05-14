@@ -46,7 +46,7 @@
                         <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
                         <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
                         <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="employee_id"/>
+                        <field name="employee_id"/>
                         <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
                     </group>
                     <notebook>
@@ -129,6 +129,16 @@
                         </page>
                         <page string="Fuel log Vouchers">
                             <field colspan="4" name="fuel_log_ids" nolabel="1" readonly="1"/>
+                        </page>
+                        <page string="Diferencia de gastos">
+                            <field colspan="4" name="expense_dif_ids" nolabel="1">
+                                <tree string="" editable="bottom">
+                                    <field invisible="1" name="expense_id"/>
+                                    <field name="name"/>
+                                    <field name="tipo"/>
+                                    <field name="valor"/>
+                                </tree>
+                            </field>
                         </page>
                         <page string="Loans">
                             <field colspan="4" name="loan_ids" nolabel="1" attrs="{'readonly':[('state','in',('confirmed'))]}">
