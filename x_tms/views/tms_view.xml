@@ -6,8 +6,8 @@
 
 
     <!-- Menu Solicitud de Transporte -->
-    <!-- <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
-    <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/> -->
+    <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
+    <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/>
 
 
     <!-- Menu Viajes -->
@@ -19,354 +19,12 @@
 
     <menuitem action="open_view_tms_travel_template_form" id="menu_tms_travel_template_form" name="Plantilla de viaje" parent="menu_tms_travels" sequence="26"/>
 
-
+    
     <!-- Menu Administracion -->
     <menuitem id="menu_tms_admin" name="Administración" parent="menu_tms" sequence="3"/>
     <menuitem action="fleet.fleet_vehicle_odometer_action" id="tms_fleet_vehicle_odometer_menu" parent="menu_tms_admin" name="Units Odometers" sequence="33"/>
     <menuitem action="action_tms_expense_loan_form" id="hr_menu_tms_expense_loan" parent="menu_tms_admin" sequence="32" />
     <menuitem action="action_tms_expense_form" id="menu_tms_expense" parent="menu_tms_admin" sequence="31"/>
-
-
-
-    <record id="view_tms_travel_form" model="ir.ui.view">
-        <field name="name">tms.travel.form</field>
-        <field name="model">tms.travel</field>
-
-        <field name="sequence">10</field>
-        <field name="arch" type="xml">
-            <form string="Travels">
-                <header>
-                    <button name="action_progress" icon="fa-thumbs-up" type="object"
-                            string="Dispatch" states="draft" groups="x_tms.group_traffic,x_tms.group_expenses"
-                            class="oe_highlight oe_read_only"/>
-                    <button name="action_done" icon="fa-check-square" type="object"
-                            string="Finish" states="progress" groups="x_tms.group_traffic,x_tms.group_expenses"
-                            class="oe_highlight oe_read_only"/>
-                    <button name="action_cancel" icon="fa-times" type="object"
-                            string="Cancel" states="draft,progress" groups="x_tms.group_traffic,x_tms.group_expenses" class="oe_read_only"/>
-                    <button name="action_draft" icon="fa-reply" type="object"
-                            string="Set to draft" states="done,cancel" groups="x_tms.group_traffic,x_tms.group_expenses" class="oe_read_only" />
-                    <button name="create_sale_order" icon="fa-check-square" type="object"
-                            string="Crear Presupuesto" class="oe_highlight oe_read_only" attrs="{'invisible':[('presupuesto_creado','=',True)]}"/>
-                    <field name="state" widget="statusbar"/>
-                </header>
-                <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <label class="oe_inline" style="font-size:30px;" string="Travel - " attrs="{'invisible':[('name','=', False)]}"/>
-                            <field name="name" readonly="1"/>
-                        </h1>
-                    </div>
-                    <group>
-                        <group>
-                            <field name="viaje_gm" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="fecha_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="subpedido_id" readonly="1"/>
-                            <field name="cliente_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="costo_producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="sucursal_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="lineanegocio" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="tipo_lineanegocio" readonly="1"/>
-                            <field name="tipo_negocio" invisible="1"/>
-                            <field name="tarifa_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="flete_cliente" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                        </group>
-                        <group>
-                            <field name="celular_operador" />
-                            <field name="tipo_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="operating_unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="tipo_remolque" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="kit_id" attrs="{'readonly':[('state','in',('progress','done','closed'))]}"/>
-                            <field name="unit_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('fleet_type', '=', 'tractor')]"/>
-                            <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)], 'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
-                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
-                            <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'readonly':[('state','in',('progress','done', 'closed'))],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
-                            <field name="ejes" />
-                            <field name="costo_casetas" />
-                            <field name="kml" />
-                            <field name="com_necesario" />
-                            <field name="presupuesto_creado" />
-                        </group>
-                        <group>
-                            <field name="date" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="user_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name="employee_id" readonly="1"/>
-                            <field name="framework"/>
-                        </group>
-                        <group colspan="4">
-                            <field name="route_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='ruta_vacia1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='rendimiento_manual1' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                        </group>
-                        <group>
-                            <field name='departure_id' />
-                        </group>
-                        <group>
-                            <field name="arrival_id"/>
-                        </group>
-                        <group colspan="4">
-                            <field name="route2_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='ruta_vacia2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='rendimiento_manual2' attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                            <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                        </group>
-                        <group>
-                            <field name='departure2_id'/>
-                        </group>
-                        <group>
-                            <field name="arrival2_id"/>
-                        </group>
-                    </group>
-                    <notebook colspan="4">
-                        <page string="Pesos" attrs="{'invisible':[('tipo_negocio','!=','granel')]}">
-                            <group>
-                                <group string="Peso Origen">
-                                    <field name="peso_origen_remolque_1" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_origen_remolque_2" attrs="{'invisible':[('tipo_remolque','!=','doble')],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_origen_total" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                </group>
-                                <group string="Peso Destino">
-                                    <field name="peso_destino_remolque_1" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_destino_remolque_2" attrs="{'invisible':[('tipo_remolque','!=','doble')],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_destino_total" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_autorizado" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                </group>
-                                <group string="Peso Convenido">
-                                    <field name="peso_convenido_remolque_1" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_convenido_remolque_2" attrs="{'invisible':[('tipo_remolque','!=','doble')],'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                    <field name="peso_convenido_total" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group string="Merma">
-                                    <field name="facturar_con" invisible="1"/>
-                                    <field name="facturar_con_cliente"/>
-                                    <field name="excedente_merma"/>
-                                    <field name="merma_kg"/>
-                                    <field name="merma_pesos"/>
-                                    <field name="merma_permitida_kg"/>
-                                    <field name="merma_permitida_pesos"/>
-                                    <field name="merma_cobrar_kg"/>
-                                    <field name="merma_cobrar_pesos"/>
-
-                                </group>
-                                <!-- <group string="Comisión">
-                                    <field name="comision_linea"/>
-                                    <field name="regla_comision"/>
-                                    <field name="comision_calculada"/>
-                                    <field name="motivo"/>
-                                    <field name="porcent_comision"/>
-                                    <field name="cant_especifica"/>
-                                    <field name="maniobras"/>
-                                    <field name="regla_maniobra"/>
-                                    <field name="pronto_pago"/>
-
-                                </group> -->
-                            </group>
-                        </page>
-                        <page string="Productos" >
-                            <group>
-                                <field name="product" nolabel="1">
-                                    <tree delete="false" create="false" edit="false">
-                                        <field name="product_id" />
-                                        <field name="name" />
-                                        <field name="product_uom_qty" />
-                                        <field name="price_unit" />
-                                        <field name="tax_id" />
-                                        <field name="price_subtotal" />
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
-
-
-                        <page string="Evidencias" >
-                            <group>
-                                <field name="evidencias_id" nolabel="1"/>
-                                <field name="documentacion_completa" />
-                                <field name="fecha_documentacion" />
-                                <!-- <field name="dif_dias" /> -->
-                                <field name="asignadoa_id" />
-                            </group>
-                        </page>
-                        <!-- <page string="Boletas">
-                            <group>
-                                <field name="boletas_id" />
-                            </group>
-                        </page> -->
-                        <page string="CARTA DE INSTRUCCIÓN">
-                            <group>
-                                <field name="detalle_origen" string="Detalle Origen"/>
-                                <field name="detalle_destino" string="Detalle Destino"/>
-                            </group>
-                        </page>
-
-                        <page string="Cita">
-                            <group>
-                                <field name="fecha_hora_carga" />
-                                <field name="fecha_hora_descarga" />
-                                <field name="detalles_cita" />
-                            </group>
-                        </page>
-
-                        <page string="Cargos Adicionales">
-                            <group>
-                                <field name="cargo_id" nolabel="1">
-                                    <tree editable="bottom">
-                                        <field name="name" required="1" />
-                                        <field name="valor" required="1" />
-                                        <field name="sistema" />
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
-
-                        <page string="Calificaciones">
-                            <group>
-                                <field name="calificaiones" nolabel="1"/>
-                            </group>
-                        </page>
-                        <!-- <page string="SLI TRACK">
-                        <hr/>
-                          <div>
-                                   <button string="Generar c&#243;digo" name="action_slitrack_codigo" type="object" class="oe_inline oe_stat_button" confirm="&#191;Generar c&#243;digo?"/>
-                                   <span style="width:100%;"/><span style="color:white;">|</span>
-                                   <button string="Activar" name="action_slitrack_activa" type="object" class="oe_inline oe_stat_button" confirm="&#191;Activar viaje?"/>
-                                 </div>
-                                 <hr/>
-                             <group>
-                               <group>
-                               </group>
-                               <group/>
-                               <group name="slitrack_gps" string="GPS">
-                                 <field name="slitrack_gps_fechahorar" readonly="0"/>
-                                 <field name="slitrack_gps_latitud" readonly="0"/>
-                                 <field name="slitrack_gps_longitud" readonly="0"/>
-                                 <field name="slitrack_gps_velocidad" readonly="0"/>
-                                 <field name="slitrack_gps_contador" readonly="0"/>
-
-                               </group>
-                               <group name="slitrack_control" string="Control">
-                                 <field name="slitrack_proveedor"/>
-                                 <field name="slitrack_estado"/>
-                                 <field name="slitrack_codigo" readonly="1"/>
-                                 <field name="slitrack_st"/>
-                                 <field name="slitrack_comentarios"/>
-                               </group>
-                             </group>
-                        </page> -->
-                        <page string="Detalles">
-                            <group>
-                                <field name="observaciones" />
-                                <field name="especificaciones" />
-                                <field name="folio_cliente" />
-                                <field name="suger_pago" />
-                            </group>
-                        </page>
-                        <page string="Vehicle log fuel">
-                            <field name="fuel_log_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}" >
-                              <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
-                                    <field name='name'/>
-                                    <field name='operating_unit_id'/>
-                                    <field name='employee_id'/>
-                                    <field name='vendor_id'/>
-                                    <field name='vehicle_id'/>
-                                    <field name='product_id'/>
-                                    <field name='product_qty'/>
-                                    <field name='product_uom_id'/>
-                                    <field name='price_total'/>
-                                    <field name='state'/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Advances">
-                            <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1"/>
-                        </page>
-                        <page string="Waybills">
-                            <group>
-                                <field name="waybill_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" nolabel="1">
-                                    <tree colors="red:state=='cancel';green:state=='approved';blue:state=='confirmed';" string="Waybills">
-                                        <button groups="x_tms.group_waybill_approve" icon="gtk-go-forward" name="action_approve" states="draft" string="Approve" type="object"/>
-                                        <button groups="x_tms.group_waybill_confirm" icon="gtk-ok" name="action_confirm" states="approved" string="Confirm" type="object"/>
-                                        <field name="state"/>
-                                        <field name="name"/>
-                                        <field name="date_order"/>
-                                        <field name="partner_id"/>
-                                        <field name="product_qty" sum="Product Quantity"/>
-                                        <field name="amount_untaxed" sum="Amount Untaxed"/>
-                                        <field name="amount_tax" sum="Taxes"/>
-                                        <field name="amount_total" sum="Total "/>
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
-                        <page string="Expense driver factor">
-                            <field name="driver_factor_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_category': 'driver'}" nolabel="1">
-                                <tree>
-                                    <field name="name" />
-                                    <field name="factor_type" />
-                                    <field name="valor" />
-                                    <field name="valor2" />
-                                    <field name="total" />
-                                    <field name="travel_id" invisible="1" />
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="History">
-                            <field name="event_ids" context="{'default_travel_id':active_id}" nolabel="1"/>
-                            <group>
-                                <separator colspan="4" string="Notes"/>
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="notes" nolabel="1"/>
-                            </group>
-                        </page>
-                        <page string="Statistics">
-                            <group>
-                                <group>
-                                    <separator string="Distances (mi./kms)"/>
-                                    <newline/>
-                                    <field name="distance_route" readonly="1"/>
-                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="distance_loaded"/>
-                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="distance_empty"/>
-                                    <field name="distance_driver"/>
-                                    <field name="odometer" attrs="{'invisible':[('state','!=', 'done', 'closed')]}"/>
-                                </group>
-                                <group>
-                                    <separator colspan="4" string="Fuel Efficiency"/>
-                                    <newline/>
-                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="fuel_efficiency_expected" readonly="1"/>
-                                    <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="fuel_efficiency_travel"/>
-                                    <field name="fuel_efficiency_extraction"/>
-                                </group>
-                            </group>
-                            <separator colspan="4" string="Date and Times"/>
-                            <group col="6" colspan="4">
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="date_start" />
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="date_end" />
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="travel_duration" widget="float_time"/>
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="date_start_real" />
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="date_end_real" />
-                                <field attrs="{'readonly':[('state','in',('done', 'closed'))]}" name="travel_duration_real" widget="float_time"/>
-                            </group>
-                        </page>
-                    </notebook>
-                </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" widget="mail_followers"/>
-                    <field name="message_ids" placeholder="Share a message..." widget="mail_thread"/>
-                </div>
-            </form>
-        </field>
-    </record>
-    <record id="open_view_tms_travel_report" model="ir.actions.act_window">
-        <field name="name">TMS Travel</field>
-        <field name="res_model">tms.travel</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form,gantt,graph</field>
-        <field name="view_id" ref="view_tms_travel_tree_report"/>
-        <field name="context">{&quot;search_default_progress&quot;:1, 'search_default_date_dispatched': 1}</field>
-    </record>
 
 
     <!-- Menu Reportes -->
@@ -376,18 +34,7 @@
 
     <!-- Menu Settings Principal -->
     <menuitem id="menu_tms_settings" name="Configuration" parent="menu_tms" sequence="9"/>
-
-    <record id="action_lineasnegocio_tms" model="ir.actions.act_window">
-        <field name="name">Lineas del negocio</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">tms.lineanegocio</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[]</field>
-        <field name="filter" eval="True"/>
-    </record>
-    <menuitem id="menu_tms_settings_lineasnegocio" action="action_lineasnegocio_tms" name="Lineas de Negocio" parent="menu_tms_settings" sequence="10"/>
-
+    
 
     <!-- SubMenu 1 -->
     <record id="action_partner_tms" model="ir.actions.act_window">
@@ -415,7 +62,6 @@
     <menuitem id="menu_tms_settings_suppliers" name="Proveedores" parent="menu_tms_settings" sequence="102"/>
      <menuitem id="menu_tms_suppliers" name="Proveedores" action="action_partner_tms_supp" parent="menu_tms_settings_suppliers" sequence="1"/>
 
-
      <!-- SubMenu 3 -->
     <menuitem id="menu_tms_settings_operators" name="Operadores" parent="menu_tms_settings" sequence="103"/>
     <menuitem action="tms_open_view_employee_list" id="menu_tms_open_view_employee_list" name="Drivers" parent="menu_tms_settings_operators" sequence="115"/>
@@ -436,20 +82,12 @@
         <field name="domain"></field>
         <field name="filter" eval="True"/>
     </record>
-    <menuitem id="menu_tms_settings_products" name="Categorias de Productos" parent="menu_tms_settings" sequence="105"/>
-    <menuitem action="action_product_category_tms" id="menu_tms_open_view_product_list" name="Categorias de Productos" parent="menu_tms_settings_products" sequence="119"/>
+    <menuitem id="menu_tms_settings_products" name="Productos" parent="menu_tms_settings" sequence="105"/>
+    <menuitem action="action_product_category_tms" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/>
 
     <!-- <menuitem action="tms_open_view_product_list" id="menu_tms_open_view_product_list" name="Products" parent="menu_tms_settings_products" sequence="119"/> -->
 
     <!-- Records de direccionamiento -->
-    <record id="tms_open_view_products_list" model="ir.actions.act_window">
-        <field name="name">Productos/Servicios</field>
-        <field name="res_model">product.product</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field eval="False" name="view_id"/>
-    </record>
-
     <record id="tms_open_view_product_list1" model="ir.actions.act_window">
         <field name="name">Fletes</field>
         <field name="res_model">product.template</field>
@@ -467,7 +105,6 @@
         <field name="domain">[('tms_product_category', '=', 'move')]</field>
         <field name="context">{'default_tms_product_category': 'move'}</field>
         <field eval="False" name="view_id"/>
-
     </record>
     <record id="tms_open_view_product_list3" model="ir.actions.act_window">
         <field name="name">Seguros</field>
@@ -604,43 +241,33 @@
         <field name="context">{'default_tms_product_category': 'loan'}</field>
         <field eval="False" name="view_id"/>
     </record>
-    <record id="tms_open_view_product_list18" model="ir.actions.act_window">
-        <field name="name">Productos Transportables</field>
-        <field name="res_model">product.template</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[('tms_product_category', '=', 'charge')]</field>
-        <field name="context">{'default_tms_product_category': 'charge'}</field>
-        <field eval="False" name="view_id"/>
-    </record>
 
-    <menuitem id="menu_tms_settings_r_carta" name="Productos/Servicios" parent="menu_tms_settings" sequence="106"/>
-    <menuitem action="tms_open_view_products_list" id="menu_tms_open_view_products" name="Productos/Servicios" parent="menu_tms_settings_r_carta" sequence="1"/>
+
     <!-- SubMenu 6 -->
-    <!-- <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
+    <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
     <menuitem action="tms_open_view_product_list1" id="menu_tms_open_view_product_list1" name="Producto Flete" parent="menu_tms_settings_r_carta" sequence="1"/>
     <menuitem action="tms_open_view_product_list2" id="menu_tms_open_view_product_list2" name="Maniobras de Carga/Descarga" parent="menu_tms_settings_r_carta" sequence="2"/>
-    <menuitem action="tms_open_view_product_list3" id="menu_tms_open_view_product_list3" name="Seguro de carga" parent="menu_tms_settings_r_carta" sequence="3"/> -->
-    <!-- <menuitem action="tms_open_view_product_list16" id="menu_tms_open_view_product_list16" name="Autopistas" parent="menu_tms_settings_r_carta" sequence="16"/> -->
-    <!-- <menuitem action="tms_open_view_product_list12" id="menu_tms_open_view_product_list12" name="Otros Ingresos" parent="menu_tms_settings_r_carta" sequence="12"/>
-    <menuitem action="tms_open_view_product_list18" id="tms_transportable_menu" name="Productos Transportables" parent="menu_tms_settings_r_carta" sequence="100"/> -->
+    <menuitem action="tms_open_view_product_list3" id="menu_tms_open_view_product_list3" name="Seguro de carga" parent="menu_tms_settings_r_carta" sequence="3"/>
+    <menuitem action="tms_open_view_product_list16" id="menu_tms_open_view_product_list16" name="Autopistas" parent="menu_tms_settings_r_carta" sequence="16"/>
+    <menuitem action="tms_open_view_product_list12" id="menu_tms_open_view_product_list12" name="Otros Ingresos" parent="menu_tms_settings_r_carta" sequence="12"/>
+    <menuitem action="action_tms_transportable" id="tms_transportable_menu" name="Productos Transportables" parent="menu_tms_settings_r_carta" sequence="100"/>
 
     <!-- SubMenu 7 -->
-    <!-- <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/> -->
-    <!-- <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/> -->
-  <!--   <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
+    <menuitem id="menu_tms_settings_liquidac" name="Liquidación" parent="menu_tms_settings" sequence="107"/>
+    <menuitem action="tms_open_view_product_list4" id="menu_tms_open_view_product_list4" name="Casetas" parent="menu_tms_settings_liquidac" sequence="4"/>
+    <menuitem action="tms_open_view_product_list5" id="menu_tms_open_view_product_list5" name="Otro" parent="menu_tms_settings_liquidac" sequence="5"/>
     <menuitem action="tms_open_view_product_list6" id="menu_tms_open_view_product_list6" name="Concepto de Gasto" parent="menu_tms_settings_liquidac" sequence="6"/>
     <menuitem action="tms_open_view_product_list7" id="menu_tms_open_view_product_list7" name="Gastos Indirectos" parent="menu_tms_settings_liquidac" sequence="7"/>
     <menuitem action="tms_open_view_product_list8" id="menu_tms_open_view_product_list8" name="Sueldo Operador" parent="menu_tms_settings_liquidac" sequence="8"/>
     <menuitem action="tms_open_view_product_list9" id="menu_tms_open_view_product_list9" name="Retención de Salario" parent="menu_tms_settings_liquidac" sequence="9"/>
     <menuitem action="tms_open_view_product_list10" id="menu_tms_open_view_product_list10" name="Descuento de Salario" parent="menu_tms_settings_liquidac" sequence="10"/>
-    <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/> -->
-
-    <!-- <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
+    <menuitem action="tms_open_view_product_list11" id="menu_tms_open_view_product_list11" name="Combustible" parent="menu_tms_settings_liquidac" sequence="11"/>
+    
+    <menuitem action="tms_open_view_product_list13" id="menu_tms_open_view_product_list13" name="Reembolso" parent="menu_tms_settings_liquidac" sequence="13"/>
     <menuitem action="tms_open_view_product_list14" id="menu_tms_open_view_product_list14" name="Balance en Contra" parent="menu_tms_settings_liquidac" sequence="14"/>
     <menuitem action="tms_open_view_product_list15" id="menu_tms_open_view_product_list15" name="Combustible en efectivo" parent="menu_tms_settings_liquidac" sequence="15"/>
-
-    <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/> -->
+    
+    <menuitem action="tms_open_view_product_list17" id="menu_tms_open_view_product_list17" name="Facilidad Administrativa" parent="menu_tms_settings_liquidac" sequence="17"/>
 
     <!-- SubMenu 8 -->
     <menuitem id="menu_tms_settings_eve_acc" name="Eventos y Acciones" parent="menu_tms_settings" sequence="108"/>
@@ -652,11 +279,11 @@
     <menuitem action="fleet.fleet_vehicle_state_action" groups="fleet.fleet_group_manager" id="tms_fleet_vehicle_state_menu" parent="menu_tms_settings_conf_ve" sequence="111"/>
     <menuitem action="fleet.fleet_vehicle_model_action" id="tms_fleet_vehicle_model" parent="menu_tms_settings_conf_ve" sequence="113"/>
     <menuitem action="fleet.fleet_vehicle_model_brand_action" id="tms_fleet_vehicle_make" parent="menu_tms_settings_conf_ve" sequence="114"/>    <menuitem id="fleet_vehicle_engine_menu" sequence="117" name="Engines" parent="menu_tms_settings_conf_ve" action="action_fleet_vehicle_engine"/>
-
+    
     <!-- SubMenu 10 -->
-    <!-- <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
-    <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/> -->
-
+    <menuitem id="menu_tms_settings_fact" name="Factores" parent="menu_tms_settings" sequence="110"/>
+    <menuitem id="menu_tms_fact" name="Factores de Ruta" action="open_view_tms_factor_form" parent="menu_tms_settings_fact" sequence="110"/>
+    
 
     <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="100"/>
     <menuitem id="menu_custom_config" name="Settings" parent="menu_tms_settings"
@@ -664,6 +291,6 @@
     <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="100"/>
 
 
-
+    
     <!--  groups="x_tms.group_traffic,x_tms.group_expenses,x_tms.group_supervisor_traffic,base.group_system" -->
 </odoo>

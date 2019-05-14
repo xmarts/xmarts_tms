@@ -24,7 +24,6 @@ class FleetVehicleLogFuel(models.Model):
 
     name = fields.Char()
     travel_id = fields.Many2one('tms.travel', string='Travel')
-    
     expense_id = fields.Many2one('tms.expense', string='Expense')
     employee_id = fields.Many2one(
         'hr.employee',
@@ -35,8 +34,8 @@ class FleetVehicleLogFuel(models.Model):
     odometer = fields.Float(related='vehicle_id.odometer',)
     product_uom_id = fields.Many2one('product.uom', string='UoM')
     product_qty = fields.Float(string='Liters', default=1.0,)
-    tax_amount = fields.Float(string='Taxes',compute="_compute_taxes")
-    price_total = fields.Float(string='Total', compute="_compute_total")
+    tax_amount = fields.Float(string='Taxes',)
+    price_total = fields.Float(string='Total')
     special_tax_amount = fields.Float(
         compute="_compute_special_tax_amount", string='IEPS')
     price_unit = fields.Float(
@@ -100,35 +99,18 @@ class FleetVehicleLogFuel(models.Model):
     @api.depends('tax_amount')
     def _compute_price_subtotal(self):
         for rec in self:
-            rec.price_subtotal = rec.price_unit * rec.product_qty
-            # if rec.tax_amount > 0:
-            #     rec.price_subtotal = rec.tax_amount / 0.16
+            rec.price_subtotal = 0
+            if rec.tax_amount > 0:
+                rec.price_subtotal = rec.tax_amount / 0.16
 
     @api.multi
+    @api.depends('product_qty', 'price_subtotal')
     def _compute_price_unit(self):
         for rec in self:
-            # rec.price_unit = 0
-            # if rec.product_qty and rec.price_subtotal > 0:
-            #     rec.price_unit = rec.price_subtotal / rec.product_qty
-            rec.price_unit = rec.product_id.standard_price
-
-    @api.multi
-    def _compute_taxes(self):
-        for rec in self:
-            tax = 0
-            for t in rec.product_id.supplier_taxes_id:
-                tax += t.amount
-            rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
-
-    @api.multi
-    def _compute_total(self):
-        for rec in self:
-            rec.price_total = rec.tax_amount + rec.price_subtotal
-            # tax = 0
-            # for t in rec.product_id.supplier_taxes_id:
-            #     tax += t.amount
-            # rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
-
+            rec.price_unit = 0
+            if rec.product_qty and rec.price_subtotal > 0:
+                rec.price_unit = rec.price_subtotal / rec.product_qty
+            return rec.price_unit
 
     @api.multi
     @api.depends('price_subtotal', 'tax_amount', 'price_total')
@@ -206,16 +188,3 @@ class FleetVehicleLogFuel(models.Model):
         total = str(float(product_qty)).split('.')[0]
         total = num2words(float(total), lang='es').upper()
         return '%s' % (total)
-
-
-class FleetVehicleLogFuelTem(models.Model):
-    _name = 'fleet.vehicle.log.fuel.tem'
-    
-    product_qty = fields.Float(string='Liters', default=1.0,)
-    vendor_id = fields.Many2one('res.partner')
-    product_id = fields.Many2one(
-        'product.product',
-        string='Product',
-        domain=[('tms_product_category', '=', 'fuel')])
-
-    route_id = fields.Many2one('tms.route', string='Ruta')

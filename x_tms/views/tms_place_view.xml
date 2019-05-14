@@ -5,9 +5,9 @@
         <field name="model">tms.place</field>
         <field name="arch" type="xml">
             <tree string="Places">
-                <field name="name"/>
+                <field name="complete_name"/>
                 <field name="state_id"/>
-                <field name="municipio"/>
+                <field name="country_id"/>
                 <field name="latitude"/>
                 <field name="longitude"/>
             </tree>
@@ -19,43 +19,18 @@
         <field name="arch" type="xml"> 
             <form string="Places" version="9.0">
                 <header>
-                    <!-- <button name="get_coordinates" string="Get Coords from Google" type="object"/>
-                    <button name="open_in_google" string="View in Google Maps" type="object"/> -->
+                    <button name="get_coordinates" string="Get Coords from Google" type="object"/>
+                    <button name="open_in_google" string="View in Google Maps" type="object"/>
                 </header>
-                <sheet>
-                <group>
-                    <group string="Nombre">
+                <group col="4">
                     <field name="name" select="1"/>
-                    </group>
-                </group><group>
-                    <group string="Direccion">
                     <field name="state_id" select="1"/>
-                    <field name="calle"/>
-                    <field name="noexterior"/>
-                    <field name="nointerior"/>
-                    <field name="localidad"/>
-                    <field name="cruce"/>
-                    <field name="municipio" readonly="1"/>
-                    <field name="country_id"/>
-                </group>
-                <group string="Geolocacion">
+                    <field name="country_id" readonly="1"/>
+                    <newline/>
                     <field name="latitude"/>
                     <field name="longitude"/>
+                    <field name="point" widget="geo_edit_map"/>
                 </group>
-                <group string="General">
-                    <field name="tipo_carga"/>
-                    <field name="cap_carga"/>
-                    <field name="cap_descarga"/>
-                    <field name="bodega_prob"/>
-                    <field name="tipo_ubicacion"/>
-                    <field name="responsable"/>
-                    <field name="coberturacelular"/>
-                </group>
-                <group string="Otros">
-                    <field name="comentarios"/>
-                </group>
-                </group>
-            </sheet>
             </form>
         </field>
     </record>
@@ -65,8 +40,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form,geoengine</field>
     </record>
-    <!-- 
-    <record id="tms_place_geoengine_view" model="ir.ui.view">
+    <!-- <record id="tms_place_geoengine_view" model="ir.ui.view">
         <field name="name">Place Geospatial View</field>
         <field eval="16" name="priority"/>
         <field name="model">tms.place</field>
@@ -77,7 +51,7 @@
         </field>
     </record>
     <record id="geoengine_vector_layer_place" model="geoengine.vector.layer">
-        <field name="geo_field_id" ref="x_tms.field_tms_place_point"/>
+        <field name="geo_field_id" ref="tms.field_tms_place_point"/>
         <field name="name">Place Basic point</field>
         <field eval="6" name="sequence"/>
         <field name="view_id" ref="tms_place_geoengine_view"/>

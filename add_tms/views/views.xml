@@ -30,7 +30,7 @@
                         <group col="4">
                             <field name="vehicle_id"/>
                             <field name="date"/>
-                            <!-- <field name="vehicle_type_id"/>                             -->
+                            <field name="vehicle_type_id"/>                            
                             <field name="partner_id"/>
                             <field name="name" colspan="4"/>
                             <field name="date_start"/>
@@ -126,7 +126,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-       <!--  <menuitem name="Acciones" id="add_operaciones_menu_4_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_eventos_acciones"/> -->
+        <menuitem name="Acciones" id="add_operaciones_menu_4_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_eventos_acciones"/>
 
            <record model="ir.actions.act_window" id="add_tms_tipo_tipos_eventos">
       <field name="name">Categorías de Eventos</field>
@@ -134,7 +134,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-        <!-- <menuitem name="Tipos de Eventos" id="add_operaciones_menu_5_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_tipos_eventos"/> -->
+        <menuitem name="Tipos de Eventos" id="add_operaciones_menu_5_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_tipo_tipos_eventos"/>
 
       <record model="ir.actions.act_window" id="add_tms_odometro">
       <field name="name">Odómetro del Vehículo</field>
@@ -180,13 +180,13 @@
         <menuitem name="Tipos de Motor" id="add_operaciones_menu_10_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_tipos_motor"/>
 
 
-      <!-- <record model="ir.actions.act_window" id="add_tms_vigencia_motor">
+      <record model="ir.actions.act_window" id="add_tms_vigencia_motor">
       <field name="name">Datos de Vigencia</field>
       <field name="res_model">fleet.vehicle.validity</field>
       <field name="view_mode">tree,form</field>
     </record>
 
-        <menuitem name="Documentos con Vigencia" id="add_operaciones_menu_11_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_vigencia_motor"/> -->
+        <menuitem name="Documentos con Vigencia" id="add_operaciones_menu_11_list" parent="x_tms.menu_tms_settings_conf_ve" action="add_tms_vigencia_motor"/>
 
             <record model="ir.actions.act_window" id="add_tms_llantas_motor">
       <field name="name">Llenado de Llantas</field>
@@ -204,16 +204,16 @@
 
         <menuitem name="Categoría de Empleado" id="add_operaciones_menu_13_list" parent="x_tms.menu_tms_settings_operators" action="add_tms_etiquetas_contacto_motor"/>
 
-        <!-- <record model="ir.actions.act_window" id="add_tms_place">
+        <record model="ir.actions.act_window" id="add_tms_place">
       <field name="name">TMS Plazas</field>
       <field name="res_model">tms.place</field>
       <field name="view_mode">tree,form</field>
     </record>
 
-        <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/> -->
+        <menuitem name="Plazas" id="add_operaciones_menu_14_list" parent="x_tms.menu_tms_settings_routes" action="add_tms_place"/>
 
 
-      <!-- <record model="ir.actions.act_window" id="add_tms_categorias_porte">
+      <record model="ir.actions.act_window" id="add_tms_categorias_porte">
       <field name="name">Categoría de Cartas Porte</field>
       <field name="res_model">tms.waybill.category</field>
       <field name="view_mode">tree,form</field>
@@ -227,7 +227,7 @@
       <field name="view_mode">tree,form</field>
       </record>
 
-        <menuitem name="Productos Transportables" id="add_operaciones_menu_16_list" parent="x_tms.menu_tms_settings_r_carta" action="add_tms_productos_transportables"/>  -->
+        <menuitem name="Productos Transportables" id="add_operaciones_menu_16_list" parent="x_tms.menu_tms_settings_r_carta" action="add_tms_productos_transportables"/> 
 
         <record model="ir.actions.act_window" id="add_tms_categorias_contacto">
       <field name="name">Etiquetas de contacto</field>

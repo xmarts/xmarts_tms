@@ -426,8 +426,8 @@ msgstr "<strong>GASTOS DE VIAJE</strong>"
 
 #. module: x_tms
 #: model:ir.ui.view,arch_db:x_tms.travel_instructions_letter_header
-msgid "<strong>Remolque:</strong>"
-msgstr "<strong>Remolque:</strong>"
+msgid "<strong>Trailer:</strong>"
+msgstr "<strong>Trailer:</strong>"
 
 #. module: x_tms
 #: model:ir.ui.view,arch_db:x_tms.travel_instructions_letter_header
@@ -3791,28 +3791,28 @@ msgstr "Total Real"
 #. module: x_tms
 #: selection:fleet.vehicle,fleet_type:0
 #: model:ir.ui.view,arch_db:x_tms.expense_report
-msgid "Remolque"
-msgstr "Remolque"
+msgid "Trailer"
+msgstr "Tráiler"
 
 #. module: x_tms
-#: model:ir.model.fields,field_description:x_tms.field_tms_unit_kit_Remolque1_id
-msgid "Remolque 1"
-msgstr "Remolque 1"
+#: model:ir.model.fields,field_description:x_tms.field_tms_unit_kit_trailer1_id
+msgid "Trailer 1"
+msgstr "Tráiler 1"
 
 #. module: x_tms
-#: model:ir.model.fields,field_description:x_tms.field_tms_unit_kit_Remolque2_id
-msgid "Remolque 2"
-msgstr "Remolque 2"
+#: model:ir.model.fields,field_description:x_tms.field_tms_unit_kit_trailer2_id
+msgid "Trailer 2"
+msgstr "Tráiler 2"
 
 #. module: x_tms
-#: model:ir.model.fields,field_description:x_tms.field_tms_travel_Remolque1_id
-msgid "Remolque1"
-msgstr "Remolque 1"
+#: model:ir.model.fields,field_description:x_tms.field_tms_travel_trailer1_id
+msgid "Trailer1"
+msgstr "Tráiler 1"
 
 #. module: x_tms
-#: model:ir.model.fields,field_description:x_tms.field_tms_travel_Remolque2_id
-msgid "Remolque2"
-msgstr "Remolque 2"
+#: model:ir.model.fields,field_description:x_tms.field_tms_travel_trailer2_id
+msgid "Trailer2"
+msgstr "Tráiler 2"
 
 #. module: x_tms
 #: model:ir.actions.act_window,name:x_tms.action_tms_transportable

@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 
 class FleetVehicle(models.Model):
@@ -47,17 +47,6 @@ class FleetVehicle(models.Model):
     insurance_days_to_expire = fields.Integer(
         compute='_compute_insurance_days_to_expire', string='Days to expire')
 
-    ejes = fields.Integer(string="Numero de ejes", default=2)
-    efficiency = fields.Float(
-        digits=(4, 2),
-        help=_("Rendimiento L/KM"),
-        string=_("Rendimiento L/Km")
-    )
-    f_category = fields.Many2one("fleet.vehicle.category", string="Categoria")
-    f_status = fields.Many2one("fleet.vehicle.state", string="Estado")
-    f_status_r = fields.Many2one("fleet.vehicle.status_reason", string="Razon de estado")
-    f_marca = fields.Many2one("fleet.vehicle.model.brand", string="Marca")
-    #f_tipo_motor = fields.Many2one("fleet.vehicle.motor", string="Tipo de motor")
     @api.depends('insurance_expiration')
     def _compute_insurance_days_to_expire(self):
         for rec in self:

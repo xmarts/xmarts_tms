@@ -2,9 +2,9 @@
 
 from odoo import models, fields, api
 
-# class tms_operat_ih(models.Model):
-# 	_inherit = 'tms.advance'
-# 	travel_id=fields.Many2one('tms.advance', string='table')
+class tms_operat_ih(models.Model):
+	_inherit = 'tms.advance'
+	travel_id=fields.Many2one('tms.advance', string='table')
 
 #class tms_operat_fuelvoucher(models.Model):
 #	_inherit = 'fleet.vehicle.log.fuel'
@@ -16,8 +16,7 @@ from odoo import models, fields, api
 
 class tms_operat_expense(models.Model):
 	_inherit = 'tms.expense.line'
-	operation_id    = fields.Many2one('tms.operation', string='Operation', ondelete='restrict', required=False, readonly=False,
-                                     domain=[('state', 'in', ('process','done'))])
+	employee_id=fields.Many2one('tms.expense.line', string='table_cuatro')
 
 
 class tms_operat(models.Model):
@@ -33,7 +32,6 @@ class tms_operat(models.Model):
 	fuelvoucher_ids = fields.One2many('tms.advance', 'travel_id', string='Advances')
 	waybill_ids = fields.One2many('tms.waybill', 'partner_id', string='Advances')
 	#expense_line_ids = fields.One2many('fleet.vehicle.log.fuel', 'purchaser_id', string='Advances')
-	expense_line_ids = fields.One2many('tms.expense.line', 'operation_id', string='Travel Expense Lines', readonly=True)
 
 
 	state = fields.Selection([

@@ -42,15 +42,9 @@
             <field name="driver_id" position="before">
                 <field name="operating_unit_id" required="1"/>
                 <field name="fleet_type" required="1"/>
-                <field name="ejes"/>
-                <field name="efficiency" invisible="1"/>
             </field>
             <field name="car_value" position="after">
                 <field name="year_model"/>
-                <field name="f_category"/>
-                <field name="f_status"/>
-                <field name="f_status_r"/>
-                <field name="f_marca"/>
                 <field name="active"/>
             </field>
             <xpath expr="//sheet/group[2]" position="replace">
@@ -84,7 +78,6 @@
                             </div>
                             <field name="horsepower"/>
                             <field name="horsepower_tax"/>
-                            <!-- <field name="f_tipo_motor"/> -->
                             <label for="power"/>
                             <div class="o_row">
                                 <field name="power"/>

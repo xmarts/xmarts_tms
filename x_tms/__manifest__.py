@@ -6,9 +6,9 @@
 
 {
     "name": "Freight Management",
-    "version": "10.3",
+    "version": "10.0.0.1.0",
     "category": "Transport",
-    "author": "Jarsa Sistemas, Argil Consulting, XMARTS",
+    "author": "Jarsa Sistemas, Argil Consulting",
     "website": "https://www.jarsa.com.mx/page/transport-management-system",
     "depends": [
         "account_accountant",
@@ -18,6 +18,7 @@
         "hr",
         "purchase",
         "sale",
+        #"base_geoengine",
         "account_operating_unit"
     ],
     'external_dependencies': {
@@ -70,7 +71,6 @@
         'report/expense_report.xml',
         'data/ir_config_parameter.xml',
         'views/tms_travel_template_view.xml',
-        'views/sale_order.xml',
         'views/tms_view.xml',
     ],
     "demo": [

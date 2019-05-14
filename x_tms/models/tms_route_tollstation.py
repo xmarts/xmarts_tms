@@ -3,7 +3,7 @@
 # Copyright 2016, Jarsa Sistemas, S.A. de C.V.
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class TmsRouteTollstation(models.Model):
@@ -19,24 +19,3 @@ class TmsRouteTollstation(models.Model):
         'tollstation_id',
         string='Cost per Axis')
     active = fields.Boolean(default=True)
-
-    # @api.model
-    # def _get_field_axis(self):
-    #     related_model_id = self.env['tms.route.tollstation.costperaxis'].search([('tollstation_id','=',self.id)], limit=1).id
-    #     return related_model_id
-
-    # ejes = fields.Many2one("tms.route.tollstation.costperaxis",string="# Ejes",default=_get_field_axis)
-    # costo_caseta = fields.Float(string="Costo caseta", compute="get_costo")
-
-
-
-    # @api.multi
-    # @api.depends('credit','costo_caseta','ejes')
-    # def get_costo(self):
-    #     for record in self:
-    #         costo = 0.0
-    #         if record.credit == True:
-    #             costo = record.ejes.cost_credit
-    #         else:
-    #             costo = record.ejes.cost_cash
-    #         record.costo_caseta = costo

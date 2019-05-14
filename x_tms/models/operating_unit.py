@@ -19,8 +19,6 @@ class OperatingUnit(models.Model):
         'ir.sequence', string='Advance Sequence')
     waybill_sequence_id = fields.Many2one(
         'ir.sequence', string='Waybill Sequence')
-    request_sequence_id = fields.Many2one(
-        'ir.sequence', string='Request Sequence')
     expense_sequence_id = fields.Many2one(
         'ir.sequence', string='Expense Sequence')
     loan_sequence_id = fields.Many2one(

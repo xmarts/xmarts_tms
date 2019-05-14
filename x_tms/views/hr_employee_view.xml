@@ -37,7 +37,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('driver','=',True)]</field>
-        <field name="context">{'default_driver': True}</field>
+        <field name="context">{}</field>
         <field eval="False" name="view_id"/>
         <field name="search_view_id" ref="hr.view_employee_filter"/>
         <field name="help" type="html">
