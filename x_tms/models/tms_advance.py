@@ -19,6 +19,7 @@ class TmsAdvance(models.Model):
     adjunto_compro = fields.Binary(string="Comprobante", related="payment_move_id.adjunto_compro")
     filename = fields.Char('file name', related="payment_move_id.filename")
 
+    advance_auto = fields.Boolean(string="Anticipo Automatico", default=False)
     adelanto_factor = fields.Boolean(string="Es adelando de salario?", default=False)
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit', required=True)

@@ -586,11 +586,32 @@ class TmsTravel(models.Model):
 
     @api.onchange('driver_factor_ids','com_necesario')
     def onchange_flete_cliente_anticipo(self):
-        for x in self.advance_ids:
-            l = []
-            l.append(x)
-            print(l)
         line_ids = []
+        for x in self.advance_ids:
+            if x.advance_auto != True:
+                line = {
+                  'id': x.id,
+                  'name':x.name,
+                  'operating_unit_id': x.operating_unit_id.id,
+                  'unit_id': x.unit_id.id,
+                  'product_id': x.product_id.id,
+                  'employee_id': x.employee_id.id,
+                  'amount': x.amount,
+                  'currency_id': x.currency_id,
+                  'date':x.date,
+                  'notes': x.notes,
+                  'state':x.state,
+                  'move_id':x.move_id.id,
+                  'expense_id':x.expense_id.id,
+                  'cuenta_b':x.cuenta_b.id,
+                  'adjunto_compro':x.adjunto_compro,
+                  'paid':x.paid,
+                  'payment_move_id':x.payment_move_id.id,
+                  'n_transaccion':x.n_transaccion,
+                  'auto_expense':x.auto_expense,
+                }
+                line_ids += [line]
+        
         res = {'value':{
                 'advance_ids':[],
             }
@@ -620,6 +641,7 @@ class TmsTravel(models.Model):
                   'notes': "Monto generado automaticamente calculando el 20 porciento del factor del operador",
                   'state':'draft',
                   'adelanto_factor': True,
+                  'advance_auto': True,
                 }
             line_ids += [line]
 
@@ -646,7 +668,8 @@ class TmsTravel(models.Model):
               'currency_id': self.env.user.company_id.currency_id,
               'date':datetime.today(),
               'notes': "Monto generado automaticamente para pagar casetas sin opcion de credito activa",
-              'state':'draft'
+              'state':'draft',
+              'advance_auto': True,
             }
             line_ids += [line]
 
