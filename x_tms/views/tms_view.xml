@@ -208,6 +208,7 @@
                         <page string="Advances">
                             <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
                                 <tree>
+                                    <field name="id" invisible="1"/>
                                     <field name="name" />
                                     <field name="notes" invisible="1" />
                                     <field name="advance_auto" invisible="1" />

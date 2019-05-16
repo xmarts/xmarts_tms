@@ -60,7 +60,6 @@
                     <button name="action_confirm" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
                     <button name="action_authorized" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
                     <field name="state" statusbar_visible="draft,approved,authorized,confirmed,cancel,closed" widget="statusbar"/>
-                    <button name="action_test_read" icon="fa-thumbs-up" class="oe_highlight" string="Test" type="object"/>
                 </header>
                 <sheet>
                     <h1>
