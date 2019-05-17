@@ -71,7 +71,7 @@ class FleetVehicleLogFuel(models.Model):
     ticket_number = fields.Char()
     prepaid_id = fields.Many2one(
         'fleet.vehicle.log.fuel.prepaid',
-        string='Prepaid',
+        string='Prepaid'
     )
     tax_amount2 = fields.Float(string='Taxes',compute="_compute_taxes2")
     price_total2 = fields.Float(string='Total', compute="_compute_total2")
