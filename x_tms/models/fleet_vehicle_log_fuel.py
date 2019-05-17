@@ -72,26 +72,25 @@ class FleetVehicleLogFuel(models.Model):
     prepaid_id = fields.Many2one(
         'fleet.vehicle.log.fuel.prepaid',
         string='Prepaid',
-        compute="_compute_prepaid"
     )
     tax_amount2 = fields.Float(string='Taxes',compute="_compute_taxes2")
     price_total2 = fields.Float(string='Total', compute="_compute_total2")
     price_subtotal2 = fields.Float(
         string="Subtotal", compute='_compute_price_subtotal2')
-    @api.depends('vendor_id')
-    def _compute_prepaid(self):
-        for rec in self:
-            obj_prepaid = self.env['fleet.vehicle.log.fuel.prepaid']
-            prepaid_id = obj_prepaid.search([
-                ('operating_unit_id', '=', rec.operating_unit_id.id),
-                ('vendor_id', '=', rec.vendor_id.id),
-                ('state', '=', 'confirmed')], limit=1, order="date")
-            if prepaid_id:
-                if prepaid_id.balance > rec.price_total:
-                    rec.prepaid_id = prepaid_id.id
-                else:
-                    raise ValidationError(
-                        _('Insufficient amount'))
+    # @api.depends('vendor_id')
+    # def _compute_prepaid(self):
+    #     for rec in self:
+    #         obj_prepaid = self.env['fleet.vehicle.log.fuel.prepaid']
+    #         prepaid_id = obj_prepaid.search([
+    #             ('operating_unit_id', '=', rec.operating_unit_id.id),
+    #             ('vendor_id', '=', rec.vendor_id.id),
+    #             ('state', '=', 'confirmed')], limit=1, order="date")
+    #         if prepaid_id:
+    #             if prepaid_id.balance > rec.price_total:
+    #                 rec.prepaid_id = prepaid_id.id
+    #             else:
+    #                 raise ValidationError(
+    #                     _('Insufficient amount'))
 
     @api.multi
     @api.depends('vehicle_id')
