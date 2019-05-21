@@ -327,8 +327,12 @@ class TmsTravel(models.Model):
         'fleet.vehicle', 'Remolque 2',
         domain=[('fleet_type', '=', 'trailer')])
     employee_id = fields.Many2one(
-        'hr.employee', 'Driver', readonly=True,
-        domain=[('driver', '=', True)], related="unit_id.employee_id")
+        'hr.employee', 'Driver',
+        domain=[('driver', '=', True)], store=True)
+
+
+
+
     date = fields.Datetime(
         'Date  registered', required=True,
         default=(fields.Datetime.now))
@@ -432,6 +436,10 @@ class TmsTravel(models.Model):
     flete_cliente = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente')
     flete_1 = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente1')
     flete_2 = fields.Float(string='Flete cliente', readonly=True, compute='_compute_flete_cliente2')
+
+    @api.onchange('unit_id')
+    def onchange_unit_employee_id(self):
+        self.employee_id = self.unit_id.employee_id.id
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -2067,7 +2075,9 @@ class tms_viaje_cargos(models.Model):
     line_cargo_id = fields.Many2one('tms.travel', string='Id viaje')
     sistema = fields.Boolean(string="Sistema", default=False)  # Indica si es un registro del sistema.
     route_id = fields.Many2one("tms.route", string="Ruta")
-
+    adjunto_compro = fields.Binary(string="Comprobante")
+    filename = fields.Char('file name')
+    advance_id = fields.Many2one("tms.advance", string="Anticipo")
     # @api.constrains('name')
     # def _check_name(self):
     #     obj = self.env['tms.viaje.cargos'].search(

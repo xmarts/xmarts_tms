@@ -48,8 +48,7 @@ class TmsAdvance(models.Model):
     employee_id = fields.Many2one(
         'hr.employee',
         compute='_compute_employee_id',
-        string='Driver',
-        store=True,)
+        string='Driver')
     amount = fields.Monetary(required=True)
     notes = fields.Text()
     move_id = fields.Many2one(
@@ -85,6 +84,12 @@ class TmsAdvance(models.Model):
     def _compute_unit_id(self):
         for rec in self:
             rec.unit_id = rec.travel_id.unit_id.id
+
+    @api.multi
+    @api.depends('travel_id')
+    def _compute_employee_id(self):
+        for rec in self:
+            rec.unit_id = rec.travel_id.employee_id.id
 
     @api.depends('travel_id')
     def _compute_employee_id(self):
