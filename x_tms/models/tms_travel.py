@@ -2070,6 +2070,19 @@ class tms_viajes_boletas(models.Model):
 class tms_viaje_cargos(models.Model):
     _name = 'tms.viaje.cargos'
 
+    # @api.model
+    # def _advance_ids(self, vals):
+    #     t_id = vals.get['line_cargo_id']
+    #     if t_id:
+    #         travel = self.env['tms.travel'].search([('id','=',t_id)])
+    #         ids = []
+    #         for x in self.line_cargo_id.advance_ids:
+    #             ids.append(x.id)
+    #         print(ids)
+    #         return [('id', 'in', ids)]
+    #     else:
+    #         return []
+
     name = fields.Many2one('tms.tipocargosadicionales', string='Tipos de cargos adicionales', required=True)
     valor = fields.Float(string='Valor', required=True)
     line_cargo_id = fields.Many2one('tms.travel', string='Id viaje')
@@ -2078,6 +2091,8 @@ class tms_viaje_cargos(models.Model):
     adjunto_compro = fields.Binary(string="Comprobante")
     filename = fields.Char('file name')
     advance_id = fields.Many2one("tms.advance", string="Anticipo")
+
+    
     # @api.constrains('name')
     # def _check_name(self):
     #     obj = self.env['tms.viaje.cargos'].search(

@@ -340,7 +340,7 @@
 
                         <page string="Cargos Adicionales">
                             <group>
-                                <field name="cargo_id" nolabel="1">
+                                <field name="cargo_id" context="{'default_line_cargo_id':active_id}" nolabel="1">
                                     <tree editable="bottom">
                                         <field name="name" required="1" />
                                         <field name="valor" required="1" />
@@ -348,6 +348,7 @@
                                         <field name="advance_id" />
                                         <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
                                         <field name="filename" invisible="1"/>
+                                        <field name="line_cargo_id" invisible="0"/>
                                     </tree>
                                 </field>
                             </group>
