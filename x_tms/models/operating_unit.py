@@ -37,5 +37,6 @@ class OperatingUnit(models.Model):
         'account.journal', string='Purchase Journal')
     ieps_product_id = fields.Many2one(
         'product.product', string='IEPS Product')
+    ieps_value = fields.Float(string="Valor del IEPS", default=0.3521)
     credit_limit = fields.Float()
     default_provider_fuel = fields.Many2one('res.partner', string="Proveedor de combustible por default")

@@ -133,7 +133,7 @@
         <field eval="False" name="sale_ok"/>
         <field eval="True" name="es_cargo"/>
     </record>
-    <record id="servicio_flete" model="product.product">
+    <record id="es_servicio_flete" model="product.product">
         <field name="name">Servicio de Flete</field>
         <field name="type">service</field>
         <field eval="True" name="purchase_ok"/>

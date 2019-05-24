@@ -15,7 +15,7 @@ class FleetVehicle(models.Model):
 
     name = fields.Char(compute=False, required=True)
     operating_unit_id = fields.Many2one(
-        'operating.unit', string='Operating Unit')
+        'operating.unit', string='Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     year_model = fields.Char()
     serial_number = fields.Char()
     registration = fields.Char()

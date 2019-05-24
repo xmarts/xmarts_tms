@@ -197,9 +197,9 @@
                                 <th>CARGA</th>
                                 <th>COMBUSTIBLE (LITROS)</th>
                                 <th>KMS</th>
-                                <th>CASETAS</th>
+                                <!-- <th>CASETAS</th>
                                 <th>TARIFA</th>
-                                <th> FLETE </th>
+                                <th> FLETE </th> -->
                             </tr>
                             <tr>
                                 <td><span t-field="o.fecha_viaje"/></td>
@@ -210,9 +210,9 @@
                                 <td><span t-field="o.modalidad_ruta1"/></td>
                                 <td><span t-esc="'%.2f'% o.combustible1"/></td>
                                 <td><span t-esc="'%.2f'% o.route_id.distance"/></td>
-                                <td>$ <span t-esc="'%.2f'% o.casetas1"/></td>
+                                <!-- <td>$ <span t-esc="'%.2f'% o.casetas1"/></td>
                                 <td>$ <span t-esc="'%.2f'% o.tarifa_cliente"/></td>
-                                <td>$<span t-esc="'%.2f'% o.flete_1"/></td>
+                                <td>$<span t-esc="'%.2f'% o.flete_1"/></td> -->
                             </tr>
                             <tr t-if="o.route2_id">
                                 <td><span t-field="o.fecha_viaje"/></td>
@@ -223,17 +223,17 @@
                                 <td><span t-field="o.modalidad_ruta2"/></td>
                                 <td><span t-esc="'%.2f'% o.combustible2"/></td>
                                 <td><span t-esc="'%.2f'% o.route2_id.distance"/></td>
-                                <td>$ <span t-esc="'%.2f'% o.casetas2"/></td>
+                                <!-- <td>$ <span t-esc="'%.2f'% o.casetas2"/></td>
                                 <td>$ <span t-esc="'%.2f'% o.tarifa_cliente2"/></td>
-                                <td>$<span t-esc="'%.2f'% o.flete_2"/></td>
+                                <td>$<span t-esc="'%.2f'% o.flete_2"/></td> -->
                             </tr>
                             <tr>
                                 <th class="text-right" colspan="6">TOTAL:</th>
                                 <td><span t-esc="'%.2f'% o.com_necesario"/></td>
                                 <td><span t-esc="'%.2f'% (float(o.route2_id.distance) + float(o.route_id.distance))"/></td>
-                                <td>$<span t-esc="'%.2f'% o.costo_casetas"/></td>
+                                <!-- <td>$<span t-esc="'%.2f'% o.costo_casetas"/></td>
                                 <td/>
-                                <td>$<span t-esc="'%.2f'% o.flete_cliente"/></td>
+                                <td>$<span t-esc="'%.2f'% o.flete_cliente"/></td> -->
                             </tr>
                             <!--<tr><td colspan="12"><br/></td></tr>-->
                             <!--<tr>-->

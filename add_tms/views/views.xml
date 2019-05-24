@@ -142,7 +142,7 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-        <menuitem name="Odómetro del Vehículo" id="add_operaciones_menu_6_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_odometro"/>
+       <!--  <menuitem name="Odómetro del Vehículo" id="add_operaciones_menu_6_list" parent="x_tms.menu_tms_settings_eve_acc" action="add_tms_odometro"/> -->
 
 
      <record model="ir.actions.act_window" id="add_tms_atas_bajas">

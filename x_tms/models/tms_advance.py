@@ -22,7 +22,7 @@ class TmsAdvance(models.Model):
     advance_auto = fields.Boolean(string="Anticipo Automatico", default=False)
     adelanto_factor = fields.Boolean(string="Es adelando de salario?", default=False)
     operating_unit_id = fields.Many2one(
-        'operating.unit', string='Operating Unit', required=True)
+        'operating.unit', string='Operating Unit', required=True,default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     name = fields.Char(string='Advance Number')
     state = fields.Selection(
         [('draft', 'Draft'),

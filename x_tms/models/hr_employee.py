@@ -29,7 +29,7 @@ class HrEmployee(models.Model):
     tms_expense_negative_account_id = fields.Many2one(
         'account.account', 'Negative Balance Account')
     operating_unit_id = fields.Many2one(
-        'operating.unit', 'Operating Unit')
+        'operating.unit', 'Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     driver_license = fields.Char(string="License ID")
     license_type = fields.Char()
     days_to_expire = fields.Integer(compute='_compute_days_to_expire')

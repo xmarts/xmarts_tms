@@ -356,7 +356,14 @@
 
                         <page string="Calificaciones">
                             <group>
-                                <field name="calificaiones" nolabel="1"/>
+                                <field name="calificaiones" nolabel="1" context="{'default_viaje_id':active_id}">
+                                    <tree>
+                                        <field name="viaje_id" invisible="1"/>
+                                        <field name="clasificacion_id"/>
+                                        <field name="operador_nombre" />
+                                        <field name="considerar" />
+                                    </tree>
+                                </field>
                             </group>
                         </page>
                         <!-- <page string="SLI TRACK">
@@ -811,7 +818,7 @@
     <menuitem action="open_view_fleet_vehicle_log_fuel_prepaid_form" id="menu_fleet_vehicle_log_fuel_prepaid_form" name="Fuel Prepaid" parent="menu_tms_settings" sequence="100"/>
     <menuitem id="menu_custom_config" name="Settings" parent="menu_tms_settings"
     sequence="100" action="action_tms_config"/>
-    <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="100"/>
+    <!-- <menuitem action="action_tms_custom_house" id="tms_custom_house" parent="menu_tms_settings" name="Custom House" sequence="100"/> -->
 
 
 

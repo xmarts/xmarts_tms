@@ -6,6 +6,9 @@
 from __future__ import division
 
 from datetime import datetime
+import tempfile
+import base64
+import os
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
@@ -19,6 +22,20 @@ class ExpenseDiferences(models.Model):
     valor = fields.Float(string="Valor")
     expense_id = fields.Many2one("tms.expense")
 
+class ExpenseDiferences(models.Model):
+    """docstring for ExpenseDiferences"""
+    _name = "tms.fuel.diference"
+    name = fields.Char(string="Mercancia")
+    descripcion = fields.Char(string="Descripción")
+    litros = fields.Float(string="Litros")
+    importe = fields.Float(string="Importe")
+    fecha = fields.Char(string="Fecha")
+    hora = fields.Char(string="Hora")
+    unidad = fields.Char(string="Unidad")
+    expense_id = fields.Many2one("tms.expense")
+
+
+
 class TmsExpense(models.Model):
     _name = 'tms.expense'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
@@ -27,13 +44,106 @@ class TmsExpense(models.Model):
 
     name = fields.Char(readonly=True)
     expense_dif_ids = fields.One2many("expense.diference", "expense_id")
+    fuel_dif_ids = fields.One2many("tms.fuel.diference", "expense_id")
+    file_fuel = fields.Binary(string="Archivo de combustible.")
+    filenamef = fields.Char('file name')
+
     operating_unit_id = fields.Many2one(
-        'operating.unit', string="Operating Unit", required=True)
+        'operating.unit', string="Operating Unit", required=True,default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     employee_id = fields.Many2one(
         'hr.employee', 'Driver', readonly=True, related="unit_id.employee_id")
     travel_ids = fields.Many2many('tms.travel',string='Travels')
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
+
+
+    @api.onchange('file_fuel','unit_id')
+    def onchange_file_fuel(self):
+        if self.file_fuel and self.unit_id:
+            data = base64.decodestring(self.file_fuel)
+            fobj = tempfile.NamedTemporaryFile(delete=False)
+            fname = fobj.name
+            fobj.write(data)
+            fobj.close()
+            image = open(fname,"r")
+            cont = 0
+            line_ids = []
+            res = {'value':{
+                    'fuel_dif_ids':[],
+                }
+            }
+            for x in image:
+                if cont>3:
+                    lista = x.split(",")
+                    if self.unit_id.name == lista[0]:
+                        if len(lista) > 32:
+                            if float(lista[12]) > 0:
+                                f = lista[9]
+                                ff = lista[8]
+                                date = ff[6:]+"-"+ff[3:5]+"-"+ff[:-8] + " " + f[:-3]
+                                print(date)
+                                if date >= self.start_date and date <= self.end_date:
+                                    print("*********FECHAS********")
+                                    print(self.start_date)
+                                    print(date)
+                                    print(self.end_date)
+                                    b = lista[6]
+                                    c = lista[7]
+                                    impo = str(b + c)
+                                    if impo[0].isdigit():
+                                        impo = impo
+                                    else:
+                                        impo = impo[1:-1]
+                                    print(impo)
+                                    line = {
+                                    'name':lista[10],
+                                    'descripcion':lista[11],
+                                    'litros':float(lista[12]),
+                                    'importe':float(impo),
+                                    'fecha':lista[8],
+                                    'hora':lista[9],
+                                    'unidad':lista[0],
+                                    'expense_id':self.id,
+                                    }
+                                    line_ids += [line]
+                            
+                        else:
+                            a = lista[11]
+                            aa = lista[6]
+                            if float(a) > 0:
+                                f = lista[8]
+                                ff = lista[7]
+                                date = ff[6:]+"-"+ff[3:5]+"-"+ff[:-8] + " " + f[:-3]
+                                if date >= self.start_date and date <= self.end_date:
+                                    print("*********FECHAS********")
+                                    print(self.start_date)
+                                    print(date)
+                                    print(self.end_date)
+                                    line = {
+                                    'name':lista[9],
+                                    'descripcion':lista[10],
+                                    'litros':float(a),
+                                    'importe':float(aa),
+                                    'fecha':lista[7],
+                                    'hora':lista[8],
+                                    'unidad':lista[0],
+                                    'expense_id':self.id,
+                                    }
+                                    line_ids += [line]
+
+                cont += 1
+            res['value'].update({
+                'fuel_dif_ids': line_ids,
+            })
+            return res
+        else:
+            line_ids = []
+            res = {'value':{
+                    'fuel_dif_ids':[],
+                }
+            }
+            return res
+
     currency_id = fields.Many2one(
         'res.currency', 'Currency', required=True,
         default=lambda self: self.env.user.company_id.currency_id)
@@ -303,7 +413,7 @@ class TmsExpense(models.Model):
                         line.price_subtotal +
                         line.special_tax_amount)
 
-    @api.depends('expense_line_ids')
+    @api.depends('expense_line_ids','expense_dif_ids')
     def _compute_amount_refund(self):
         for rec in self:
             rec.amount_refund = 0.0
@@ -330,7 +440,7 @@ class TmsExpense(models.Model):
                 if line.line_type == 'salary':
                     rec.amount_salary += line.price_total
 
-    @api.depends('expense_line_ids')
+    @api.depends('expense_line_ids','expense_dif_ids')
     def _compute_amount_salary_discount(self):
         for rec in self:
             rec.amount_salary_discount = 0
@@ -366,7 +476,7 @@ class TmsExpense(models.Model):
                     rec.amount_real_expense += line.price_subtotal
             
 
-    @api.depends('travel_ids', 'expense_line_ids')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_subtotal_real(self):
         for rec in self:
             rec.amount_subtotal_real = (
@@ -379,14 +489,14 @@ class TmsExpense(models.Model):
                 rec.amount_fuel_cash +
                 rec.amount_other_income)
 
-    @api.depends('travel_ids', 'expense_line_ids')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_total_real(self):
         for rec in self:
             rec.amount_total_real = (
                 rec.amount_subtotal_real +
                 rec.amount_tax_real)
 
-    @api.depends('travel_ids', 'expense_line_ids')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_balance(self):
         for rec in self:
             rec.amount_balance = (rec.amount_total_real -
@@ -833,7 +943,8 @@ class TmsExpense(models.Model):
                 ('control', '=', True)]).unlink()
             travels = self.env['tms.travel'].search(
                 [('expense_id', '=', rec.id)])
-            travels.write({'expense_id': False, 'state': 'done'})
+            for t in travels:
+                t.write({'expense_id': False, 'state': 'done'})
             advances = self.env['tms.advance'].search(
                 [('expense_id', '=', rec.id)])
             advances.write({
@@ -846,6 +957,12 @@ class TmsExpense(models.Model):
                 'expense_id': False,
                 'state': 'confirmed'
             })
+            rec.expense_dif_ids.search([
+                ('expense_id', '=', rec.id)]).unlink()
+            # expense_dif_ids = self.env['expense.diference'].search([
+            #     ('expense_id', '=', rec.id)
+            #     ])
+            # expense_dif_ids.unlink()
 
     @api.multi
     def create_advance_line(self, advance, travel):
@@ -950,6 +1067,43 @@ class TmsExpense(models.Model):
                 })
 
     @api.multi
+    def create_diference_line(self, travel):
+        for rec in self:
+            for x in travel.cargo_id:
+                if x.valor > x.advance_id.amount:
+                    rec.expense_dif_ids.create({
+                    'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                    'tipo':'reembolso',
+                    'valor': x.valor - x.advance_id.amount,
+                    'expense_id': rec.id
+                    })
+                if x.valor < x.advance_id.amount:
+                    rec.expense_dif_ids.create({
+                    'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                    'tipo':'sobrante',
+                    'valor': x.advance_id.amount - x.valor,
+                    'expense_id': rec.id
+                    })
+            
+        for rec in self:
+            rec.amount_refund = 0.0
+            for line in rec.expense_line_ids:
+                if line.line_type == 'refund':
+                    rec.amount_refund += line.price_total
+            for line in rec.expense_dif_ids:
+                if line.tipo == 'reembolso':
+                    rec.amount_refund += line.valor
+            rec.amount_salary_discount = 0
+            for line in rec.expense_line_ids:
+                if line.line_type == 'salary_discount':
+                    rec.amount_salary_discount += line.price_total
+            for line in rec.expense_dif_ids:
+                if line.tipo != 'reembolso':
+                    rec.amount_salary_discount += (line.valor * -1)
+
+
+
+    @api.multi
     def calculate_discounts(self, methods, loan):
         if loan.discount_type == 'fixed':
             total = loan.fixed_discount
@@ -1051,6 +1205,76 @@ class TmsExpense(models.Model):
                 # Creating salary lines
                 rec.create_salary_line(travel)
                 # Finish creating salary lines
+                #creando diferencias
+                #rec.create_diference_line(travel)
+
+
+                for x in travel.advance_ids:
+                    rec.expense_dif_ids.create({
+                        'name': 'Anticipo '+ str(x.name),
+                        'tipo':'sobrante',
+                        'valor': x.amount,
+                        'expense_id': rec.id
+                        })
+                for x in travel.cargo_id:
+                    rec.expense_dif_ids.create({
+                        'name': 'Gastos real '+ str(x.name.name),
+                        'tipo':'reembolso',
+                        'valor': x.valor,
+                        'expense_id': rec.id
+                        })
+
+
+                # for x in travel.cargo_id:
+                #     if x.valor > x.advance_id.amount:
+                #         rec.expense_dif_ids.create({
+                #         'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                #         'tipo':'reembolso',
+                #         'valor': x.valor - x.advance_id.amount,
+                #         'expense_id': rec.id
+                #         })
+                #     if x.valor < x.advance_id.amount:
+                #         rec.expense_dif_ids.create({
+                #         'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                #         'tipo':'sobrante',
+                #         'valor': x.advance_id.amount - x.valor,
+                #         'expense_id': rec.id
+                #         })
+            # a = 0
+            # for x in rec.fuel_log_ids:
+            #     a += x.price_total
+            # b = 0
+            # for x in rec.fuel_dif_ids:
+            #     b += x.importe
+            # if a > b:
+            #     rec.expense_dif_ids.create({
+            #         'name': 'Diferencia del combustible',
+            #         'tipo':'sobrante',
+            #         'valor': a-b,
+            #         'expense_id': rec.id
+            #         })
+            # else:
+            #     rec.expense_dif_ids.create({
+            #         'name': 'Diferencia del combustible',
+            #         'tipo':'reembolso',
+            #         'valor': b-a,
+            #         'expense_id': rec.id
+            #         })
+
+            # rec.amount_refund = 0.0
+            # for line in rec.expense_line_ids:
+            #     if line.line_type == 'refund':
+            #         rec.amount_refund += line.price_total
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo == 'reembolso':
+            #         rec.amount_refund += line.valor
+            # rec.amount_salary_discount = 0
+            # for line in rec.expense_line_ids:
+            #     if line.line_type == 'salary_discount':
+            #         rec.amount_salary_discount += line.price_total
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo != 'reembolso':
+            #         rec.amount_salary_discount += (line.valor * -1)
 
     @api.depends('travel_ids')
     def get_driver_salary(self, travel):

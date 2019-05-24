@@ -11,6 +11,17 @@
                     <field name="apply_for_salary" groups="base.group_no_one" attrs="{'invisible': ['|', ('tms_product_category', 'in', ('real_expense', 'made_up_expense', 'salary', 'salary_retention', 'salary_discount', 'fuel', 'indirect_expense', 'other_income', 'refund', 'negative_balance', 'fuel_cash')), ('tms_product_category', '=', False)]}"/>
                 </group>
             </field>
+            <notebook position="inside">
+                <page string="tms">
+                    <group>
+                        <field name="es_caseta" />
+                        <field name="es_factor_op" />
+                        <field name="es_combustible" />
+                        <field name="es_cargo" />
+                        <field name="es_flete" />
+                    </group>
+                </page>
+            </notebook>
         </field>
     </record>
     <record id="tms_open_view_product_list" model="ir.actions.act_window">

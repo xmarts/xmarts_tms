@@ -94,7 +94,7 @@
                                 </group>
                             </group>
                             <!-- <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('state','=', 'done'), ('state','!=','cancel'), ('unit_id', '=', unit_id)]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1"> -->
-                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('state','=', 'done')]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1">
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('unit_id', '=', unit_id), ('state','=', 'done')]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1">
                                 <tree default_order="name" string="">
                                     <field invisible="1" name="state"/>
                                     <field name="name"/>
@@ -129,7 +129,25 @@
                             </field>
                         </page>
                         <page string="Fuel log Vouchers">
-                            <field colspan="4" name="fuel_log_ids" nolabel="1" readonly="1"/>
+                            <group>
+                                <field name="file_fuel" readonly="0" widget="binary" string="Vale de transacciones" filename="filenamef"/>
+                                <field name="filenamef" invisible="1"/>
+                            </group>
+                            <group>
+                                <field colspan="4" name="fuel_log_ids" nolabel="1" readonly="1"/>
+                                <field colspan="4" name="fuel_dif_ids" nolabel="1">
+                                    <tree string="" editable="bottom">
+                                        <field invisible="1" name="expense_id"/>
+                                        <field name="name"/>
+                                        <field name="descripcion"/>
+                                        <field name="litros"/>
+                                        <field name="importe"/>
+                                        <field name="fecha"/>
+                                        <field name="hora"/>
+                                        <field name="unidad"/>
+                                    </tree>
+                                </field>
+                            </group>
                         </page>
                         <page string="Diferencia de gastos">
                             <field colspan="4" name="expense_dif_ids" nolabel="1">

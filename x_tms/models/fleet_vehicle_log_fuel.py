@@ -48,7 +48,7 @@ class FleetVehicleLogFuel(models.Model):
     invoice_paid = fields.Boolean(
         compute='_compute_invoiced_paid')
     operating_unit_id = fields.Many2one(
-        'operating.unit', string='Operating Unit')
+        'operating.unit', string='Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     notes = fields.Char()
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -91,6 +91,10 @@ class FleetVehicleLogFuel(models.Model):
     #             else:
     #                 raise ValidationError(
     #                     _('Insufficient amount'))
+
+    @api.onchange('operating_unit_id')
+    def onchange_operating_unit_id(self):
+        self.vendor_id = self.operating_unit_id.default_provider_fuel.id
 
     @api.multi
     @api.depends('vehicle_id')
@@ -178,7 +182,7 @@ class FleetVehicleLogFuel(models.Model):
     @api.depends('price_subtotal', 'tax_amount', 'price_total')
     def _compute_special_tax_amount(self):
         for rec in self:
-            rec.special_tax_amount = rec.product_qty * 0.3521
+            rec.special_tax_amount = rec.product_qty * rec.operating_unit_id.ieps_value
             # rec.special_tax_amount = 0
             # if rec.price_subtotal and rec.price_total and rec.tax_amount > 0:
             #     rec.special_tax_amount = (
