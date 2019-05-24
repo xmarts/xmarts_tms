@@ -51,7 +51,7 @@ class TmsExpense(models.Model):
     operating_unit_id = fields.Many2one(
         'operating.unit', string="Operating Unit", required=True,default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     employee_id = fields.Many2one(
-        'hr.employee', 'Driver', readonly=True, related="unit_id.employee_id")
+        'hr.employee', 'Driver')
     travel_ids = fields.Many2many('tms.travel',string='Travels')
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
@@ -1412,6 +1412,10 @@ class TmsExpense(models.Model):
                     ('id', 'in', employee_ids), ('driver', '=', True)],
             }
         }
+
+    @api.onchange('unit_id')
+    def onchange_employee_id(self):
+        self.employee_id = self.unit_id.employee_id.id
 
     @api.multi
     def get_amount_total(self):
