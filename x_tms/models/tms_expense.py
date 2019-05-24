@@ -1183,7 +1183,7 @@ class TmsExpense(models.Model):
                         'date': self.date,
                         'control': True
                     })
-                loan.expense_ids += expense_line
+                    loan.expense_ids += expense_line
 
     @api.multi
     def get_travel_info(self):
