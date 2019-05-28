@@ -11,6 +11,7 @@
     "author": "Jarsa Sistemas, Argil Consulting, XMARTS",
     "website": "https://www.jarsa.com.mx/page/transport-management-system",
     "depends": [
+        "base",
         "account_accountant",
         "contacts",
         "account_cancel",
