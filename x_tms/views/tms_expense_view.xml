@@ -35,6 +35,7 @@
                     <button class="oe_highlight" confirm="Are you sure to confirm this expense? This action can't be changed." icon="fa-check-square-o" name="action_confirm" states="approved" string="Confirm" type="object"/>
                     <button name="action_cancel" states="approved,confirmed" string="Cancel" type="object"/>
                     <button name="get_travel_info" states="approved,draft" string="Update Expense" type="object"/>
+                    <button name="get_nomina" states="approved,draft" string="Actualizar Percepciones/Deducciones" type="object"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -63,6 +64,8 @@
                                         <field name="amount_loan"/>
                                         <field name="amount_real_expense"/>
                                         <field name="amount_fuel_cash"/>
+                                        <field name="amount_percepciones"/>
+                                        <field name="amount_deducciones"/>
                                         <field name="amount_subtotal_real"/>
                                         <field name="amount_tax_real"/>
                                         <field name="amount_total_real"/>
@@ -170,6 +173,9 @@
                                     <field name="balance"/>                    
                                     <field name="paid" />
                                     <field name="state"/>
+                                    <field name="discount_type"/>
+                                    <field name="percent_discount"/>
+                                    <field name="fixed_discount"/>
                                     <field name="lock"/>
                                     <field name="amount_discount"/>
                                 </tree>
@@ -219,6 +225,19 @@
                                    <field name="expense_km" widget="monetary" options="{'currency_id': 'currency_id'}"></field>
                                    <field name="percentage_km" widget="progressbar"></field>
                                 </group>
+                            </group>
+                        </page>
+                        <page string="Deducciones y Percepciones">
+                            <group>
+                              <field name="employee_salary_ids" colspan="4">
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
+                                  <field name="expense_id" invisible="1"/>
+                                </tree>
+                              </field>
                             </group>
                         </page>
                     </notebook>

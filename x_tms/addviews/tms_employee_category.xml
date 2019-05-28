@@ -20,17 +20,18 @@
                     <sheet>
                        <group name="group0"> 
                             <field name="name"/>
-                            <field name="periodo"/>
+                            
                             
                         </group>
                         <notebook>
                           <page string="Deducciones y Percepciones">
                             <group>
                               <field name="employee_salary_ids" colspan="4">
-                                <tree editable="buttom">
-                                  <field name="name"/>
-                                  <field name="tipo"/>
-                                  <field name="monto"/>
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
                                   <field name="hr_emp_cat_id" invisible="1"/>
                                 </tree>
                               </field>

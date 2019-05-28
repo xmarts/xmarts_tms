@@ -37,6 +37,8 @@ class HrEmployee(models.Model):
     license_valid_from = fields.Date()
     license_expiration = fields.Date()
     outsourcing = fields.Boolean(string='Outsourcing?')
+    employee_category_id = fields.Many2one("hr.employee.category", string="Categoria de empleado")
+    num_med_prev = fields.Char(string="Número de medicina preventiva")
 
     @api.depends('license_expiration')
     def _compute_days_to_expire(self):

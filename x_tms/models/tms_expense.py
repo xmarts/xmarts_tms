@@ -48,6 +48,9 @@ class TmsExpense(models.Model):
     file_fuel = fields.Binary(string="Archivo de combustible.")
     filenamef = fields.Char('file name')
 
+    employee_salary_ids = fields.One2many("hr.employee.salary", "expense_id", string="Detalles de salario")
+
+
     operating_unit_id = fields.Many2one(
         'operating.unit', string="Operating Unit", required=True,default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     employee_id = fields.Many2one(
@@ -474,9 +477,79 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'real_expense':
                     rec.amount_real_expense += line.price_subtotal
+
+
+    amount_percepciones = fields.Float(string="Total Percepciones", compute="_compute_amount_percep", store=True)
+    amount_deducciones = fields.Float(string="Total Deducciones", compute="_compute_amount_deduc", store=True)
+
+    @api.depends('employee_salary_ids','amount_percepciones')
+    def _compute_amount_percep(self):
+        for rec in self:
+            for x in rec.employee_salary_ids:
+                if x.tipo == 'percepcion':
+                    rec.amount_percepciones += x.monto
+
+    @api.onchange('employee_salary_ids')
+    def onchange_amount_percep(self):
+        for rec in self:
+            for x in rec.employee_salary_ids:
+                if x.tipo == 'percepcion':
+                    rec.amount_percepciones += x.monto
+
+    @api.depends('employee_salary_ids','amount_deducciones')
+    def _compute_amount_deduc(self):
+        for rec in self:
+            for x in rec.employee_salary_ids:
+                if x.tipo == 'deduccion':
+                    rec.amount_deducciones += x.monto
+
+    @api.onchange('employee_salary_ids')
+    def onchange_amount_deduc(self):
+        for rec in self:
+            for x in rec.employee_salary_ids:
+                if x.tipo == 'deduccion':
+                    rec.amount_deducciones += x.monto
+
+
+    @api.multi
+    def get_nomina(self):
+        for rec in self:
+            rec.employee_salary_ids.search([
+                ('expense_id', '=', rec.id)]).unlink()
+            today = datetime(int(rec.date[:4]),int(rec.date[5:7]),int(rec.date[8:10]))
+            week_day = today.weekday()
+            month = int(rec.date[5:7])
+            month_day = int(rec.date[8:10])
             
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
+            for x in rec.employee_id.employee_category_id.employee_salary_ids:
+                if x.periodo == 'sem' and week_day == 4:
+                    rec.employee_salary_ids.create({
+                    'name': x.name,
+                    'tipo': x.tipo,
+                    'monto': x.monto,
+                    'periodo': x.periodo,
+                    'expense_id': rec.id
+                    })
+                if x.periodo == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                    rec.employee_salary_ids.create({
+                    'name': x.name,
+                    'tipo': x.tipo,
+                    'monto': x.monto,
+                    'periodo': x.periodo,
+                    'expense_id': rec.id
+                    })
+                if x.periodo == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                    rec.employee_salary_ids.create({
+                    'name': x.name,
+                    'tipo': x.tipo,
+                    'monto': x.monto,
+                    'periodo': x.periodo,
+                    'expense_id': rec.id
+                    })
+            
+
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
     def _compute_amount_subtotal_real(self):
         for rec in self:
             rec.amount_subtotal_real = (
@@ -487,16 +560,19 @@ class TmsExpense(models.Model):
                 rec.amount_loan +
                 rec.amount_refund +
                 rec.amount_fuel_cash +
-                rec.amount_other_income)
+                rec.amount_other_income +
+                rec.amount_percepciones -
+                rec.amount_deducciones
+                )
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
     def _compute_amount_total_real(self):
         for rec in self:
             rec.amount_total_real = (
                 rec.amount_subtotal_real +
                 rec.amount_tax_real)
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
     def _compute_amount_balance(self):
         for rec in self:
             rec.amount_balance = (rec.amount_total_real -
@@ -1147,7 +1223,7 @@ class TmsExpense(models.Model):
             total_discount = 0.0
             payment = loan.payment_move_id.id
             ac_loan = loan.active_loan
-            if not loan.lock and loan.state == 'confirmed' and payment:
+            if loan.lock != True and loan.state == 'confirmed' and payment:
                 if ac_loan:
                     loan.write({
                         'expense_id': self.id
@@ -1168,7 +1244,7 @@ class TmsExpense(models.Model):
                         'control': True
                     })
                     loan.expense_ids += expense_line
-            elif loan.lock and loan.state == 'confirmed' and ac_loan:
+            elif loan.lock == True and loan.state == 'confirmed' and ac_loan:
                 if loan.balance > 0.0:
                     loan.write({
                         'expense_id': self.id
@@ -1315,6 +1391,9 @@ class TmsExpense(models.Model):
             #             'the Travel or the Waybill\nTravel: %s' %
             #             travel.name))
             return driver_salary
+
+    
+
 
     @api.multi
     def create_supplier_invoice(self, line):
