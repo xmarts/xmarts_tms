@@ -79,7 +79,7 @@
 
         'addviews/views.xml',
         'addviews/templates.xml',
-        'addviews/tms_operations.xml',
+        #'addviews/tms_operations.xml',
         'addviews/type_vehicle_procedures.xml',
         'addviews/tms_event_actions.xml',
         'addviews/tms_categories_events.xml',
