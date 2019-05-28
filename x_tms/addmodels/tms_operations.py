@@ -16,7 +16,7 @@ from odoo import models, fields, api
 
 class tms_operat_expense(models.Model):
 	_inherit = 'tms.expense.line'
-	operation_id    = fields.Many2one('tms.operation', string='Operation', ondelete='restrict', required=False, readonly=False,
+	operation_id    = fields.Many2one('tms_operat.tms_operat', string='Operation', ondelete='restrict', required=False, readonly=False,
                                      domain=[('state', 'in', ('process','done'))])
 
 
