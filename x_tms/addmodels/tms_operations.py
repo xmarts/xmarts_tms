@@ -14,10 +14,10 @@ from odoo import models, fields, api
 #	_inherit = 'tms.waybill'
 #	partner_id=fields.Many2one('tms.waybill', string='table_tres')
 
-class tms_operat_expense(models.Model):
-	_inherit = 'tms.expense.line'
-	operation_id    = fields.Many2one('tms.operation', string='Operation', ondelete='restrict', required=False, readonly=False,
-                                     domain=[('state', 'in', ('process','done'))])
+# class tms_operat_expense(models.Model):
+# 	_inherit = 'tms.expense.line'
+	# operation_id    = fields.Many2one('tms.operation', string='Operation', ondelete='restrict', required=False, readonly=False,
+ #                                     domain=[('state', 'in', ('process','done'))])
 
 
 class tms_operat(models.Model):
