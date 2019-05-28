@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="razon_estado_list">
+      <field name="name">fleet_vehicle_status_reason_menu</field>
+      <field name="model">fleet.vehicle.status_reason</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="tipo"/>
+        </tree>
+      </field>
+    </record>
+  	    <record model="ir.ui.view" id="tms_razon_estado_list">
+      <field name="name">fleet_vehicle_status_reason</field>
+      <field name="model">fleet.vehicle.status_reason</field>
+      <field name="arch" type="xml">
+      		<form string="Type of Vehicles">
+                    <sheet>
+                       <!--  <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" groups="base.group_user" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                            </button>
+                        </div> -->
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" placeholder="Razón de Estado, Ejemplo:"/></h1>
+                        </div>
+                        <group col="4" colspan="4">
+                            <field name="parent_id" />
+                            <field name="tipo"/>                            
+                                                        
+                            <separator string="Notes" colspan="4"/>
+                            <field name="notes" colspan="4" nolabel="1"/>
+                        </group>
+                    </sheet>
+                    
+                     <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread" placeholder="Share a message..."/>
+                    </div>
+                </form>
+      </field>
+  </record>
+</data>
+</odoo>

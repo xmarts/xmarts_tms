@@ -11,6 +11,7 @@
                         <field name="operating_unit_id"/>
                         <field name="driver"/>
                         <field name="outsourcing" attrs="{'invisible':[('driver','=',False)]}"/>
+                        <field name="employee_category_id" />
                     </group>
                     <group col="4">
                         <field name="tms_advance_account_id" attrs="{'required':[('driver','=',True)], 'invisible':[('driver','=',False)] }"/>
@@ -22,6 +23,7 @@
                             <field name="driver_license" attrs="{'invisible': [('driver','=',False)]}"/>
                             <button name="get_driver_license_info" type="object" string="Get Licence Info" attrs="{'invisible': [('driver','=',False)]}" class="oe_link"/>
                         </div>
+                        <field name="num_med_prev" />
                         <field name="license_type" attrs="{'invisible': [('driver','=',False)]}"/>
                         <field name="license_valid_from" attrs="{'invisible': [('driver','=',False)]}"/>
                         <field name="license_expiration" attrs="{'invisible': [('driver','=',False)]}"/>
@@ -49,4 +51,5 @@
           </p>
         </field>
     </record>
+
 </odoo>

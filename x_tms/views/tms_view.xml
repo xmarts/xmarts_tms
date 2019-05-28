@@ -338,7 +338,7 @@
                             </group>
                         </page>
 
-                        <page string="Cargos Adicionales">
+                        <page string="Gastos Reales">
                             <group>
                                 <field name="cargo_id" context="{'default_line_cargo_id':active_id}" nolabel="1">
                                     <tree editable="bottom">

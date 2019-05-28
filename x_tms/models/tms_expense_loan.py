@@ -35,13 +35,13 @@ class TmsExpenseLoan(models.Model):
         readonly=True,
         default='draft')
     discount_method = fields.Selection([
-        ('each', 'Each Travel Expense Record'),
-        ('weekly', 'Weekly'),
-        ('fortnightly', 'Fortnightly'),
-        ('monthly', 'Monthly')], required=True)
+        ('each', 'Por Cada Registro de Viaje'),
+        ('weekly', 'Semanal'),
+        ('fortnightly', 'Quincenal'),
+        ('monthly', 'Mensual')], required=True)
     discount_type = fields.Selection([
-        ('fixed', 'Fixed'),
-        ('percent', 'Loan Percentage'), ], required=True)
+        ('fixed', 'Fijo'),
+        ('percent', 'Porcentaje'), ], required=True)
     notes = fields.Text()
     origin = fields.Char()
     amount = fields.Float(required=True)

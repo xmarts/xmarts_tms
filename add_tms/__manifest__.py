@@ -27,7 +27,7 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
-        'views/tms_operations.xml',
+        #'views/tms_operations.xml',
         'views/type_vehicle_procedures.xml',
         'views/tms_event_actions.xml',
         'views/tms_categories_events.xml',
