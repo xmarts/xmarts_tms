@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import models
-from . import tms_operations
+#from . import tms_operations
 from . import type_vehicle_procedures
 from . import tms_event_actions
 from . import tms_categories_events
