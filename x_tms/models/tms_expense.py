@@ -21,7 +21,7 @@ class tms_employee_salary(models.Model):
     monto = fields.Float(string="Monto")
     periodo = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo de nomina")
     hr_emp_cat_id = fields.Many2one("hr.employee.category") 
-    #expense_id = fields.Many2one("tms.expense")
+    expense_id = fields.Many2one("tms.expense")
 
 class tms_categories_events(models.Model):
 
@@ -64,7 +64,7 @@ class TmsExpense(models.Model):
     file_fuel = fields.Binary(string="Archivo de combustible.")
     filenamef = fields.Char('file name')
 
-    #employee_salary_ids = fields.One2many("hr.employee.salary", "expense_id", string="Detalles de salario")
+    employee_salary_ids = fields.One2many("hr.employee.salary", "expense_id", string="Detalles de salario")
 
 
     operating_unit_id = fields.Many2one(
@@ -495,11 +495,9 @@ class TmsExpense(models.Model):
                     rec.amount_real_expense += line.price_subtotal
 
 
-    amount_percepciones = fields.Float(string="Total Percepciones", store=True)
-    amount_deducciones = fields.Float(string="Total Deducciones", store=True)
-#     , compute="_compute_amount_percep"
-# , compute="_compute_amount_deduc"
-
+    amount_percepciones = fields.Float(string="Total Percepciones", compute="_compute_amount_percep", store=True)
+    amount_deducciones = fields.Float(string="Total Deducciones", compute="_compute_amount_deduc", store=True)
+    
     @api.depends('employee_salary_ids','amount_percepciones')
     def _compute_amount_percep(self):
         for rec in self:
