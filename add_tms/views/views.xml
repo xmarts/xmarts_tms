@@ -103,14 +103,14 @@
 
 
 
-  <!-- <record model="ir.actions.act_window" id="add_tms_operaciones">
+  <record model="ir.actions.act_window" id="add_tms_operaciones">
       <field name="name">TMS Operaciones</field>
       <field name="res_model">tms_operat.tms_operat</field>
       <field name="view_mode">tree,form</field>
-    </record> -->
+    </record>
 
-       <!--  <menuitem name="Operaciones" id="add_operaciones_menu_2_list" parent="x_tms.menu_tms_travels"
-              action="add_tms_operaciones"/> -->
+        <menuitem name="Operaciones" id="add_operaciones_menu_2_list" parent="x_tms.menu_tms_travels"
+              action="add_tms_operaciones"/>
     
       <record model="ir.actions.act_window" id="add_tms_tipo_tramite_vehicular">
       <field name="name">Tipo de Tramite Vehicular</field>

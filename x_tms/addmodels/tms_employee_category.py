@@ -12,6 +12,8 @@ class tms_employee_salary(models.Model):
     expense_id = fields.Many2one("tms.expense")
 
 class tms_categories_events(models.Model):
+
+
 	_name = 'hr.employee.category'
 	name = fields.Char('Etiqueta del empleado')
 	
