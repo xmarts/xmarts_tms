@@ -14,16 +14,32 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
+class tms_employee_salary(models.Model):
+    _name = 'hr.employee.salary'
+    name = fields.Char(string="Concepto")
+    tipo = fields.Selection([('percepcion','Percepción'),('deduccion','Deducción')], string="Tipo")
+    monto = fields.Float(string="Monto")
+    periodo = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo de nomina")
+    hr_emp_cat_id = fields.Many2one("hr.employee.category") 
+    #expense_id = fields.Many2one("tms.expense")
+
+class tms_categories_events(models.Model):
+
+
+    _name = 'hr.employee.category'
+    name = fields.Char('Etiqueta del empleado')
+    
+    employee_salary_ids = fields.One2many("hr.employee.salary", "hr_emp_cat_id", string="Detalles de salario")
+
+
 class ExpenseDiferences(models.Model):
-    """docstring for ExpenseDiferences"""
     _name = "expense.diference"
     name = fields.Char(string="Concepto")
     tipo = fields.Selection([('reembolso','Reembolso'),('sobrante','Cambio')], string="Tipo")
     valor = fields.Float(string="Valor")
     expense_id = fields.Many2one("tms.expense")
 
-class ExpenseDiferences(models.Model):
-    """docstring for ExpenseDiferences"""
+class ExpenseFuelDiferences(models.Model):
     _name = "tms.fuel.diference"
     name = fields.Char(string="Mercancia")
     descripcion = fields.Char(string="Descripción")
@@ -48,7 +64,7 @@ class TmsExpense(models.Model):
     file_fuel = fields.Binary(string="Archivo de combustible.")
     filenamef = fields.Char('file name')
 
-    employee_salary_ids = fields.One2many("hr.employee.salary", "expense_id", string="Detalles de salario")
+    #employee_salary_ids = fields.One2many("hr.employee.salary", "expense_id", string="Detalles de salario")
 
 
     operating_unit_id = fields.Many2one(
@@ -479,8 +495,10 @@ class TmsExpense(models.Model):
                     rec.amount_real_expense += line.price_subtotal
 
 
-    amount_percepciones = fields.Float(string="Total Percepciones", compute="_compute_amount_percep", store=True)
-    amount_deducciones = fields.Float(string="Total Deducciones", compute="_compute_amount_deduc", store=True)
+    amount_percepciones = fields.Float(string="Total Percepciones", store=True)
+    amount_deducciones = fields.Float(string="Total Deducciones", store=True)
+#     , compute="_compute_amount_percep"
+# , compute="_compute_amount_deduc"
 
     @api.depends('employee_salary_ids','amount_percepciones')
     def _compute_amount_percep(self):
@@ -488,66 +506,6 @@ class TmsExpense(models.Model):
             for x in rec.employee_salary_ids:
                 if x.tipo == 'percepcion':
                     rec.amount_percepciones += x.monto
-
-    @api.onchange('employee_salary_ids')
-    def onchange_amount_percep(self):
-        for rec in self:
-            for x in rec.employee_salary_ids:
-                if x.tipo == 'percepcion':
-                    rec.amount_percepciones += x.monto
-
-    @api.depends('employee_salary_ids','amount_deducciones')
-    def _compute_amount_deduc(self):
-        for rec in self:
-            for x in rec.employee_salary_ids:
-                if x.tipo == 'deduccion':
-                    rec.amount_deducciones += x.monto
-
-    @api.onchange('employee_salary_ids')
-    def onchange_amount_deduc(self):
-        for rec in self:
-            for x in rec.employee_salary_ids:
-                if x.tipo == 'deduccion':
-                    rec.amount_deducciones += x.monto
-
-
-    @api.multi
-    def get_nomina(self):
-        for rec in self:
-            rec.employee_salary_ids.search([
-                ('expense_id', '=', rec.id)]).unlink()
-            today = datetime(int(rec.date[:4]),int(rec.date[5:7]),int(rec.date[8:10]))
-            week_day = today.weekday()
-            month = int(rec.date[5:7])
-            month_day = int(rec.date[8:10])
-            
-
-            for x in rec.employee_id.employee_category_id.employee_salary_ids:
-                if x.periodo == 'sem' and week_day == 4:
-                    rec.employee_salary_ids.create({
-                    'name': x.name,
-                    'tipo': x.tipo,
-                    'monto': x.monto,
-                    'periodo': x.periodo,
-                    'expense_id': rec.id
-                    })
-                if x.periodo == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
-                    rec.employee_salary_ids.create({
-                    'name': x.name,
-                    'tipo': x.tipo,
-                    'monto': x.monto,
-                    'periodo': x.periodo,
-                    'expense_id': rec.id
-                    })
-                if x.periodo == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
-                    rec.employee_salary_ids.create({
-                    'name': x.name,
-                    'tipo': x.tipo,
-                    'monto': x.monto,
-                    'periodo': x.periodo,
-                    'expense_id': rec.id
-                    })
-            
 
     @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
     def _compute_amount_subtotal_real(self):
