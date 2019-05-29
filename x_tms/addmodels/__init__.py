@@ -13,7 +13,7 @@ from . import tms_motor_types
 from . import tms_validity
 from . import tms_tires
 from . import tms_categories_empresa
-from . import tms_employee_category
+#from . import tms_employee_category
 #from . import tms_plazas
 from . import tms_categories_letter_porte
 from . import tms_transportable_product
