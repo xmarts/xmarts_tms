@@ -1266,7 +1266,8 @@ class TmsExpense(models.Model):
                         'control': True
                     })
                     loan.expense_ids += expense_line
-            elif loan.lock == True and loan.state == 'confirmed' and ac_loan:
+        for loan in loans:
+            if loan.lock == True and loan.state == 'confirmed' and ac_loan == True:
                 if loan.balance > 0.0:
                     loan.write({
                         'expense_id': self.id
@@ -1277,7 +1278,7 @@ class TmsExpense(models.Model):
                         'line_type': "loan",
                         'product_id': loan.product_id.id,
                         'product_qty': 1.0,
-                        'unit_price': loan.amount_discount,
+                        'unit_price': total_discount,
                         'date': self.date,
                         'control': True
                     })
