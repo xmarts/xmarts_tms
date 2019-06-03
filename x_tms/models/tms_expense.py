@@ -1309,19 +1309,21 @@ class TmsExpense(models.Model):
 
 
                 for x in travel.advance_ids:
-                    rec.expense_dif_ids.create({
-                        'name': 'Anticipo '+ str(x.name),
-                        'tipo':'sobrante',
-                        'valor': x.amount,
-                        'expense_id': rec.id
-                        })
+                    if x.to_expense == True:
+                        rec.expense_dif_ids.create({
+                            'name': 'Anticipo '+ str(x.name)+ " por "+str(x.product_id.name),
+                            'tipo':'sobrante',
+                            'valor': x.amount,
+                            'expense_id': rec.id
+                            })
                 for x in travel.cargo_id:
-                    rec.expense_dif_ids.create({
-                        'name': 'Gastos real '+ str(x.name.name),
-                        'tipo':'reembolso',
-                        'valor': x.valor,
-                        'expense_id': rec.id
-                        })
+                    if x.state == 'aprobado':
+                        rec.expense_dif_ids.create({
+                            'name': 'Gastos real '+ str(x.name.name),
+                            'tipo':'reembolso',
+                            'valor': x.valor,
+                            'expense_id': rec.id
+                            })
 
 
                 # for x in travel.cargo_id:

@@ -80,6 +80,9 @@ class TmsAdvance(models.Model):
         'product.product', string='Product', required=True,
         domain=[('tms_product_category', '=', 'real_expense')])
 
+
+    to_expense = fields.Boolean(string="Comparar en gastos", default=False)
+
     @api.multi
     @api.depends('travel_id')
     def _compute_unit_id(self):

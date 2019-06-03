@@ -2092,7 +2092,7 @@ class tms_viaje_cargos(models.Model):
     filename = fields.Char('file name')
     advance_id = fields.Many2one("tms.advance", string="Anticipo")
 
-    
+    state = fields.Selection([('pendiente','Pendiente'),('aprobado','Aprobado'),('rechazado','Rechazado')], string="Estado", default="pendiente")
     # @api.constrains('name')
     # def _check_name(self):
     #     obj = self.env['tms.viaje.cargos'].search(
@@ -2100,6 +2100,17 @@ class tms_viaje_cargos(models.Model):
     #     if len(obj) > 1:
     #         raise UserError(
     #             _('Aviso !\nNo se puede crear cargos del mismo tipo mas de 1 vez.'))
+    @api.multi
+    def action_cancel(self):
+        for rec in self:
+            rec.state = 'rechazado'
+            rec.line_cargo_id.message_post('Cargo por '+str(rec.name)+" fue rechazado")
+
+    @api.multi
+    def action_aprove(self):
+        for rec in self:
+            rec.state = 'aprobado'
+            rec.line_cargo_id.message_post('Cargo por '+str(rec.name)+" fue aprobado")
 
 class tms_tipocargosadicionales(models.Model):
     _name = 'tms.tipocargosadicionales'

@@ -207,7 +207,7 @@
                         </page>
                         <page string="Advances">
                             <field name="advance_ids" attrs="{'readonly':[('state','in',('done', 'closed'))]}" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}" nolabel="1">
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="id" invisible="1"/>
                                     <field name="name" />
                                     <field name="notes" invisible="1" />
@@ -219,7 +219,6 @@
                                     <field name="date" />
                                     <field name="product_id" />
                                     <field name="amount" />
-                                    <field name="auto_expense" />
                                     <field name="paid" />
                                     <field name="state" />
                                     <field name="move_id" invisible="1"/>
@@ -230,6 +229,7 @@
                                     <field name="payment_move_id" invisible="1"/>
                                     <field name="n_transaccion" invisible="1"/>
                                     <field name="auto_expense" invisible="1"/>
+                                    <field name="to_expense"/>
                                 </tree>
                             </field>
                         </page>
@@ -348,7 +348,11 @@
                                         <field name="advance_id" />
                                         <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
                                         <field name="filename" invisible="1"/>
-                                        <field name="line_cargo_id" invisible="0"/>
+                                        <field name="line_cargo_id" invisible="1"/>
+                                        <field name="state" invisible="0" readonly="1"/>
+
+                                    <button name="action_aprove" type="object" string="Aprobar" attrs="{'invisible':[('state','in',('rechazado','aprobado'))]}" />
+                                    <button name="action_cancel" type="object" string="Rechazar" attrs="{'invisible':[('state','in',('rechazado','aprobado'))]}" />
                                     </tree>
                                 </field>
                             </group>
