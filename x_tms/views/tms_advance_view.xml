@@ -54,12 +54,12 @@
         <field name="arch" type="xml">
             <form string="Advances">
                 <header>
-                    <button name="action_cancel_draft" icon="fa-reply" states="cancel" string="Set to Draft" type="object"/>
-                    <button name="action_cancel" icon="fa-times" states="draft,approved,confirmed" string="Cancel" type="object"/>
-                    <button name="action_approve" icon="fa-thumbs-up" class="oe_highlight" attrs="{'invisible':[('state','in', ['authorized','approved','confirmed','closed','cancel'])]}" string="Approve" type="object"/>
+                    <button name="action_cancel_draft" groups="x_tms.group_tms_advance_validator" icon="fa-reply" states="cancel" string="Set to Draft" type="object"/>
+                    <button name="action_cancel" groups="x_tms.group_tms_advance_validator" icon="fa-times" states="draft,approved,confirmed" string="Cancel" type="object"/>
+                    <button name="action_approve" groups="x_tms.group_tms_advance_validator" icon="fa-thumbs-up" class="oe_highlight" attrs="{'invisible':[('state','in', ['authorized','approved','confirmed','closed','cancel'])]}" string="Approve" type="object"/>
                     <!-- <button name="action_approve" icon="fa-thumbs-up" class="oe_highlight" states="draft" string="Approve" type="object"/> -->
-                    <button name="action_confirm" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
-                    <button name="action_authorized" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
+                    <button name="action_confirm" groups="x_tms.group_tms_advance_validator" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
+                    <button name="action_authorized" groups="x_tms.group_tms_advance_validator" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
                     <field name="state" statusbar_visible="draft,approved,authorized,confirmed,cancel,closed" widget="statusbar"/>
                 </header>
                 <sheet>
