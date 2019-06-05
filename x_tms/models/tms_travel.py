@@ -176,8 +176,12 @@ class TmsTravel(models.Model):
                 }
             }
             for x in image:
-                if cont>0:
-                    lista = x.split("|")
+                lista = x.split("|")
+                ll = x.split(",")
+                if ll[0] == 'Tag' or ll[0] == '\r\n':
+                    print(ll)
+                else:
+                    print(lista)
                     nom = lista[4]
                     cc = 0
                     for z in nom:
@@ -197,7 +201,6 @@ class TmsTravel(models.Model):
                           'travel_id': self.id,
                         }
                         line_ids += [line]
-                cont += 1
             res['value'].update({
                 'cruce_casetas': line_ids,
             })
