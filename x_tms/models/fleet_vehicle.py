@@ -15,6 +15,7 @@ class AttachmentsVehicle(models.Model):
     date = fields.Datetime(string='Fecha')
     adjunto_compro_vehicle = fields.Binary(string="Adjunto")
     filename = fields.Char('file name')
+    fleet_id=fields.Many2one('fleet.vehicle')
 
 
 class FleetVehicle(models.Model):
@@ -22,7 +23,7 @@ class FleetVehicle(models.Model):
     _description = "Vehicle"
     _order = 'name'
 
-    attachment_vehicle = fields.One2many('tms.attachment.vehicle', 'name', string="Adjuntos")
+    attachment_vehicle = fields.One2many('tms.attachment.vehicle', 'fleet_id', string="Adjuntos")
     name = fields.Char(compute=False, required=True)
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
