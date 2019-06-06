@@ -106,6 +106,7 @@
                         <group>
                             <field name="attachment_vehicle" nolabel="1">
                                     <tree editable="bottom">
+                                        <field name="fleet_id" invisible="1"/>
                                         <field name="name" />
                                         <field name="date" />
                                         <field name="adjunto_compro_vehicle" readonly="0" widget="binary" filename="filename"/>
