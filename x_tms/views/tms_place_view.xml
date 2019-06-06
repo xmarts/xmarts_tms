@@ -43,9 +43,9 @@
                     <field name="longitude"/>
                 </group>
                 <group string="General">
-                    <field name="tipo_carga"/>
-                    <field name="cap_carga"/>
-                    <field name="cap_descarga"/>
+                    <field name="tipo_carga" attrs="{'invisible':[('tipo_ubicacion','=','parada')]}"/>
+                    <field name="cap_carga" attrs="{'invisible':[('tipo_ubicacion','=','parada')]}"/>
+                    <field name="cap_descarga" attrs="{'invisible':[('tipo_ubicacion','=','parada')]}"/>
                     <field name="bodega_prob"/>
                     <field name="tipo_ubicacion"/>
                     <field name="responsable"/>
