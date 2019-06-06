@@ -253,46 +253,100 @@
                                 <td colspan="6"/>
                                 <td colspan="6">
                                     <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
-                                        <tr><th colspan="2" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
-                                        <tr>
-                                            <th colspan="6">CONCEPTO</th>
-                                            <!--<th colspan="2">IMPORTE</th>-->
-                                        </tr>
+                                        <tr><th colspan="20" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
                                         <tr t-if="o.si_seguro">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del seguro</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_seguro"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_seguro"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
                                         </tr>
                                         <tr t-if="o.lavado">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo de lavado</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_lavado"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_lavado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
                                         </tr>
                                         <tr t-if="o.plastico">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo por plastico</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_plastico"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_plastico"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
                                         </tr>
                                         <tr t-if="o.fumigado">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo de fumigado</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_fumigado"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_fumigado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                           
                                         </tr>
                                         <tr t-if="o.otros">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Otros cargos</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_otros"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_otros"/></td>
+                                            <th colspan="2">Espacificaciones</th>
+                                            <td colspan="2"><span t-field="o.des_otros"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
                                         </tr>
                                         <tr t-if="o.camisa">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo por camisa</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_camisa"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_camisa"/></td>
+                                            <th colspan="2">Manga</th>
+                                            <td colspan="2"><span t-esc="dict(o._fields['camisa_manga'].selection).get(o.camisa_manga)"/></td>
+                                            <th colspan="2">Material Espacial</th>
+                                            <td colspan="2"><span t-field="o.camisa_mat"/></td>
+                                           
                                         </tr>
                                         <tr t-if="o.chaleco">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del chaleco</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_chaleco"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_chaleco"/></td>
+                                            <th colspan="2">Color</th>
+                                            <td colspan="2"><span t-field="o.chaleco_color"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            
                                         </tr>
                                         <tr t-if="o.guantes">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo pr guantes</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_guantes"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_guantes"/></td>
+                                            <th colspan="2">Tipo de guates</th>
+                                            <td colspan="2"><span t-field="o.tipo_guantes"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
                                         </tr>
                                         <tr t-if="o.pantalon">
+                                            <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del pantalon</td>
-                                            <!--<td colspan="2"><span t-field="o.cargo_pantalon"/></td>-->
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_pantalon"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="o.pantalon_sua"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="o.pantalon_mat"/></td>
                                         </tr>
                                     </table>
                                 </td>
