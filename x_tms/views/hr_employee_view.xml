@@ -21,7 +21,7 @@
                         <label for="driver_license" attrs="{'invisible': [('driver','=',False)]}"/>
                         <div>
                             <field name="driver_license" attrs="{'invisible': [('driver','=',False)]}"/>
-                            <button name="get_driver_license_info" type="object" string="Get Licence Info" attrs="{'invisible': [('driver','=',False)]}" class="oe_link"/>
+                            <!-- <button name="get_driver_license_info" type="object" string="Get Licence Info" attrs="{'invisible': [('driver','=',False)]}" class="oe_link"/> -->
                         </div>
                         <field name="num_med_prev" />
                         <field name="license_type" attrs="{'invisible': [('driver','=',False)]}"/>
