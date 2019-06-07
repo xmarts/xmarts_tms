@@ -1245,7 +1245,7 @@ class TmsExpense(models.Model):
             total_discount = 0.0
             payment = loan.payment_move_id.id
             ac_loan = loan.active_loan
-            if loan.lock != True and loan.state == 'confirmed' and payment:
+            if loan.lock != True and loan.state == 'confirmed':
                 if ac_loan:
                     loan.write({
                         'expense_id': self.id
@@ -1272,17 +1272,27 @@ class TmsExpense(models.Model):
                     loan.write({
                         'expense_id': self.id
                     })
+
+                    descuento = 0
+
+                    if loan.amount_discount > loan.balance:
+                        descuento = loan.balance
+                    if loan.amount_discount <= loan.balance:
+                        descuento = loan.amount_discount
+
                     expense_line = self.expense_line_ids.create({
                         'name': _("Loan: ") + str(loan.name),
                         'expense_id': self.id,
                         'line_type': "loan",
                         'product_id': loan.product_id.id,
                         'product_qty': 1.0,
-                        'unit_price': total_discount,
+                        'unit_price': descuento,
                         'date': self.date,
                         'control': True
                     })
+
                     loan.expense_ids += expense_line
+
 
     @api.multi
     def get_travel_info(self):

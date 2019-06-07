@@ -24,7 +24,7 @@ class TmsExpenseLoan(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', 'Driver', required=True)
     expense_ids = fields.Many2many(
-        'tms.expense.line', readonly=True)
+        'tms.expense.line')
     state = fields.Selection(
         [('draft', 'Draft'),
          ('authorized', 'Waiting for authorization'),
@@ -205,7 +205,7 @@ class TmsExpenseLoan(models.Model):
             rec.state = 'draft'
             rec.message_post(_('<strong>Loan drafted.</strong>'))
 
-    @api.depends('expense_ids')
+    @api.depends('expense_ids','state')
     def _compute_balance(self):
         for loan in self:
             line_amount = 0.0
@@ -216,7 +216,8 @@ class TmsExpenseLoan(models.Model):
                     line_amount += line.price_total
                 loan.balance = loan.amount + line_amount
             if loan.balance <= 0.0:
-                loan.write({'state': 'closed'})
+                loan.state = 'closed'
+                #loan.write({'state': 'closed'})
 
     @api.multi
     def unlink(self):
