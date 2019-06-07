@@ -215,7 +215,7 @@ class TmsExpenseLoan(models.Model):
                 for line in loan.expense_ids:
                     line_amount += line.price_total
                 loan.balance = loan.amount + line_amount
-            if loan.balance <= 0.0:
+            if loan.balance <= 0.0 and loan.state == 'confirmed':
                 loan.state = 'closed'
                 #loan.write({'state': 'closed'})
 
