@@ -13,6 +13,7 @@ import tempfile
 import base64
 import os
 
+
 # username = 'javier.ramirez@sli.mx'
 # password = 'Javier0318*'
 # database = 'GSYEECA'
@@ -151,6 +152,22 @@ class TmsTravel(models.Model):
     _description = 'Travel'
     _order = "date desc"
 
+
+    #cambios victor
+
+    validar_viaje=fields.Boolean(string='Validar Viaje' )
+
+    @api.onchange('unit_id.insurance_days_to_expire','travel_duration')
+    def onchange_validar_viaje(self):
+        duration=self.travel_duration/24
+
+        if self.unit_id.insurance_days_to_expire < duration:
+            self.validar_viaje=True
+        else:
+            self.validar_viaje=False    
+    #
+
+    #Agregando campos
     file_casetas = fields.Binary(string="Archivo de casetas.")
     filename = fields.Char('file name')
 
@@ -413,9 +430,6 @@ class TmsTravel(models.Model):
         'res.partner', string='Customer', compute='_compute_partner_ids',
         store=True)
 
-
-
-    #Agregando campos
 
     fecha_viaje = fields.Date(string='Fecha del viaje', readonly=False, index=True, copy=False,
                               default=fields.Datetime.now, required=True)
@@ -1069,7 +1083,27 @@ class TmsTravel(models.Model):
     @api.multi
     def action_progress(self):
         for rec in self:
+            #victor
+            if self.validar_viaje==True:
+                raise ValidationError(
+                    _('La Póliza expira antes de terminar el viaje'))
+            fec_ac= str (datetime.now (). date ())
 
+            dato = self.env['fleet.vehicle.red_tape'].search([('vehicle_id','=',self.unit_id.id),('date_end','<=',fec_ac)])
+            fec=dato.date_end
+            pror=dato.dias
+            for l in dato:
+                if l.prorroga==True:
+                    continue
+                    # cur_date = str(l.date_end)
+                    # new_date = cur_date + timedelta(days=5)      
+                    # if new_date <= fec_ac:
+                    #     raise ValidationError(
+                    #         _("se encuentra vencido el tramite: %s" % l.name))
+                if l.date_end <= fec_ac:
+                        raise ValidationError(
+                            _("se encuentra vencido el tramite: %s" % l.name))
+            #
             if not self.subpedido_id:
                 raise ValidationError(
                     _('Aun no hay un pedido asociado'))

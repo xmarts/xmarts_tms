@@ -11,3 +11,4 @@ class tms_vehicle_red_tape_type(models.Model):
 	tipo= fields.Selection(selection=[('view', 'Ver'),('normal', 'Normal') ],string='Tipo',default='view')
 	notes=fields.Text(string='Notas')
 	active = fields.Boolean(string='Outsourcing?')
+	
