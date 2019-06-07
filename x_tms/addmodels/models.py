@@ -17,7 +17,7 @@ class fleet_vehicle_red_tape(models.Model):
 	date_end = fields.Date(string='Fecha Fin')
 	amount_paid = fields.Float(string='Monto Pagado')
 	notes =fields.Text(string='Descripcíon')
-	 
+	
 	#state = fields.Selection([
 	#('draft', 'Borrador'),
 	#('pending', 'Pendiente'),
