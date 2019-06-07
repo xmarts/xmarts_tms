@@ -63,7 +63,7 @@
                             <field name="fecha_viaje" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="subpedido_id" readonly="1"/>
                             <field name="cliente_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" domain="[('customer', '=', True)]"/>
-                            <field name="producto" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
+                            <field name="producto" domain="[('tms_product_category', '=',False),('es_caseta', '=', False),('es_factor_op', '=', False),('es_factor_op', '=', False),('es_combustible', '=', False),('es_cargo', '=', False),('es_flete', '=', False)]" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
                             <field name="costo_producto" />
                             <field name="sucursal_id" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}" />
                             <field name="lineanegocio" attrs="{'readonly':[('state','in',('progress','done', 'closed'))]}"/>
