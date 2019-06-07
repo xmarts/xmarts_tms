@@ -30,6 +30,12 @@
                         <field name="days_to_expire" attrs="{'invisible': [('driver','=',False)]}"/>
                     </group>
                 </page>
+                <page string="Infonavit">
+                    <group>
+                        <field name="monto_info" />
+                        <field name="periodo_info" />
+                    </group>
+                </page>
             </notebook>
         </field> 
     </record>

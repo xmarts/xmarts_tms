@@ -74,3 +74,7 @@ class HrEmployee(models.Model):
                 client.close()
                 raise ValidationError(_(
                     'The driver license is not in SCT database'))
+
+
+    monto_info = fields.Float(string="Monto Infonavit", default=0.0)
+    periodo_info = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo infonavit")

@@ -563,6 +563,31 @@ class TmsExpense(models.Model):
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
+            if self.employee_id.monto_info > 0.0:
+                if self.employee_id.periodo_info == 'sem' and week_day == 4:
+                    rec.employee_salary_ids.create({
+                    'name': 'Infonavit',
+                    'tipo': 'deduccion',
+                    'monto': self.employee_id.monto_info,
+                    'periodo': self.employee_id.periodo_info,
+                    'expense_id': rec.id
+                    })
+                if self.employee_id.periodo_info and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                    rec.employee_salary_ids.create({
+                    'name': 'Infonavit',
+                    'tipo': 'deduccion',
+                    'monto': self.employee_id.monto_info,
+                    'periodo': self.employee_id.periodo_info,
+                    'expense_id': rec.id
+                    })
+                if self.employee_id.periodo_info and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                    rec.employee_salary_ids.create({
+                    'name': 'Infonavit',
+                    'tipo': 'deduccion',
+                    'monto': self.employee_id.monto_info,
+                    'periodo': self.employee_id.periodo_info,
+                    'expense_id': rec.id
+                    })
     
     @api.depends('employee_salary_ids','amount_percepciones')
     def _compute_amount_percep(self):
