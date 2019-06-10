@@ -72,7 +72,7 @@
                             <field name="color"/>
                         </group>
                     </page>
-                    <page string="Engine Options">
+                    <page string="Engine Options" attrs="{'invisible': [('fleet_type', '!=','tractor')]}">
                         <group string="Engine Options">
                             <field name="transmission"/>
                             <field name="engine_id"/>

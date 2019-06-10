@@ -6,12 +6,12 @@
     
 <!-- comienzo formulario TMS-->
 
-
+<!-- 
      <record id="tms_modelo_form" model="ir.ui.view">
     <field name="name">fleet_vehicle_red_tape</field>
     <field name="model">fleet.vehicle.red_tape</field>
     <field name="arch" type="xml">
-    <form string="Vehicles Red Tapes">
+    <form string="Vehicles Red Tapes"> -->
                     <!--<header>
                         <button name="action_cancel" states="draft,pending,progress" string="Cancel" type="object"/>
                    <button name="action_cancel_draft" states="cancel" string="Set to Draft" type="object"/>
@@ -19,7 +19,7 @@
                         <button name="action_progress" states="pending" string="Progress" type="object" class="oe_highlight"/>
                         <button name="action_done" states="progress" string="Done" type="object" class="oe_highlight"/>
                         <field name="state" widget="statusbar" statusbar_visible="draft,pending,progress,done"/>
-                    </header> -->
+                    </header> --><!-- 
                     <sheet>
                     <group col="4" colspan="4">
                         <h1>
@@ -29,9 +29,9 @@
                     </group>
                         <group col="4">
                             <field name="vehicle_id"/>
-                            <field name="date"/>
+                            <field name="date"/> -->
                             <!-- <field name="vehicle_type_id"/>                             -->
-                            <field name="partner_id"/>
+                <!--             <field name="partner_id"/>
                             <field name="name" colspan="4"/>
                             <field name="date_start"/>
                             <field name="date_end"/>
@@ -44,7 +44,7 @@
                 </form>       
 </field>
 </record>
-
+ -->
 
 
 <!-- Fin -->
