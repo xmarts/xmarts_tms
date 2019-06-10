@@ -713,7 +713,7 @@ class TmsExpense(models.Model):
     def write(self, values):
         for rec in self:
             res = super(TmsExpense, self).write(values)
-            #rec.get_travel_info()
+            rec.get_travel_info()
             return res
 
     @api.multi
@@ -1279,7 +1279,7 @@ class TmsExpense(models.Model):
                     total_final = loan.balance - total_discount
                     if total_final <= 0.0:
                         total_discount = loan.balance
-                        #loan.write({'balance': 0.0, 'state': 'closed'})
+                        #loan.write({'state': 'closed'})
                     expense_line = self.expense_line_ids.create({
                         'name': _("Loan: ") + str(loan.name),
                         'expense_id': self.id,
@@ -1291,6 +1291,7 @@ class TmsExpense(models.Model):
                         'control': True
                     })
                     loan.expense_ids += expense_line
+                    loan._calculate_balance()
         for loan in loans:
             if loan.lock == True and loan.state == 'confirmed' and ac_loan == True:
                 if loan.balance > 0.0:
@@ -1302,6 +1303,7 @@ class TmsExpense(models.Model):
 
                     if loan.amount_discount > loan.balance:
                         descuento = loan.balance
+
                     if loan.amount_discount <= loan.balance:
                         descuento = loan.amount_discount
 
@@ -1317,6 +1319,7 @@ class TmsExpense(models.Model):
                     })
 
                     loan.expense_ids += expense_line
+                    loan._calculate_balance()
 
 
     @api.multi
