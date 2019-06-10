@@ -82,6 +82,7 @@
                                 <field name="date"/>
                                 <field name="name"/>
                                 <field name="expense_id"/>
+                                <field name="state_expense" readonly="1"/>
                                 <field name="price_total"/>
                             </tree>
                         </field>

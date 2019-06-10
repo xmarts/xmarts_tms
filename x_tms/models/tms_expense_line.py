@@ -88,6 +88,13 @@ class TmsExpenseLine(models.Model):
     route_id = fields.Many2one(
         'tms.route', related='travel_id.route_id',
         string='Route', readonly=True)
+    state_expense = fields.Selection([
+        ('draft', 'Draft'),
+        ('approved', 'Approved'),
+        ('confirmed', 'Confirmed'),
+        ('cancel', 'Cancelled')], 'Estado de liquidacion', readonly=True,
+        help="Gives the state of the Travel Expense. ",
+        default='draft', related="expense_id.state")
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
