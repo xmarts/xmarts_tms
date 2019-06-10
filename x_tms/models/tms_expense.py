@@ -1276,9 +1276,9 @@ class TmsExpense(models.Model):
                         'expense_id': self.id
                         })
                     total_discount = self.calculate_discounts(methods, loan)
-                    # total_final = loan.balance - total_discount
-                    # if total_final <= 0.0:
-                    #     total_discount = loan.balance
+                    total_final = loan.balance - total_discount
+                    if total_final <= 0.0:
+                        total_discount = loan.balance
                         #loan.write({'state': 'closed'})
                     expense_line = self.expense_line_ids.create({
                         'name': _("Loan: ") + str(loan.name),

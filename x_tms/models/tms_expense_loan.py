@@ -50,7 +50,7 @@ class TmsExpenseLoan(models.Model):
     paid = fields.Boolean(
         compute='_compute_paid',
         store=True, readonly=True)
-    balance = fields.Float(compute='_compute_balance')
+    balance = fields.Float(compute='_compute_balance', store=True)
     active_loan = fields.Boolean()
     lock = fields.Boolean(string='Other discount?')
     amount_discount = fields.Float()
@@ -76,6 +76,8 @@ class TmsExpenseLoan(models.Model):
         "is only for Loan Expense Records with balance < 0.0",
         readonly=True,
         ondelete='restrict',)
+
+    
 
     @api.model
     def create(self, values):
