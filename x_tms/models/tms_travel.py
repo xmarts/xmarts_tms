@@ -661,16 +661,16 @@ class TmsTravel(models.Model):
                 if x.factor_type == 'porcentaje':
                     total = (self.flete_cliente/100) * x.valor
                 if x.factor_type == 'costokm':
-                    if self.kmlextra > 0 or self.kmlextra2 > 0:
-                        if x.if_diferentes != True:
-                            total = x.valor * ((self.route_id.distance+self.kmlextra) + (self.route2_id.distance+self.kmlextra2))
-                        if x.if_diferentes == True:
-                            total = (x.valor * (self.route_id.distance+self.kmlextra)) + (x.valor2 * (self.route2_id.distance+self.kmlextra2))
-                    else:
-                        if x.if_diferentes != True:
-                            total = x.valor * (self.route_id.distance + self.route2_id.distance)
-                        if x.if_diferentes == True:
-                            total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+                    d1 = 0
+                    d2 = 0
+                    if self.klm_ex == True:
+                        d1 = self.kmlextra
+                    if self.klm_ex2 == True:
+                        d1 = self.kmlextra2
+                    if x.if_diferentes != True:
+                        total = x.valor * (self.route_id.distance + d1 + self.route2_id.distance + d2)
+                    if x.if_diferentes == True:
+                        total = (x.valor * self.route_id.distance + d1) + (x.valor2 * self.route2_id.distance + d2)
 
                 line = {
                   'operating_unit_id': self.operating_unit_id.id,
@@ -1999,7 +1999,7 @@ class TmsTravel(models.Model):
               'order_id': so.id
               })
 
-    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2')
+    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2','kmlextra','kmlextra2')
     def _onchange_type_factor(self):
         for x in self.driver_factor_ids:
             if x.factor_type == 'costokm':
