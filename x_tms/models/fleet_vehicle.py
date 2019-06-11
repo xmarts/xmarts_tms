@@ -81,3 +81,6 @@ class FleetVehicle(models.Model):
                 rec.insurance_days_to_expire = delta.days + 1
             else:
                 rec.insurance_days_to_expire = 0
+
+
+
