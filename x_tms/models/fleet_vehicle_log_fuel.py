@@ -77,6 +77,7 @@ class FleetVehicleLogFuel(models.Model):
     price_total2 = fields.Float(string='Total', compute="_compute_total2")
     price_subtotal2 = fields.Float(
         string="Subtotal", compute='_compute_price_subtotal2')
+    cost_amount = fields.Float(string='Amount', store=True,compute="_compute_total")
     # @api.depends('vendor_id')
     # def _compute_prepaid(self):
     #     for rec in self:
@@ -91,6 +92,7 @@ class FleetVehicleLogFuel(models.Model):
     #             else:
     #                 raise ValidationError(
     #                     _('Insufficient amount'))
+
 
     @api.onchange('operating_unit_id')
     def onchange_operating_unit_id(self):

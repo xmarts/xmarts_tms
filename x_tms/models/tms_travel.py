@@ -164,7 +164,13 @@ class TmsTravel(models.Model):
         if self.unit_id.insurance_days_to_expire < duration:
             self.validar_viaje=True
         else:
-            self.validar_viaje=False    
+            self.validar_viaje=False 
+
+    klm_ex = fields.Boolean(string="Kilometros Extra", default=False)
+    kmlextra = fields.Float(string="KM")
+    klm_ex2 = fields.Boolean(string="Kilometros Extra", default=False)
+    kmlextra2 = fields.Float(string="KM")
+
     #
 
     #Agregando campos
@@ -546,7 +552,7 @@ class TmsTravel(models.Model):
                     self.tarifa_cliente2 = self.tipo_carga.costo_rabon_pesado
 
     @api.one
-    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
+    @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total','kmlextra','kmlextra2')
     def _compute_flete_cliente(self):
         for reg in self:
             if self.lineanegocio.tipo == 'granel':
@@ -559,7 +565,11 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'flete':
                 reg.flete_cliente = reg.tarifa_cliente + reg.tarifa_cliente2
             if self.lineanegocio.tipo == 'km':
-                reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance)) + (reg.tarifa_cliente2 * (self.route2_id.distance))
+                if self.kmlextra > 0 or self.kmlextra2 > 0:
+                    reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance + self.kmlextra)) + (reg.tarifa_cliente2 * (self.route2_id.distance+self.kmlextra2))
+                else:
+                    reg.flete_cliente = (reg.tarifa_cliente * (self.route_id.distance)) + (reg.tarifa_cliente2 * (self.route2_id.distance))
+               
 
     @api.one
     @api.depends('lineanegocio','peso_origen_total','tarifa_cliente','tarifa_cliente2','facturar_con_cliente','peso_convenido_total','peso_origen_total','peso_destino_total')
@@ -651,10 +661,17 @@ class TmsTravel(models.Model):
                 if x.factor_type == 'porcentaje':
                     total = (self.flete_cliente/100) * x.valor
                 if x.factor_type == 'costokm':
-                    if x.if_diferentes != True:
-                        total = x.valor * (self.route_id.distance + self.route2_id.distance)
-                    if x.if_diferentes == True:
-                        total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+                    if self.kmlextra > 0 or self.kmlextra2 > 0:
+                        if x.if_diferentes != True:
+                            x.total = x.valor * ((self.route_id.distance+self.kmlextra) + (self.route2_id.distance+self.kmlextra2))
+                        if x.if_diferentes == True:
+                            x.total = (x.valor * (self.route_id.distance+self.kmlextra)) + (x.valor2 * (self.route2_id.distance+self.kmlextra2))
+                    else:
+                        if x.if_diferentes != True:
+                            x.total = x.valor * (self.route_id.distance + self.route2_id.distance)
+                        if x.if_diferentes == True:
+                            x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+
                 line = {
                   'operating_unit_id': self.operating_unit_id.id,
                   'unit_id': self.unit_id.id,
@@ -1041,10 +1058,10 @@ class TmsTravel(models.Model):
         self.trailer1_id = self.kit_id.trailer1_id.id
         self.dolly_id = self.kit_id.dolly_id.id
 
-    @api.onchange('route_id','route2_id','modalidad_ruta1','modalidad_ruta2')
+    @api.onchange('route_id','route2_id','modalidad_ruta1','modalidad_ruta2', 'kmlextra','kmlextra2')
     def _onchange_route(self):
         self.travel_duration = self.route_id.travel_time + self.route2_id.travel_time
-        self.distance_route = self.route_id.distance + self.route2_id.distance
+        self.distance_route = self.route_id.distance + self.route2_id.distance + self.kmlextra + self.kmlextra2
         cargado = 0
         vacio = 0
         if self.modalidad_ruta1 != 'vacio':
@@ -1521,78 +1538,144 @@ class TmsTravel(models.Model):
 
     @api.one
     def _com_com_necesario1(self):
-        if self.route_id:
-            if self.rendimiento_manual1 == True:
-                if self.kmlmuno > 0:
-                    self.update({'combustible1':self.route_id.distance/self.kmlmuno})
-            if self.rendimiento_manual1 != True:
-                if self.kml > 0:
-                    self.update({'combustible1':self.route_id.distance/self.kml})
+        if self.klm_ex==True:
+            if self.route_id:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        if self.kmlextra > 0:
+                            self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kmlmuno})
+                        else:
+                            self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+                       
+
+
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        if self.kmlextra > 0:
+                            self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kml})
+                        else:
+                            self.update({'combustible1':self.route_id.distance/self.kml})
 
     @api.one
     def _com_com_necesario2(self):
         if self.route2_id:
             if self.rendimiento_manual2 == True:
                 if self.kmlm2 > 0:
-                    self.update({'combustible2':self.route2_id.distance/self.kmlm2})
+                    if self.kmlextra2 > 0:
+                        self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kmlm2})
+                    else:
+                        self.update({'combustible2':self.route2_id.distance/self.kmlm2})
+                   
+
             if self.rendimiento_manual2 != True:
                 if self.kml > 0:
-                    self.update({'combustible2':self.route2_id.distance/self.kml})
+                    if self.kmlextra2 > 0:
+                        self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kml})
+                    else:    
+                        self.update({'combustible2':self.route2_id.distance/self.kml})
 
-    @api.onchange('route_id','rendimiento_manual1','kml','kmlmuno')
+    @api.onchange('route_id','rendimiento_manual1','kml','kmlmuno','kmlextra')
     def _onchange_necesario1(self):
         if self.route_id:
             if self.rendimiento_manual1 == True:
                 if self.kmlmuno > 0:
-                    self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+                    if self.kmlextra > 0:
+                        self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kmlmuno})
+                    else:
+                        self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+                       
             if self.rendimiento_manual1 != True:
                 if self.kml > 0:
-                    self.update({'combustible1':self.route_id.distance/self.kml})
+                    if self.kmlextra > 0:
+                        self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kml})
+                    else:
+                        self.update({'combustible1':self.route_id.distance/self.kml})
 
-    @api.onchange('route2_id','rendimiento_manual2','kml','kmlm2')
+
+    @api.onchange('route2_id','rendimiento_manual2','kml','kmlm2','kmlextra2')
     def _onchenge_necesario2(self):
         if self.route2_id:
             if self.rendimiento_manual2 == True:
                 if self.kmlm2 > 0:
-                    self.update({'combustible2':self.route2_id.distance/self.kmlm2})
+                    if self.kmlextra2 > 0:
+                        self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kmlm2})
+                    else:
+                        self.update({'combustible2':self.route2_id.distance/self.kmlm2})
             if self.rendimiento_manual2 != True:
                 if self.kml > 0:
-                    self.update({'combustible2':self.route2_id.distance/self.kml})
+                    if self.kmlextra2 > 0:
+                        self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kml})
+                    else:    
+                        self.update({'combustible2':self.route2_id.distance/self.kml})
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','kmlextra','kmlextra2')
     def _onchange_com_necesario(self):
-        if self.route2_id:
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
-                if self.kmlmuno > 0 and self.kml <= 0:
-                    self.com_necesario = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kml > 0:
-                    self.com_necesario = (self.route2_id.distance/self.kml)
-                if self.kmlmuno > 0 and self.kml > 0:
-                    self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
-                if self.kml > 0 and self.kmlm2 <= 0:
-                    self.com_necesario = (self.route_id.distance/self.kml)
-                if self.kml <= 0 and self.kmlm2 > 0:
-                    self.com_necesario = (self.route2_id.distance/self.kmlm2)
-                if self.kml > 0 and self.kmlm2 > 0:
-                    self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
-                if self.kmlmuno > 0 and self.kmlm2 <= 0:
-                    self.com_necesario = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kmlm2 > 0:
-                    self.com_necesario = (self.route2_id.distance/self.kmlm2)
-                if self.kmlmuno > 0 and self.kmlm2 > 0:
-                    self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
-                if self.kml > 0:
-                    self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        if self.kmlextra > 0 or self.kmlextra2 > 0:
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        self.com_necesario = ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        self.com_necesario = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        self.com_necesario = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        self.com_necesario = ((self.route_id.distance+self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        self.com_necesario = (self.route_id.distance+self.kmlextra)/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        self.com_necesario = (self.route_id.distance+self.kmlextra)/self.kml
         else:
-            if self.rendimiento_manual1 == True:
-                if self.kmlmuno > 0:
-                    self.com_necesario = self.route_id.distance/self.kmlmuno
-            if self.rendimiento_manual1 != True:
-                if self.kml > 0:
-                    self.com_necesario = self.route_id.distance/self.kml
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        self.com_necesario = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        self.com_necesario = (self.route2_id.distance/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        self.com_necesario = (self.route_id.distance/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        self.com_necesario = (self.route2_id.distance/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        self.com_necesario = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        self.com_necesario = (self.route2_id.distance/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        self.com_necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        self.com_necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        self.com_necesario = self.route_id.distance/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        self.com_necesario = self.route_id.distance/self.kml
 
     @api.onchange('route_id','route2_id')
     def _onchange_routes(self):
@@ -1620,41 +1703,75 @@ class TmsTravel(models.Model):
         })
         return res
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id','com_necesario')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','operating_unit_id','unit_id','employee_id','com_necesario','kmlextra','kmlextra2')
     def _onchange_route_unit(self):
         vale = 0
-        if self.route2_id:
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
-                if self.kmlmuno > 0 and self.kml <= 0:
-                    vale = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kml > 0:
-                    vale = (self.route2_id.distance/self.kml)
-                if self.kmlmuno > 0 and self.kml > 0:
-                    vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
-                if self.kml > 0 and self.kmlm2 <= 0:
-                    vale = (self.route_id.distance/self.kml)
-                if self.kml <= 0 and self.kmlm2 > 0:
-                    vale = (self.route2_id.distance/self.kmlm2)
-                if self.kml > 0 and self.kmlm2 > 0:
-                    vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
-                if self.kmlmuno > 0 and self.kmlm2 <= 0:
-                    vale = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kmlm2 > 0:
-                    vale = (self.route2_id.distance/self.kmlm2)
-                if self.kmlmuno > 0 and self.kmlm2 > 0:
-                    vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
-                if self.kml > 0:
-                    vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        if self.kmlextra > 0 or self.kmlextra2 > 0:
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        vale = ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        vale = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        vale = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        vale = ((self.route_id.distance+self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        vale = (self.route_id.distance+self.kmlextra)/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        vale = (self.route_id.distance+self.kmlextra)/self.kml
         else:
-            if self.rendimiento_manual1 == True:
-                if self.kmlmuno > 0:
-                    vale = self.route_id.distance/self.kmlmuno
-            if self.rendimiento_manual1 != True:
-                if self.kml > 0:
-                    vale = self.route_id.distance/self.kml
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        vale = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        vale = (self.route2_id.distance/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        vale = (self.route_id.distance/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        vale = (self.route2_id.distance/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        vale = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        vale = (self.route2_id.distance/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        vale = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        vale = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        vale = self.route_id.distance/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        vale = self.route_id.distance/self.kml
 
         line_ids = []
         res = {'value':{
@@ -1727,6 +1844,31 @@ class TmsTravel(models.Model):
             'origin':self.name,
             })
         self.subpedido_id = so.id
+    crear_ope=fields.Boolean(string="crear nuevo registro")
+    @api.multi
+    def create_nuevo_operador(self):
+        new_op=self.env['tms.travel'].create({
+            
+            'cliente_id':self.cliente_id.id,
+            'producto':self.producto.id,
+            'costo_producto': self.costo_producto,
+            'sucursal_id':self.sucursal_id.id,
+            'lineanegocio':self.lineanegocio.id,
+            'date':fields.datetime.now(),
+            'tipo_remolque':self.tipo_remolque,
+            'tipo_carga':self.tipo_carga.id,
+            'unit_id':self.unit_id.id,
+            'route_id':self.route_id.id,
+            'crear_ope':True,
+            })
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'tms.travel',
+            'view_mode': 'form',
+            'res_id': new_op.id,
+            'target': 'current',
+            'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}}
+            }
 
         # product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         # self.env['sale.order.line'].create({
@@ -1918,7 +2060,7 @@ class TmsTravel(models.Model):
             if x.factor_type != 'costokm':
                 x.if_diferentes == False
 
-    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2','flete_cliente')
+    @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2','flete_cliente','kmlextra','kmlextra2')
     def _onchange_cal_total_factor(self):
         for x in self.driver_factor_ids:
             if x.factor_type == 'costo_fijo':
@@ -1926,10 +2068,17 @@ class TmsTravel(models.Model):
             if x.factor_type == 'porcentaje':
                 x.total = (self.flete_cliente/100) * x.valor
             if x.factor_type == 'costokm':
-                if x.if_diferentes != True:
-                    x.total = x.valor * (self.route_id.distance + self.route2_id.distance)
-                if x.if_diferentes == True:
-                    x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+
+                if self.kmlextra > 0 or self.kmlextra2 > 0:
+                    if x.if_diferentes != True:
+                        x.total = x.valor * ((self.route_id.distance+self.kmlextra) + (self.route2_id.distance+self.kmlextra2))
+                    if x.if_diferentes == True:
+                        x.total = (x.valor * (self.route_id.distance+self.kmlextra)) + (x.valor2 * (self.route2_id.distance+self.kmlextra2))
+                else:
+                    if x.if_diferentes != True:
+                        x.total = x.valor * (self.route_id.distance + self.route2_id.distance)
+                    if x.if_diferentes == True:
+                        x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
 
     com_solicitado = fields.Float()
 
@@ -1948,43 +2097,77 @@ class TmsTravel(models.Model):
             tot_comb += l.product_qty
         self.com_solicitado = tot_comb
 
-    
+    #checar
     @api.multi
     def write(self, vals):
         necesario = 0
         res = super(TmsTravel, self).write(vals)
-        if self.route2_id:
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
-                if self.kmlmuno > 0 and self.kml <= 0:
-                    necesario = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kml > 0:
-                    necesario = (self.route2_id.distance/self.kml)
-                if self.kmlmuno > 0 and self.kml > 0:
-                    necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
-                if self.kml > 0 and self.kmlm2 <= 0:
-                    necesario = (self.route_id.distance/self.kml)
-                if self.kml <= 0 and self.kmlm2 > 0:
-                    necesario = (self.route2_id.distance/self.kmlm2)
-                if self.kml > 0 and self.kmlm2 > 0:
-                    necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
-                if self.kmlmuno > 0 and self.kmlm2 <= 0:
-                    necesario = (self.route_id.distance/self.kmlmuno)
-                if self.kmlmuno <= 0 and self.kmlm2 > 0:
-                    necesario = (self.route2_id.distance/self.kmlm2)
-                if self.kmlmuno > 0 and self.kmlm2 > 0:
-                    necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
-            if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
-                if self.kml > 0:
-                    necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+        if self.kmlextra > 0 or self.kmlextra2 > 0:
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        necesario = ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        necesario = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        necesario = ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        necesario = ((self.route_id.distance+self.kmlextra)/self.kmlmuno) + ((self.route2_id.distance+self.kmlextra2)/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        necesario = ((self.route_id.distance++self.kmlextra)/self.kml) + ((self.route2_id.distance+self.kmlextra2)/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        necesario = (self.route_id.distance+self.kmlextra)/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        necesario = (self.route_id.distance+self.kmlextra)/self.kml
         else:
-            if self.rendimiento_manual1 == True:
-                if self.kmlmuno > 0:
-                    necesario = self.route_id.distance/self.kmlmuno
-            if self.rendimiento_manual1 != True:
-                if self.kml > 0:
-                    necesario = self.route_id.distance/self.kml
+            if self.route2_id:
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 != True:
+                    if self.kmlmuno > 0 and self.kml <= 0:
+                        necesario = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kml > 0:
+                        necesario = (self.route2_id.distance/self.kml)
+                    if self.kmlmuno > 0 and self.kml > 0:
+                        necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kml)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 == True:
+                    if self.kml > 0 and self.kmlm2 <= 0:
+                        necesario = (self.route_id.distance/self.kml)
+                    if self.kml <= 0 and self.kmlm2 > 0:
+                        necesario = (self.route2_id.distance/self.kmlm2)
+                    if self.kml > 0 and self.kmlm2 > 0:
+                        necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 == True and self.rendimiento_manual2 == True:
+                    if self.kmlmuno > 0 and self.kmlm2 <= 0:
+                        necesario = (self.route_id.distance/self.kmlmuno)
+                    if self.kmlmuno <= 0 and self.kmlm2 > 0:
+                        necesario = (self.route2_id.distance/self.kmlm2)
+                    if self.kmlmuno > 0 and self.kmlm2 > 0:
+                        necesario = (self.route_id.distance/self.kmlmuno) + (self.route2_id.distance/self.kmlm2)
+                if self.rendimiento_manual1 != True and self.rendimiento_manual2 != True:
+                    if self.kml > 0:
+                        necesario = (self.route_id.distance/self.kml) + (self.route2_id.distance/self.kml)
+            else:
+                if self.rendimiento_manual1 == True:
+                    if self.kmlmuno > 0:
+                        necesario = self.route_id.distance/self.kmlmuno
+                if self.rendimiento_manual1 != True:
+                    if self.kml > 0:
+                        necesario = self.route_id.distance/self.kml
         print(vals.get('com_solicitado'))
         print(round(necesario, 2))
         if vals.get('com_solicitado') > round(necesario, 2):
@@ -2171,3 +2354,7 @@ class tms_clasificacionesg(models.Model):
     aplica_viajes=fields.Boolean(string='Aplica a calificar viaje',default=False)
     considerar=fields.Selection(string="Considerar",selection=[('malo','Malo'),('bueno','Bueno')],default='malo',required=True)
     state=fields.Selection(string='Estado',selection=[('inactivo','Inactivo'),('activo','Activo')],required=True,default='activo')
+
+
+
+
