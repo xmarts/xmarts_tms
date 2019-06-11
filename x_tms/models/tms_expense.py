@@ -331,6 +331,14 @@ class TmsExpense(models.Model):
     n_transaccion = fields.Char(string="Número de Transacción", related="payment_move_id.n_transaccion")
     adjunto_compro = fields.Binary(string="Comprobante", related="payment_move_id.adjunto_compro")
     filename = fields.Char('file name', related="payment_move_id.filename")
+
+    force_perceps = fields.Boolean(string="Forzar Percepciones/Deducciones")
+    periodo_force_perceps = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo Percepciones")
+
+    force_info = fields.Boolean(string="Forzar Infonavit")
+    periodo_force_info = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo Percepciones")
+
+
     @api.depends('travel_ids')
     def _compute_income_km(self):
         for rec in self:
@@ -547,6 +555,15 @@ class TmsExpense(models.Model):
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
+                if self.periodo_force_perceps == 'sem' and self.force_perceps == True:
+                    if x.periodo == 'sem' and week_day != 4:
+                        rec.employee_salary_ids.create({
+                        'name': x.name,
+                        'tipo': x.tipo,
+                        'monto': x.monto,
+                        'periodo': x.periodo,
+                        'expense_id': rec.id
+                        })
                 if x.periodo == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
                     rec.employee_salary_ids.create({
                     'name': x.name,
@@ -555,6 +572,15 @@ class TmsExpense(models.Model):
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
+                if self.periodo_force_perceps == 'quin' and self.force_perceps == True:
+                    if x.periodo == 'quin' and (month_day != 15 and month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
+                        rec.employee_salary_ids.create({
+                        'name': x.name,
+                        'tipo': x.tipo,
+                        'monto': x.monto,
+                        'periodo': x.periodo,
+                        'expense_id': rec.id
+                        })
                 if x.periodo == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
                     rec.employee_salary_ids.create({
                     'name': x.name,
@@ -563,6 +589,15 @@ class TmsExpense(models.Model):
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
+                if self.periodo_force_perceps == 'men' and self.force_perceps == True:
+                    if x.periodo == 'men' and (month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
+                        rec.employee_salary_ids.create({
+                        'name': x.name,
+                        'tipo': x.tipo,
+                        'monto': x.monto,
+                        'periodo': x.periodo,
+                        'expense_id': rec.id
+                        })
             if self.employee_id.monto_info > 0.0:
                 if self.employee_id.periodo_info == 'sem' and week_day == 4:
                     rec.employee_salary_ids.create({
@@ -572,7 +607,16 @@ class TmsExpense(models.Model):
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
-                if self.employee_id.periodo_info and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if self.force_info == True:
+                    if self.employee_id.periodo_info == 'sem' and week_day != 4:
+                        rec.employee_salary_ids.create({
+                        'name': 'Infonavit',
+                        'tipo': 'deduccion',
+                        'monto': self.employee_id.monto_info,
+                        'periodo': self.employee_id.periodo_info,
+                        'expense_id': rec.id
+                        })
+                if self.employee_id.periodo_info == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
                     rec.employee_salary_ids.create({
                     'name': 'Infonavit',
                     'tipo': 'deduccion',
@@ -580,7 +624,16 @@ class TmsExpense(models.Model):
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
-                if self.employee_id.periodo_info and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if self.force_info == True:
+                    if self.employee_id.periodo_info == 'quin' and (month_day != 15 and month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
+                        rec.employee_salary_ids.create({
+                        'name': 'Infonavit',
+                        'tipo': 'deduccion',
+                        'monto': self.employee_id.monto_info,
+                        'periodo': self.employee_id.periodo_info,
+                        'expense_id': rec.id
+                        })
+                if self.employee_id.periodo_info == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
                     rec.employee_salary_ids.create({
                     'name': 'Infonavit',
                     'tipo': 'deduccion',
@@ -588,6 +641,15 @@ class TmsExpense(models.Model):
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
+                if self.force_info == True:
+                    if self.employee_id.periodo_info == 'men' and (month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
+                        rec.employee_salary_ids.create({
+                        'name': 'Infonavit',
+                        'tipo': 'deduccion',
+                        'monto': self.employee_id.monto_info,
+                        'periodo': self.employee_id.periodo_info,
+                        'expense_id': rec.id
+                        })
     
     @api.depends('employee_salary_ids','amount_percepciones')
     def _compute_amount_percep(self):
