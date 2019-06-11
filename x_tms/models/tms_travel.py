@@ -663,14 +663,14 @@ class TmsTravel(models.Model):
                 if x.factor_type == 'costokm':
                     if self.kmlextra > 0 or self.kmlextra2 > 0:
                         if x.if_diferentes != True:
-                            x.total = x.valor * ((self.route_id.distance+self.kmlextra) + (self.route2_id.distance+self.kmlextra2))
+                            total = x.valor * ((self.route_id.distance+self.kmlextra) + (self.route2_id.distance+self.kmlextra2))
                         if x.if_diferentes == True:
-                            x.total = (x.valor * (self.route_id.distance+self.kmlextra)) + (x.valor2 * (self.route2_id.distance+self.kmlextra2))
+                            total = (x.valor * (self.route_id.distance+self.kmlextra)) + (x.valor2 * (self.route2_id.distance+self.kmlextra2))
                     else:
                         if x.if_diferentes != True:
-                            x.total = x.valor * (self.route_id.distance + self.route2_id.distance)
+                            total = x.valor * (self.route_id.distance + self.route2_id.distance)
                         if x.if_diferentes == True:
-                            x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
+                            total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
 
                 line = {
                   'operating_unit_id': self.operating_unit_id.id,
