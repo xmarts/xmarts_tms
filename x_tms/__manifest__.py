@@ -75,6 +75,9 @@
         'views/sale_order.xml',
         'views/tms_view.xml',
         'views/tms_tipos_carga.xml',
+        'views/tms_fisicomecanicas.xml',
+        'views/tms_emisiones.xml',
+
 
 
         'addviews/views.xml',

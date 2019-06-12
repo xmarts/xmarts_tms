@@ -80,3 +80,9 @@ tms_tms_expense_usr,access_tms_expense,model_tms_expense,group_expense_user,1,0,
 
 tms_fleet_vehicle_log_fuel_validator,access_fleet_vehicle_log_fuel,model_fleet_vehicle_log_fuel,group_fleet_vehicle_log_fuel_validator,1,1,1,1
 tms_tms_advance_validator,access_tms_advance,model_tms_advance,group_tms_advance_validator,1,1,1,1
+
+tms_tms_fisicomecanica_adm,access_tms_fisicomecanica,model_tms_fisicomecanica,group_travel_administration,1,1,1,1
+tms_tms_fisicomecanica_usr,access_tms_fisicomecanica,model_tms_fisicomecanica,group_travel_user,1,0,0,0
+
+tms_tms_emisiones_adm,access_tms_emisiones,model_tms_emisiones,group_travel_administration,1,1,1,1
+tms_tm_emisiones_usr,access_tms_emisiones,model_tms_emisiones,group_travel_user,1,0,0,0

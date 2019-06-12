@@ -36,7 +36,7 @@ class FleetVehicleLogFuel(models.Model):
     product_uom_id = fields.Many2one('product.uom', string='UoM')
     product_qty = fields.Float(string='Liters', default=1.0,)
     tax_amount = fields.Float(string='Taxes',compute="_compute_taxes")
-    price_total = fields.Float(string='Total', compute="_compute_total")
+    price_total = fields.Float(string='Total', compute="_compute_total", store=True)
     special_tax_amount = fields.Float(
         compute="_compute_special_tax_amount", string='IEPS')
     price_unit = fields.Float(
@@ -77,7 +77,19 @@ class FleetVehicleLogFuel(models.Model):
     price_total2 = fields.Float(string='Total', compute="_compute_total2")
     price_subtotal2 = fields.Float(
         string="Subtotal", compute='_compute_price_subtotal2')
-    cost_amount = fields.Float(string='Amount', store=True,compute="_compute_total")
+
+    # @api.model
+    # def default_get(self, default_fields):
+    #     res = super(FleetVehicleLogFuel, self).default_get(default_fields)
+    #     service = self.env.ref('fleet.type_service_refueling', raise_if_not_found=False)
+    #     amount=res.price_total
+    #     res.update({
+    #         'date': fields.Date.context_today(self),
+    #         'cost_subtype_id': service and service.id or False,
+    #         'cost_type': 'fuel',
+    #         'amount':amount
+    #     })
+    #     return res
     # @api.depends('vendor_id')
     # def _compute_prepaid(self):
     #     for rec in self:
@@ -278,6 +290,21 @@ class FleetVehicleLogFuel(models.Model):
         total = num2words(float(total), lang='es').upper()
         return '%s' % (total)
 
+    @api.model
+    def create(self, vals):
+        res=super(FleetVehicleLogFuel, self).create(vals)  
+      
+        if res:
+            ids=res.id
+            comb = self.env['fleet.vehicle.log.fuel'].search([('id','=',ids)])
+            amount=comb.price_total
+            vehicle_id=res.vehicle_id.id
+            cost_subtype_id=res.cost_subtype_id.id
+            date=res.date
+            parent_id=res.parent_id
+            do=self.env['fleet.vehicle.cost'].create({'vehicle_id':vehicle_id,'cost_subtype_id':cost_subtype_id,'amount':amount,'date':date,'parent_id':parent_id})
+                
+        return res
 
 class FleetVehicleLogFuelTem(models.Model):
     _name = 'fleet.vehicle.log.fuel.tem'
