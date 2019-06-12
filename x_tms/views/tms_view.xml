@@ -8,8 +8,8 @@
     <!-- Menu Solicitud de Transporte -->
     <!-- <menuitem id="menu_tms_soli_r" name="Solicitud de transporte" parent="menu_tms" sequence="2"/>
     <menuitem id="menu_tms_soli" action="action_tms_request_form" name="Solicitud de transporte" parent="menu_tms_soli_r" sequence="11"/> -->
-
-
+    <!--Menu fisicomecanica -->
+      
     <!-- Menu Viajes -->
     <menuitem id="menu_tms_travels" name="Freights" parent="menu_tms" sequence="2"/>
     <menuitem action="open_view_tms_travel_form" id="menu_tms_travel_form" name="Travels" parent="menu_tms_travels" sequence="1"/>
@@ -20,13 +20,16 @@
     <menuitem action="open_view_tms_travel_template_form" id="menu_tms_travel_template_form" name="Plantilla de viaje" parent="menu_tms_travels" sequence="26"/>
 
 
+
+    <menuitem action="action_tms_emisiones_form" id="menu_tms_emisiones" parent="fleet.fleet_vehicles"/>
+    <menuitem action="action_tms_fisicomecanica_form" id="menu_tms_fisicomecanica" parent="fleet.fleet_vehicles" />
     <!-- Menu Administracion -->
     <menuitem id="menu_tms_admin" name="Administración" parent="menu_tms" sequence="3"/>
+   
     <menuitem action="fleet.fleet_vehicle_odometer_action" id="tms_fleet_vehicle_odometer_menu" parent="menu_tms_admin" name="Units Odometers" sequence="33"/>
     <menuitem action="action_tms_expense_loan_form" id="hr_menu_tms_expense_loan" parent="menu_tms_admin" sequence="32" />
     <menuitem action="action_tms_expense_form" id="menu_tms_expense" parent="menu_tms_admin" sequence="31"/>
-
-
+    
 
     <record id="view_tms_travel_form" model="ir.ui.view">
         <field name="name">tms.travel.form</field>

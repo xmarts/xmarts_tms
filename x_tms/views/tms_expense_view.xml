@@ -309,4 +309,19 @@
         <field name="search_view_id" ref="view_tms_expense_filter"/>
         <field name="help">TMS Travel Expenses</field>
     </record>
+     <record id="action_tms_fisicomecanica_form" model="ir.actions.act_window">
+        <field name="name">Fisicomecanica</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.fisicomecanica</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+     <record id="action_tms_emisiones_form" model="ir.actions.act_window">
+        <field name="name">Emisiones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.emisiones</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
 </odoo>

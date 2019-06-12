@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="tms_fisicomecanica_menu_lis">
+      <field name="name">tms_fisicomecanica_menu</field>
+      <field name="model">tms.fisicomecanica</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/> 
+          <field name="folio"/>
+          <field name="date_fisi"/>          
+          <field name="date_vig"/>                  
+          <field name="folio_verificacion"/>
+        
+        </tree>
+      </field>
+    </record>
+  	  <record model="ir.ui.view" id="tms_fisicomecanica_list">
+      <field name="name">tms_fisicomecanica</field>
+      <field name="model">tms.fisicomecanica</field>
+      <field name="arch" type="xml"><form string="Fisicomecanica">
+                    
+                    <sheet>
+                    <group col="4" colspan="4">
+                        <h1>
+                          <label for="name" class="oe_edit_only"/>
+                    
+                    <field name="name"/>
+                        </h1>
+                    </group>
+                        <group col="4">
+                            <field name="folio"/>
+                            <field name="date_fisi"/>
+                            <field name="date_vig"/>
+                                                       
+                            <field name="folio_verificacion"/>
+                            <field name="date_veri"/>
+                        </group>
+                        <separator string="Notes" colspan="4"/>
+                        <field name="notes" nolabel="1"/>
+                    </sheet>
+                </form>
+         </field>
+     </record>
+   
+    </data>
+</odoo>
+            
