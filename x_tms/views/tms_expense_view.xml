@@ -47,17 +47,20 @@
                         <group>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
-                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
-                            <field name="employee_id"/>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
                         </group>
                         <group>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
+                            <field name="employee_id"/>
+                        </group>
+                        <!-- <group>
                             <field name="force_perceps"/>
                             <field name="periodo_force_perceps" attrs="{'invisible': [('force_perceps','!=',True)]}"/>
                             <field name="force_info"/>
-                        </group>
+                        </group> -->
                     </group>
                     <notebook>
+                        
                         <page string="Resume">
                             <group col="2">
                                 <div>
@@ -188,6 +191,19 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Deducciones y Percepciones">
+                            <group>
+                              <field name="employee_salary_ids" colspan="4">
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
+                                  <field name="expense_id" invisible="1"/>
+                                </tree>
+                              </field>
+                            </group>
+                        </page>
                         <page string="Notes">
                             <group>
                                 <field colspan="4" name="notes" nolabel="1"/>
@@ -234,19 +250,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Deducciones y Percepciones">
-                            <group>
-                              <field name="employee_salary_ids" colspan="4">
-                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
-                                  <field name="name" required="1"/>
-                                  <field name="tipo" required="1"/>
-                                  <field name="periodo" required="1"/>
-                                  <field name="monto" required="1"/>
-                                  <field name="expense_id" invisible="1"/>
-                                </tree>
-                              </field>
-                            </group>
-                        </page>
+                        
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

@@ -5,23 +5,13 @@
 
 from __future__ import division
 
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
 import tempfile
 import base64
 import os
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-
-
-class tms_employee_salary(models.Model):
-    _name = 'hr.employee.salary'
-    name = fields.Char(string="Concepto")
-    tipo = fields.Selection([('percepcion','Percepción'),('deduccion','Deducción')], string="Tipo")
-    monto = fields.Float(string="Monto")
-    periodo = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo de nomina")
-    hr_emp_cat_id = fields.Many2one("hr.employee.category") 
-    expense_id = fields.Many2one("tms.expense")
 
 class tms_categories_events(models.Model):
 
@@ -544,112 +534,74 @@ class TmsExpense(models.Model):
             week_day = today.weekday()
             month = int(rec.date[5:7])
             month_day = int(rec.date[8:10])
-            
+            DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+            # week_day = today.weekday()
+            # month = int(rec.date[5:7])
+            # month_day = int(rec.date[8:10])
+            f_i = datetime.strptime(rec.start_date, DATETIME_FORMAT)
+            f_f = datetime.strptime(rec.end_date, DATETIME_FORMAT)
+            v = 0
+            q = 0
+            m = 0
+            while f_i <= f_f:
+                if f_i.weekday() == 4:
+                    v += 1
+                if int(f_i.strftime("%d")) == 30:
+                    m += 1
+                if (int(f_i.strftime("%d")) == 15 or int(f_i.strftime("%d")) == 30):
+                    q += 1
+                f_i += timedelta(days=1)
 
             for x in rec.employee_id.employee_category_id.employee_salary_ids:
-                if x.periodo == 'sem' and week_day == 4:
+                if x.periodo == 'sem' and v > 0:
                     rec.employee_salary_ids.create({
-                    'name': x.name,
+                    'name': x.name + ", " + str(v) +" semanas",
                     'tipo': x.tipo,
-                    'monto': x.monto,
+                    'monto': x.monto * v,
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
-                if self.periodo_force_perceps == 'sem' and self.force_perceps == True:
-                    if x.periodo == 'sem' and week_day != 4:
-                        rec.employee_salary_ids.create({
-                        'name': x.name,
-                        'tipo': x.tipo,
-                        'monto': x.monto,
-                        'periodo': x.periodo,
-                        'expense_id': rec.id
-                        })
-                if x.periodo == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if x.periodo == 'quin' and q > 0:
                     rec.employee_salary_ids.create({
-                    'name': x.name,
+                    'name': x.name+ ", " + str(q) + " quincenas",
                     'tipo': x.tipo,
-                    'monto': x.monto,
+                    'monto': x.monto * q,
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
-                if self.periodo_force_perceps == 'quin' and self.force_perceps == True:
-                    if x.periodo == 'quin' and (month_day != 15 and month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
-                        rec.employee_salary_ids.create({
-                        'name': x.name,
-                        'tipo': x.tipo,
-                        'monto': x.monto,
-                        'periodo': x.periodo,
-                        'expense_id': rec.id
-                        })
-                if x.periodo == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if x.periodo == 'men' and m > 0:
                     rec.employee_salary_ids.create({
-                    'name': x.name,
+                    'name': x.name + ", " + str(m) +" meses",
                     'tipo': x.tipo,
-                    'monto': x.monto,
+                    'monto': x.monto * m,
                     'periodo': x.periodo,
                     'expense_id': rec.id
                     })
-                if self.periodo_force_perceps == 'men' and self.force_perceps == True:
-                    if x.periodo == 'men' and (month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
-                        rec.employee_salary_ids.create({
-                        'name': x.name,
-                        'tipo': x.tipo,
-                        'monto': x.monto,
-                        'periodo': x.periodo,
-                        'expense_id': rec.id
-                        })
             if self.employee_id.monto_info > 0.0:
-                if self.employee_id.periodo_info == 'sem' and week_day == 4:
+                if self.employee_id.periodo_info == 'sem' and v > 0:
                     rec.employee_salary_ids.create({
-                    'name': 'Infonavit',
+                    'name':"Infonavit" + ", " + str(v) +" semanas",
                     'tipo': 'deduccion',
-                    'monto': self.employee_id.monto_info,
+                    'monto': self.employee_id.monto_info * v,
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
-                if self.force_info == True:
-                    if self.employee_id.periodo_info == 'sem' and week_day != 4:
-                        rec.employee_salary_ids.create({
-                        'name': 'Infonavit',
-                        'tipo': 'deduccion',
-                        'monto': self.employee_id.monto_info,
-                        'periodo': self.employee_id.periodo_info,
-                        'expense_id': rec.id
-                        })
-                if self.employee_id.periodo_info == 'quin' and (month_day == 15 or month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if self.employee_id.periodo_info == 'quin' and q > 0:
                     rec.employee_salary_ids.create({
-                    'name': 'Infonavit',
+                    'name': "Infonavit"+ ", " + str(q) + " quincenas",
                     'tipo': 'deduccion',
-                    'monto': self.employee_id.monto_info,
+                    'monto': self.employee_id.monto_info * q,
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
-                if self.force_info == True:
-                    if self.employee_id.periodo_info == 'quin' and (month_day != 15 and month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
-                        rec.employee_salary_ids.create({
-                        'name': 'Infonavit',
-                        'tipo': 'deduccion',
-                        'monto': self.employee_id.monto_info,
-                        'periodo': self.employee_id.periodo_info,
-                        'expense_id': rec.id
-                        })
-                if self.employee_id.periodo_info == 'men' and (month_day == 30 or (month == 2 and (month_day == 28 or month_day == 29))):
+                if self.employee_id.periodo_info == 'men' and m > 0:
                     rec.employee_salary_ids.create({
-                    'name': 'Infonavit',
+                    'name': "Infonavit" + ", " + str(m) +" meses",
                     'tipo': 'deduccion',
-                    'monto': self.employee_id.monto_info,
+                    'monto': self.employee_id.monto_info * m,
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
-                if self.force_info == True:
-                    if self.employee_id.periodo_info == 'men' and (month_day != 30 or (month == 2 and (month_day != 28 and month_day != 29))):
-                        rec.employee_salary_ids.create({
-                        'name': 'Infonavit',
-                        'tipo': 'deduccion',
-                        'monto': self.employee_id.monto_info,
-                        'periodo': self.employee_id.periodo_info,
-                        'expense_id': rec.id
-                        })
     
     @api.depends('employee_salary_ids','amount_percepciones')
     def _compute_amount_percep(self):
@@ -1645,3 +1597,28 @@ class TmsExpense(models.Model):
                 if line.line_type == type_line:
                     value += line.price_total
         return value
+
+
+    @api.multi
+    def get_test(self):
+        for rec in self:
+            DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+            # week_day = today.weekday()
+            # month = int(rec.date[5:7])
+            # month_day = int(rec.date[8:10])
+            f_i = datetime.strptime(rec.start_date, DATETIME_FORMAT)
+            f_f = datetime.strptime(rec.end_date, DATETIME_FORMAT)
+            v = 0
+            q = 0
+            m = 0
+            while f_i <= f_f:
+                if f_i.weekday() == 4:
+                    v += 1
+                if int(f_i.strftime("%d")) == 30:
+                    m += 1
+                if int(f_i.strftime("%d")) == 15 or int(f_i.strftime("%d")) == 30:
+                    q += 1
+                f_i += timedelta(days=1)
+            print("Semanas: "+str(v))
+            print("Quincenas: "+str(q))
+            print("Mensualidades: "+str(m))
