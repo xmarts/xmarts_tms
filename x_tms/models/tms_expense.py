@@ -602,15 +602,10 @@ class TmsExpense(models.Model):
                     'periodo': self.employee_id.periodo_info,
                     'expense_id': rec.id
                     })
+            rec.get_travel_info()
     
-    @api.depends('employee_salary_ids','amount_percepciones')
-    def _compute_amount_percep(self):
-        for rec in self:
-            for x in rec.employee_salary_ids:
-                if x.tipo == 'percepcion':
-                    rec.amount_percepciones += x.monto
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_subtotal_real(self):
         for rec in self:
             rec.amount_subtotal_real = (
@@ -621,19 +616,17 @@ class TmsExpense(models.Model):
                 rec.amount_loan +
                 rec.amount_refund +
                 rec.amount_fuel_cash +
-                rec.amount_other_income +
-                rec.amount_percepciones -
-                rec.amount_deducciones
+                rec.amount_other_income
                 )
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_total_real(self):
         for rec in self:
             rec.amount_total_real = (
                 rec.amount_subtotal_real +
                 rec.amount_tax_real)
 
-    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids','amount_percepciones','amount_deducciones')
+    @api.depends('travel_ids', 'expense_line_ids','expense_dif_ids')
     def _compute_amount_balance(self):
         for rec in self:
             rec.amount_balance = (rec.amount_total_real -
@@ -1202,6 +1195,7 @@ class TmsExpense(models.Model):
                     'unit_price': rec.get_driver_salary(travel),
                     'control': True
                 })
+            
 
     @api.multi
     def create_diference_line(self, travel):
@@ -1341,6 +1335,7 @@ class TmsExpense(models.Model):
             rec.unattach_info()
             # Finish unattach info from expense
             rec.get_expense_loan()
+            
             for travel in rec.travel_ids:
                 travel.write({'state': 'closed', 'expense_id': rec.id})
                 for advance in travel.advance_ids:
@@ -1426,6 +1421,32 @@ class TmsExpense(models.Model):
             # for line in rec.expense_dif_ids:
             #     if line.tipo != 'reembolso':
             #         rec.amount_salary_discount += (line.valor * -1)
+            if rec.amount_percepciones > 0:
+                product_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary')])
+                rec.expense_line_ids.create({
+                    'name': _("Salario por percepciones"),
+                    'expense_id': rec.id,
+                    'line_type': "salary",
+                    'product_qty': 1.0,
+                    'product_uom_id': product_id.uom_id.id,
+                    'product_id': product_id.id,
+                    'unit_price': rec.amount_percepciones,
+                    'control': True
+                })
+            if rec.amount_deducciones > 0:
+                productd_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary_discount')])
+                rec.expense_line_ids.create({
+                    'name': _("Descuento por deducciones"),
+                    'expense_id': rec.id,
+                    'line_type': "salary_discount",
+                    'product_qty': 1.0,
+                    'product_uom_id': productd_id.uom_id.id,
+                    'product_id': productd_id.id,
+                    'unit_price': rec.amount_deducciones,
+                    'control': True
+                })
 
     @api.depends('travel_ids')
     def get_driver_salary(self, travel):
