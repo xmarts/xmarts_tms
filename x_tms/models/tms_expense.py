@@ -75,7 +75,21 @@ class TmsExpense(models.Model):
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
 
+    date_inicio = fields.Datetime(string='Fecha Prevista', compute='_compute_date_inicio', store=True)
 
+    @api.depends('travel_ids')
+    def _compute_date_inicio(self):
+        for order in self:
+            min_date = False
+            for line in order.travel_ids:
+                if not min_date or line.fecha_viaje < min_date:
+                    min_date = line.fecha_viaje
+            if min_date:
+                order.date_inicio = min_date
+           
+
+
+    
     @api.onchange('file_fuel','unit_id')
     def onchange_file_fuel(self):
         if self.file_fuel and self.unit_id:
