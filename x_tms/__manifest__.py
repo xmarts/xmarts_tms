@@ -70,6 +70,7 @@
         'wizards/tms_wizard_invoice_view.xml',
         'report/travel_instructions_letter.xml',
         'report/expense_report.xml',
+        'report/settlement.xml',
         'data/ir_config_parameter.xml',
         'views/tms_travel_template_view.xml',
         'views/sale_order.xml',

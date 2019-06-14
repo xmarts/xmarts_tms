@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="settlement_repor">
+        <t t-call="report.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="report.external_layout">
+                    <div class="page">
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th width="20%">OPERADOR:</th>
+                                <td width="30%"><span t-field="o.employee_id"/></td>
+                                <th width="20%">NO. DE LIQUIDACIÓN:</th>
+                                <td width="30%"><span t-field="o.name" /></td>
+                            </tr>
+                            <tr>
+                                <th>CTA. BANCARIA:</th>
+                                <td><span t-field="o.employee_id.bank_account_id.bank_id" /> - <span t-field="o.employee_id.bank_account_id.acc_number" /></td>
+                                <th>FECHA SALIDA:</th>
+                                   <t t-set="sumfec" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="x">
+                                             <t t-if="sumfec &gt;=  x.date_start">
+                                                   
+                                                        <t t-set="sumfec" t-value="sumfec + x.date_start"/>
+                                                        
+                                                 
+                                                </t>
+                                        </t>
+                                       <td><span t-esc="'%.2f'% sumfec"/></td>
+                                
+                            </tr>
+                            <!-- <tr>
+                                <th>CAMIÓN:</th>
+                                <td><span t-field="o.unit_id"/></td>
+                                <th>FECHA LLEGADA:</th>
+                                <td><span t-field="o.date_end"/></td>
+                            </tr>
+                            <tr>
+                                <th>KMS. SALIDA</th>
+                                <td><span t-esc="'%.2f'% o.odometro_inicial"/></td>
+                                <th>FECHA LIQUIDACIÓN:</th>
+                                <td><span t-field="o.expense_id.date"/></td>
+                            </tr>
+                            <tr>
+                                <th>KMS. LLEGADA:</th>
+                                <td><span t-esc="'%.2f'% o.odometro_final"/></td>
+                                <th>TIEMPO ESTIMADO:</th>
+                                <td><span t-esc="'%02d:%02d' % (int(o.travel_duration), o.travel_duration % 1 * 60)" /> HORAS</td>
+                            </tr>
+                            <tr>
+                                <th>KMS. RECORRIDOS:</th>
+                                <td><span t-esc="'%.2f'% o.distance_driver"/></td>
+                                <th>CATEGORIA OPERADOR</th>
+                                <td><span t-field="o.employee_id.employee_category_id"/></td>
+                            </tr> -->
+                        </table>
+                   
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <template id="settlement_repor_translate">
+        <t t-call="report.html_container">
+            <t t-as="doc_id" t-foreach="doc_ids">
+                <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'x_tms.settlement_repor')"/>
+            </t>
+        </t>
+    </template>
+    <report file="x_tms.settlement_repor" id="print_settlement_repor" model="tms.expense" name="x_tms.settlement_repor" report_type="qweb-pdf" string="Liquidacion"/>
+</odoo>

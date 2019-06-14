@@ -12,9 +12,11 @@ class TmsFisicomecanicas(models.Model):
     
 
     name= fields.Char(string="Nombre")
+    vehicle_id = fields.Many2one('fleet.vehicle',string='Vehículo', required=True)
     folio= fields.Char(string="Folio")
     date_emi = fields.Date(string='Fecha de Emisiones')
     date_vig = fields.Date(string='Fecha de Vigencia')
     folio_verificacion= fields.Char(string="Folio de Verificacion")
     date_veri= fields.Date(string='Fecha Verificacion')
     notes = fields.Text()
+    adjunto = fields.Binary(string="Adjunto")
