@@ -451,9 +451,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'refund':
                     rec.amount_refund += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo == 'reembolso':
-                    rec.amount_refund += line.valor
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo == 'reembolso':
+            #         rec.amount_refund += line.valor
 
     @api.depends('expense_line_ids')
     def _compute_amount_other_income(self):
@@ -478,9 +478,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'salary_discount':
                     rec.amount_salary_discount += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo != 'reembolso':
-                    rec.amount_salary_discount += (line.valor * -1)
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo != 'reembolso':
+            #         rec.amount_salary_discount += (line.valor * -1)
 
     @api.depends('expense_line_ids')
     def _compute_amount_loan(self):
@@ -628,7 +628,6 @@ class TmsExpense(models.Model):
                 rec.amount_real_expense +
                 rec.amount_salary_retention +
                 rec.amount_loan +
-                rec.amount_refund +
                 rec.amount_fuel_cash +
                 rec.amount_other_income
                 )
@@ -1235,16 +1234,16 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'refund':
                     rec.amount_refund += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo == 'reembolso':
-                    rec.amount_refund += line.valor
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo == 'reembolso':
+            #         rec.amount_refund += line.valor
             rec.amount_salary_discount = 0
             for line in rec.expense_line_ids:
                 if line.line_type == 'salary_discount':
                     rec.amount_salary_discount += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo != 'reembolso':
-                    rec.amount_salary_discount += (line.valor * -1)
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo != 'reembolso':
+            #         rec.amount_salary_discount += (line.valor * -1)
 
 
 
@@ -1459,6 +1458,40 @@ class TmsExpense(models.Model):
                     'product_uom_id': productd_id.uom_id.id,
                     'product_id': productd_id.id,
                     'unit_price': rec.amount_deducciones,
+                    'control': True
+                })
+
+            diferencia_reem = 0
+            diferencia_cam = 0
+            for x in rec.expense_dif_ids:
+                if x.tipo == 'reembolso':
+                    diferencia_reem += x.valor
+                if x.tipo == 'sobrante':
+                    diferencia_cam += x.valor
+            if diferencia_reem > 0:
+                product_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary')])
+                rec.expense_line_ids.create({
+                    'name': _("Reembolso por diferencia de gastos"),
+                    'expense_id': rec.id,
+                    'line_type': "salary",
+                    'product_qty': 1.0,
+                    'product_uom_id': product_id.uom_id.id,
+                    'product_id': product_id.id,
+                    'unit_price': diferencia_reem,
+                    'control': True
+                })
+            if diferencia_cam > 0:
+                productd_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary_discount')])
+                rec.expense_line_ids.create({
+                    'name': _("Descuento por diferencia de gastos"),
+                    'expense_id': rec.id,
+                    'line_type': "salary_discount",
+                    'product_qty': 1.0,
+                    'product_uom_id': productd_id.uom_id.id,
+                    'product_id': productd_id.id,
+                    'unit_price': diferencia_cam,
                     'control': True
                 })
 
