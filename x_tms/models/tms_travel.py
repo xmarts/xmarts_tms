@@ -166,9 +166,9 @@ class TmsTravel(models.Model):
         else:
             self.validar_viaje=False 
 
-    klm_ex = fields.Boolean(string="Kilometros Extra", default=False)
+    kml_ex = fields.Boolean(string="Kilometros Extra", default=False)
     kmlextra = fields.Float(string="KM")
-    klm_ex2 = fields.Boolean(string="Kilometros Extra", default=False)
+    kml_ex2 = fields.Boolean(string="Kilometros Extra", default=False)
     kmlextra2 = fields.Float(string="KM")
 
     #
@@ -663,9 +663,9 @@ class TmsTravel(models.Model):
                 if x.factor_type == 'costokm':
                     d1 = 0
                     d2 = 0
-                    if self.klm_ex == True:
+                    if self.kml_ex == True:
                         d1 = self.kmlextra
-                    if self.klm_ex2 == True:
+                    if self.kml_ex2 == True:
                         d1 = self.kmlextra2
                     if x.if_diferentes != True:
                         total = x.valor * (self.route_id.distance + d1 + self.route2_id.distance + d2)
@@ -1172,29 +1172,29 @@ class TmsTravel(models.Model):
             rec.message_post('Travel Finished')
 
 
-    @api.depends('route_id','fuel_log_ids')
-    @api.onchange('route_id')
-    def _onchange_ruta_fuel(self):
-        line_ids = []
-        res = {'value':{
-                'fuel_log_ids':[],
-            }
-        }
-        for x in self.route_id.fuel_log_ids:
-            lines = {
-              'operating_unit_id': self.operating_unit_id.id,
-              'vendor_id': x.vendor_id.id,
-              'vehicle_id': self.unit_id.id,
-              'date': datetime.today(),
-              'product_id': x.product_id,
-              'product_qty': x.product_qty,
-              'state': 'approved',
-            }
-            line_ids += [lines]
-        res['value'].update({
-            'fuel_log_ids': line_ids,
-        })
-        return res
+    # @api.depends('route_id','fuel_log_ids')
+    # @api.onchange('route_id')
+    # def _onchange_ruta_fuel(self):
+    #     line_ids = []
+    #     res = {'value':{
+    #             'fuel_log_ids':[],
+    #         }
+    #     }
+    #     for x in self.route_id.fuel_log_ids:
+    #         lines = {
+    #           'operating_unit_id': self.operating_unit_id.id,
+    #           'vendor_id': x.vendor_id.id,
+    #           'vehicle_id': self.unit_id.id,
+    #           'date': datetime.today(),
+    #           'product_id': x.product_id,
+    #           'product_qty': x.product_qty,
+    #           'state': 'approved',
+    #         }
+    #         line_ids += [lines]
+    #     res['value'].update({
+    #         'fuel_log_ids': line_ids,
+    #     })
+    #     return res
 
     @api.multi
     def action_cancel(self):
@@ -1538,77 +1538,76 @@ class TmsTravel(models.Model):
 
     @api.one
     def _com_com_necesario1(self):
-        if self.klm_ex==True:
-            if self.route_id:
-                if self.rendimiento_manual1 == True:
-                    if self.kmlmuno > 0:
-                        if self.kmlextra > 0:
-                            self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kmlmuno})
-                        else:
-                            self.update({'combustible1':self.route_id.distance/self.kmlmuno})
-                       
+        if self.route_id:
+            if self.rendimiento_manual1 == True:
+                if self.kmlmuno > 0:
+                    if self.kml_ex == True:
+                        self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kmlmuno})
+                    if self.kml_ex != True:
+                        self.update({'combustible1':self.route_id.distance/self.kmlmuno})
+                   
 
 
-                if self.rendimiento_manual1 != True:
-                    if self.kml > 0:
-                        if self.kmlextra > 0:
-                            self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kml})
-                        else:
-                            self.update({'combustible1':self.route_id.distance/self.kml})
+            if self.rendimiento_manual1 != True:
+                if self.kml > 0:
+                    if self.kml_ex == True:
+                        self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kml})
+                    if self.kml_ex != True:
+                        self.update({'combustible1':self.route_id.distance/self.kml})
 
     @api.one
     def _com_com_necesario2(self):
         if self.route2_id:
             if self.rendimiento_manual2 == True:
                 if self.kmlm2 > 0:
-                    if self.kmlextra2 > 0:
+                    if self.kml_ex2 == True:
                         self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kmlm2})
-                    else:
+                    if self.kml_ex2 != True:
                         self.update({'combustible2':self.route2_id.distance/self.kmlm2})
                    
 
             if self.rendimiento_manual2 != True:
                 if self.kml > 0:
-                    if self.kmlextra2 > 0:
+                    if self.kml_ex2 == True:
                         self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kml})
-                    else:    
+                    if self.kml_ex2 != True:   
                         self.update({'combustible2':self.route2_id.distance/self.kml})
 
-    @api.onchange('route_id','rendimiento_manual1','kml','kmlmuno','kmlextra')
+    @api.onchange('route_id','rendimiento_manual1','kml','kmlmuno','kmlextra','kml_ex')
     def _onchange_necesario1(self):
         if self.route_id:
             if self.rendimiento_manual1 == True:
                 if self.kmlmuno > 0:
-                    if self.kmlextra > 0:
+                    if self.kml_ex == True:
                         self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kmlmuno})
-                    else:
+                    if self.kml_ex != True:
                         self.update({'combustible1':self.route_id.distance/self.kmlmuno})
                        
             if self.rendimiento_manual1 != True:
                 if self.kml > 0:
-                    if self.kmlextra > 0:
+                    if self.kml_ex == True:
                         self.update({'combustible1':(self.route_id.distance+self.kmlextra)/self.kml})
-                    else:
+                    if self.kml_ex != True:
                         self.update({'combustible1':self.route_id.distance/self.kml})
 
 
-    @api.onchange('route2_id','rendimiento_manual2','kml','kmlm2','kmlextra2')
+    @api.onchange('route2_id','rendimiento_manual2','kml','kmlm2','kmlextra2','kml_ex2')
     def _onchenge_necesario2(self):
         if self.route2_id:
             if self.rendimiento_manual2 == True:
                 if self.kmlm2 > 0:
-                    if self.kmlextra2 > 0:
+                    if self.kml_ex2 == True:
                         self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kmlm2})
-                    else:
+                    if self.kml_ex2 != True:
                         self.update({'combustible2':self.route2_id.distance/self.kmlm2})
             if self.rendimiento_manual2 != True:
                 if self.kml > 0:
-                    if self.kmlextra2 > 0:
+                    if self.kml_ex2 == True:
                         self.update({'combustible2':(self.route2_id.distance+self.kmlextra2)/self.kml})
-                    else:    
+                    if self.kml_ex2 != True:
                         self.update({'combustible2':self.route2_id.distance/self.kml})
 
-    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','kmlextra','kmlextra2')
+    @api.onchange('route_id','route2_id','rendimiento_manual1','rendimiento_manual2','kml','kmlmuno','kmlm2','kmlextra','kmlextra2','kml_ex','kml_ex2')
     def _onchange_com_necesario(self):
         if self.kmlextra > 0 or self.kmlextra2 > 0:
             if self.route2_id:
