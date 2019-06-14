@@ -101,8 +101,8 @@
                             <field name="com_necesario" invisible="1"/>
                             <field name="com_solicitado" invisible="1"/>
                             <field name="presupuesto_creado" invisible="1"/>
-                            <field name="odometro_inicial" invisible="1"/>
-                            <field name="odometro_final" invisible="1"/>
+                            <field name="odometro_inicial" /> <!-- invisible="1" -->
+                            <field name="odometro_final" /><!-- invisible="1" -->
                             <field name="expense_id" invisible="1"/>
                             <field name="crear_ope" invisible="1"/>
                         </group>

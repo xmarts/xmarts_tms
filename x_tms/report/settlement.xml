@@ -16,42 +16,210 @@
                                 <th>CTA. BANCARIA:</th>
                                 <td><span t-field="o.employee_id.bank_account_id.bank_id" /> - <span t-field="o.employee_id.bank_account_id.acc_number" /></td>
                                 <th>FECHA SALIDA:</th>
-                                   <t t-set="sumfec" t-value="0"/>
-                                        <t t-foreach="o.travel_ids" t-as="x">
-                                             <t t-if="sumfec &gt;=  x.date_start">
-                                                   
-                                                        <t t-set="sumfec" t-value="sumfec + x.date_start"/>
-                                                        
-                                                 
-                                                </t>
-                                        </t>
-                                       <td><span t-esc="'%.2f'% sumfec"/></td>
+                                   
+                                       <td><span t-field="o.date_inicio"/></td>
                                 
                             </tr>
-                            <!-- <tr>
+                            <tr>
                                 <th>CAMIÓN:</th>
                                 <td><span t-field="o.unit_id"/></td>
                                 <th>FECHA LLEGADA:</th>
-                                <td><span t-field="o.date_end"/></td>
+                                <td><span t-field="o.date_fin"/></td>
                             </tr>
-                            <tr>
+                             <tr>
                                 <th>KMS. SALIDA</th>
-                                <td><span t-esc="'%.2f'% o.odometro_inicial"/></td>
+                                <td><span t-field="o.odoo_inicio"/></td>
                                 <th>FECHA LIQUIDACIÓN:</th>
-                                <td><span t-field="o.expense_id.date"/></td>
+                                <td><span t-field="o.date"/></td>
                             </tr>
                             <tr>
                                 <th>KMS. LLEGADA:</th>
-                                <td><span t-esc="'%.2f'% o.odometro_final"/></td>
+                                <td><span t-field="o.odoo_fin"/></td>
                                 <th>TIEMPO ESTIMADO:</th>
-                                <td><span t-esc="'%02d:%02d' % (int(o.travel_duration), o.travel_duration % 1 * 60)" /> HORAS</td>
+                                <t t-set="sumtiem" t-value="0"/>
+                                 <t t-foreach="o.travel_ids" t-as="z">
+                                    
+                                            <t t-set="sumtiem" t-value="sumtiem + z.travel_duration"/>
+                                                                               
+                                </t>
+                                <td><span t-esc="'%.2f'% sumtiem"/> HORAS</td>
                             </tr>
                             <tr>
                                 <th>KMS. RECORRIDOS:</th>
-                                <td><span t-esc="'%.2f'% o.distance_driver"/></td>
+                                <t t-set="sumrec" t-value="0"/>
+                                 <t t-foreach="o.travel_ids" t-as="z">
+                                    
+                                            <t t-set="sumrec" t-value="sumrec + z.distance_driver"/>
+                                                                               
+                                </t>
+                                <td><span t-esc="'%.2f'% sumrec"/></td>
                                 <th>CATEGORIA OPERADOR</th>
                                 <td><span t-field="o.employee_id.employee_category_id"/></td>
-                            </tr> -->
+                            </tr>
+                        </table>
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th colspan="12" class="text-center" style="background: lightgray;">ITINERARIO</th>
+                            </tr>
+                            
+                            <tr>
+                                <th>VIAJE</th>
+                                <th>FECHA</th>
+                                <th>CP</th>
+                                <th>ORIGEN</th>
+                                <th>DESTINO</th>
+                                <th>PRODUCTO</th>
+                                <th>CARGA</th>
+                                <th>COMBUSTIBLE (LITROS)</th>
+                                <th>KMS</th>
+                            </tr>
+                            <t t-set="sumconb" t-value="0"/>
+                            <t t-set="sumkms" t-value="0"/>
+                            <t t-foreach="o.travel_ids" t-as="z">
+                            <tr>
+                                <td><span t-field="z.name"/></td>
+                                <td><span t-field="z.fecha_viaje"/></td>
+                                <td><span t-field="z.arrival_id.localidad.zip_sat_code.code"/></td>
+                                <td><span t-field="z.departure_id"/></td>
+                                <td><span t-field="z.arrival_id"/></td>
+                                <td><span t-field="z.producto"/></td>
+                                <td><span t-field="z.modalidad_ruta1"/></td>
+                                <td><span t-esc="'%.2f'% z.combustible1"/></td>
+                                <td><span t-esc="'%.2f'% z.route_id.distance"/></td>
+                            </tr>
+                            <tr t-if="z.route2_id">
+                                <td><span t-field="z.name"/></td>
+                                <td><span t-field="z.fecha_viaje"/></td>
+                                <td><span t-field="z.arrival2_id.localidad.zip_sat_code.code"/></td>
+                                <td><span t-field="z.departure2_id"/></td>
+                                <td><span t-field="z.arrival2_id"/></td>
+                                <td><span t-field="z.producto"/></td>
+                                <td><span t-field="z.modalidad_ruta2"/></td>
+                                <td><span t-esc="'%.2f'% z.combustible2"/></td>
+                                <td><span t-esc="'%.2f'% z.route2_id.distance"/></td>
+                            </tr>
+                                    <t t-set="sumkms" t-value="sumkms + (float(z.route2_id.distance) + float(z.route_id.distance))"/>
+                                    <t t-set="sumconb" t-value="sumconb + z.com_necesario"/>
+                            </t>
+                            <tr>
+                                <th class="text-right" colspan="7">TOTAL:</th>
+                                <td><span t-esc="'%.2f'% sumconb"/></td>
+                                <td><span t-esc="'%.2f'% sumkms"/></td>
+                            </tr>
+                            
+                            <tr>
+                                <td colspan="6"/>
+                                <td colspan="6">
+                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr><th colspan="20" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
+                                        <t t-foreach="o.travel_ids" t-as="z">
+                                        <tr t-if="z.si_seguro">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del seguro</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_seguro"/></td>
+                                            
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="z.lavado">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo de lavado</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_lavado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                           
+                                        </tr>
+                                        <tr t-if="z.plastico">
+                                           <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo por plastico</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_plastico"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            
+                                        </tr>
+                                        <tr t-if="z.fumigado">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo de fumigado</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_fumigado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            
+                                           
+                                        </tr>
+                                        <tr t-if="z.otros">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Otros cargos</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_otros"/></td>
+                                            <th colspan="2">Espacificaciones</th>
+                                            <td colspan="2"><span t-field="z.des_otros"/></td>
+                                            <th colspan="2"></th>
+                                           
+                                        </tr>
+                                        <tr t-if="z.camisa">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo por camisa</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_camisa"/></td>
+                                            <th colspan="2">Manga</th>
+                                            <td colspan="2"><span t-esc="dict(z._fields['camisa_manga'].selection).get(z.camisa_manga)"/></td>
+                                            <th colspan="2">Material Espacial</th>
+                                            <td colspan="2"><span t-field="z.camisa_mat"/></td>
+                                           
+                                        </tr>
+                                        <tr t-if="z.chaleco">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del chaleco</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_chaleco"/></td>
+                                            <th colspan="2">Color</th>
+                                            <td colspan="2"><span t-field="z.chaleco_color"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            
+                                            
+                                        </tr>
+                                        <tr t-if="z.guantes">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo pr guantes</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_guantes"/></td>
+                                            <th colspan="2">Tipo de guates</th>
+                                            <td colspan="2"><span t-field="z.tipo_guantes"/></td>
+                                            <th colspan="2"></th>
+                                            
+                                        </tr>
+                                        <tr t-if="z.pantalon">
+                                            <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del pantalon</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="z.cargo_pantalon"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="z.pantalon_sua"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="z.pantalon_mat"/></td>
+                                        </tr>
+                                    </t>
+                                    </table>
+                                </td>
+                            </tr>
                         </table>
                    
                     </div>
