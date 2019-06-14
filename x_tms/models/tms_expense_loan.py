@@ -208,7 +208,7 @@ class TmsExpenseLoan(models.Model):
             rec.message_post(_('<strong>Loan drafted.</strong>'))
 
 
-    @api.depends('expense_ids','state')
+    @api.depends('expense_ids','state','balance')
     def _compute_balance(self):
         for loan in self:
             line_amount = 0.0
@@ -216,11 +216,10 @@ class TmsExpenseLoan(models.Model):
                 loan.balance = loan.amount
             else:
                 for line in loan.expense_ids:
-                    if line.expense_id.state == 'confirmed':
+                    if line.state_expense == 'confirmed':
                         line_amount += line.price_total
                 loan.balance = loan.amount + line_amount
-            if line_amount <= 0.0 and loan.state == 'confirmed':
-                #loan.action_closed()
+            if loan.balance <= 0.0 and loan.state == 'confirmed':
                 loan.state = 'closed'
                 #loan.write({'state': 'closed'})
 

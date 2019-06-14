@@ -43,14 +43,25 @@
                         <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Expense - " style="font-size:30px;"/>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
-                    <group col="4">
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
-                        <field name="employee_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
+                    <group>
+                        <group>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
+                            <field name="date_inicio"/>
+                        </group>
+                        <group>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
+                            <field name="employee_id"/>
+                        </group>
+                        <!-- <group>
+                            <field name="force_perceps"/>
+                            <field name="periodo_force_perceps" attrs="{'invisible': [('force_perceps','!=',True)]}"/>
+                            <field name="force_info"/>
+                        </group> -->
                     </group>
                     <notebook>
+                        
                         <page string="Resume">
                             <group col="2">
                                 <div>
@@ -181,6 +192,19 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Deducciones y Percepciones">
+                            <group>
+                              <field name="employee_salary_ids" colspan="4">
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
+                                  <field name="expense_id" invisible="1"/>
+                                </tree>
+                              </field>
+                            </group>
+                        </page>
                         <page string="Notes">
                             <group>
                                 <field colspan="4" name="notes" nolabel="1"/>
@@ -227,19 +251,7 @@
                                 </group>
                             </group>
                         </page>
-                        <page string="Deducciones y Percepciones">
-                            <group>
-                              <field name="employee_salary_ids" colspan="4">
-                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
-                                  <field name="name" required="1"/>
-                                  <field name="tipo" required="1"/>
-                                  <field name="periodo" required="1"/>
-                                  <field name="monto" required="1"/>
-                                  <field name="expense_id" invisible="1"/>
-                                </tree>
-                              </field>
-                            </group>
-                        </page>
+                        
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -301,5 +313,28 @@
         <field name="context">{}</field>
         <field name="search_view_id" ref="view_tms_expense_filter"/>
         <field name="help">TMS Travel Expenses</field>
+    </record>
+    <!--  <record id="action_tms_fisicomecanica_form" model="ir.actions.act_window">
+        <field name="name">Fisicomecanica</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model"></field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record> -->
+
+    <record id='action_tms_fisicomecanica_form' model='ir.actions.act_window'>
+    <field name="name">Fisicomecanica</field>
+    <field name="res_model">tms.fisicomecanica</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,graph</field>
+  
+    </record>
+
+     <record id="action_tms_emisiones_form" model="ir.actions.act_window">
+        <field name="name">Emisiones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.emisiones</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

@@ -81,3 +81,27 @@ class FleetVehicle(models.Model):
                 rec.insurance_days_to_expire = delta.days + 1
             else:
                 rec.insurance_days_to_expire = 0
+
+
+    fisicomecanica_count = fields.Integer(compute="_compute_count_all", string='Fisicomecanica')
+    emisiones_count = fields.Integer(compute="_compute_count_all", string='Emisiones')
+    def _compute_count_all(self):
+        fisi = self.env['tms.fisicomecanica']
+        emi=self.env['tms.emisiones']
+        for record in self:
+            record.fisicomecanica_count = fisi.search_count([('vehicle_id', '=', record.id)])
+            record.emisiones_count = emi.search_count([('vehicle_id', '=', record.id)])
+    
+    @api.multi
+    def return_action_to_open_new(self):
+        """ This opens the xml view specified in xml_id for the current vehicle """
+        self.ensure_one()
+        xml_id = self.env.context.get('xml_id')
+        if xml_id:
+            res = self.env['ir.actions.act_window'].for_xml_id('x_tms', xml_id)
+            res.update(
+                context=dict(self.env.context, default_vehicle_id=self.id, group_by=False),
+                domain=[('vehicle_id', '=', self.id)]
+            )
+            return res
+        return False
