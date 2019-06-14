@@ -245,6 +245,15 @@ class FleetVehicleLogFuel(models.Model):
     @api.model
     def create(self, values):
         res = super(FleetVehicleLogFuel, self).create(values)
+        if res:
+            ids=res.id
+            comb = self.env['fleet.vehicle.log.fuel'].search([('id','=',ids)])
+            amount=comb.price_total
+            vehicle_id=res.vehicle_id.id
+            cost_subtype_id=res.cost_subtype_id.id
+            date=res.date
+            parent_id=res.parent_id
+            do=self.env['fleet.vehicle.cost'].create({'vehicle_id':vehicle_id,'cost_subtype_id':cost_subtype_id,'amount':amount,'date':date,'parent_id':parent_id})
         if not res.operating_unit_id.fuel_log_sequence_id:
             raise ValidationError(_(
                 'You need to define the sequence for fuel logs in base %s' %
@@ -290,21 +299,21 @@ class FleetVehicleLogFuel(models.Model):
         total = num2words(float(total), lang='es').upper()
         return '%s' % (total)
 
-    @api.model
-    def create(self, vals):
-        res=super(FleetVehicleLogFuel, self).create(vals)  
+    # @api.model
+    # def create(self, vals):
+    #     res=super(FleetVehicleLogFuel, self).create(vals)  
       
-        if res:
-            ids=res.id
-            comb = self.env['fleet.vehicle.log.fuel'].search([('id','=',ids)])
-            amount=comb.price_total
-            vehicle_id=res.vehicle_id.id
-            cost_subtype_id=res.cost_subtype_id.id
-            date=res.date
-            parent_id=res.parent_id
-            do=self.env['fleet.vehicle.cost'].create({'vehicle_id':vehicle_id,'cost_subtype_id':cost_subtype_id,'amount':amount,'date':date,'parent_id':parent_id})
+    #     if res:
+    #         ids=res.id
+    #         comb = self.env['fleet.vehicle.log.fuel'].search([('id','=',ids)])
+    #         amount=comb.price_total
+    #         vehicle_id=res.vehicle_id.id
+    #         cost_subtype_id=res.cost_subtype_id.id
+    #         date=res.date
+    #         parent_id=res.parent_id
+    #         do=self.env['fleet.vehicle.cost'].create({'vehicle_id':vehicle_id,'cost_subtype_id':cost_subtype_id,'amount':amount,'date':date,'parent_id':parent_id})
                 
-        return res
+    #     return res
 
 class FleetVehicleLogFuelTem(models.Model):
     _name = 'fleet.vehicle.log.fuel.tem'
