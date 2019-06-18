@@ -49,6 +49,9 @@
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
                             <field name="date_inicio"/>
+                            <field name="date_fin"/>
+                            <field name="odoo_inicio"/>
+                            <field name="odoo_fin"/>
                         </group>
                         <group>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>

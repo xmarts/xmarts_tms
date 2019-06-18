@@ -66,17 +66,58 @@ class TmsExpense(models.Model):
         'fleet.vehicle', 'Unit', required=True)
 
     date_inicio = fields.Datetime(string='Fecha Prevista', compute='_compute_date_inicio', store=True)
-
-    @api.depends('travel_ids')
-    def _compute_date_inicio(self):
+    date_fin = fields.Datetime(string='Fecha Prevista', compute='_compute_date_fin', store=True)
+    @api.depends('travel_ids.date','date')
+    def _compute_date_inicio(self):        
         for order in self:
             min_date = False
             for line in order.travel_ids:
-                if not min_date or line.fecha_viaje < min_date:
-                    min_date = line.fecha_viaje
+                if not min_date or line.date < min_date:
+                    min_date = line.date
             if min_date:
                 order.date_inicio = min_date
-           
+            else:
+                order.date_inicio = order.date
+
+    @api.depends('travel_ids.date','date')
+    def _compute_date_fin(self):        
+        for order in self:
+            min_date = False
+            for line in order.travel_ids:
+                if not min_date or line.date > min_date:
+                    min_date = line.date
+            if min_date:
+                order.date_fin = min_date
+            else:
+                order.date_fin = order.date
+
+
+    odoo_inicio = fields.Float(string='odometro inicial', compute='_compute_odoo_inicio')
+    odoo_fin = fields.Float(string='odometro final', compute='_compute_odoo_fin')
+    @api.depends('travel_ids.odometro_inicial')
+    def _compute_odoo_inicio(self):        
+        for order in self:
+            min_odoo = False
+            for line in order.travel_ids:
+                if not min_odoo or line.odometro_inicial < min_odoo:
+                    min_odoo = line.odometro_inicial
+            if min_odoo:
+                order.odoo_inicio = min_odoo
+            else:
+                order.odoo_inicio = 0.0
+                
+    @api.depends('travel_ids.odometro_final')
+    def _compute_odoo_fin(self):        
+        for order in self:
+            min_odoo = False
+            for line in order.travel_ids:
+                if not min_odoo or line.odometro_final > min_odoo:
+                    min_odoo = line.odometro_final
+            if min_odoo:
+                order.odoo_fin = min_odoo
+            else:
+                order.odoo_fin = 0.0
+      
 
 
     

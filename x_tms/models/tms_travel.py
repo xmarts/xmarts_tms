@@ -1091,7 +1091,7 @@ class TmsTravel(models.Model):
     odometro_inicial = fields.Float("Odometro Inicial")
     odometro_final = fields.Float("Odometro Final")
 
-    @api.onchange('unit_id','route_id','route2_id')
+    @api.onchange('unit_id','route_id','route2_id','distance_driver')
     def _onchange_odo_inicial(self):
         for rec in self:
             rec.odometro_inicial = rec.unit_id.odometer
