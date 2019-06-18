@@ -774,7 +774,7 @@ class TmsExpense(models.Model):
     def write(self, values):
         for rec in self:
             res = super(TmsExpense, self).write(values)
-            rec.get_travel_info()
+            #rec.get_travel_info()
             return res
 
     @api.multi
