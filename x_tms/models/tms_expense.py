@@ -378,9 +378,9 @@ class TmsExpense(models.Model):
     amount_to_text = fields.Char(compute='_get_amount_to_text', string='Monto en Texto', readonly=True,
                                 help='Amount of the invoice in letter')
     @api.one
-    @api.depends('amount_total_total')
+    @api.depends('amount_balance')
     def _get_amount_to_text(self):
-        self.amount_to_text = amount_to_text.get_amount_to_text(self, self.amount_total_total)
+        self.amount_to_text = amount_to_text.get_amount_to_text(self, self.amount_balance)
 
     #cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
     cuenta_b = fields.Many2one("res.partner.bank", string="Cuenta Bancaria", related="payment_move_id.cuenta_b")

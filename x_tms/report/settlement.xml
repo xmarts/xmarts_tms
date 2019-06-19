@@ -665,7 +665,7 @@
                                     </tr>
                                     <tr>
                                         <td style="text-justify">
-                                            RECIBI DE <span style="font-weight:bold;" t-field="o.company_id.name"/> LA CANTIDAD DE <span style="font-weight:bold;" t-field="o.amount_total_total"/>  (<span style="font-weight:bold;" t-field="o.amount_to_text" />) QUE CUBRE A LA FECHA EL IMPORTE DE MI SALARIO POR LOS VIAJES REALIZADOS, TIEMPOS EXTRA, 7 MO DIA Y TODAS LAS PRESTACIONES A LAS QUE TENGO DERECHO SIN QUE SE ME ADEUDE ALGUNA CANTIDAD POR OTRO CONCEPTO
+                                            RECIBI DE <span style="font-weight:bold;" t-field="o.company_id.name"/> LA CANTIDAD DE <span style="font-weight:bold;" t-field="o.amount_balance"/>  (<span style="font-weight:bold;" t-field="o.amount_to_text" />) QUE CUBRE A LA FECHA EL IMPORTE DE MI SALARIO POR LOS VIAJES REALIZADOS, TIEMPOS EXTRA, 7 MO DIA Y TODAS LAS PRESTACIONES A LAS QUE TENGO DERECHO SIN QUE SE ME ADEUDE ALGUNA CANTIDAD POR OTRO CONCEPTO
                                         </td>
                                     </tr>
                                     <tr>
