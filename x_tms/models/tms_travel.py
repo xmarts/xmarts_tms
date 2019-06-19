@@ -154,7 +154,8 @@ class TmsTravel(models.Model):
 
 
     #cambios victor
-
+    travels_id = fields.Many2one("tms.travel", string="Origen")
+    facturar = fields.Boolean(string="No Facturable", default=False)
     validar_viaje=fields.Boolean(string='Validar Viaje' )
 
     @api.onchange('unit_id.insurance_days_to_expire','travel_duration')
@@ -305,8 +306,8 @@ class TmsTravel(models.Model):
         'tms.factor', 'travel_id', string='Travel Driver Payment Factors')
     name = fields.Char('Travel Number')
     state = fields.Selection([
-        ('draft', 'Pending'), ('progress', 'In Progress'), ('done', 'Done'),
-        ('cancel', 'Cancelled'), ('closed', 'Closed')],
+        ('draft', 'Pendiente'), ('progress', 'En progreso'), ('done', 'Hecho'),
+        ('cancel', 'Cancelado'), ('closed', 'Cerrado')],
         readonly=True, default='draft')
     route_id = fields.Many2one(
         'tms.route', 'Route', required=True,
@@ -1846,8 +1847,11 @@ class TmsTravel(models.Model):
     crear_ope=fields.Boolean(string="crear nuevo registro")
     @api.multi
     def create_nuevo_operador(self):
+        travel= self.env['tms.travel'].search([('name','=',self.name)], limit=1)
+        ids=travel.id
         new_op=self.env['tms.travel'].create({
-            
+            'travels_id':ids,
+            'facturar':True,
             'cliente_id':self.cliente_id.id,
             'producto':self.producto.id,
             'costo_producto': self.costo_producto,

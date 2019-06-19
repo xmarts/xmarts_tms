@@ -12,6 +12,7 @@ import os
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from . import amount_to_text
 
 class tms_categories_events(models.Model):
 
@@ -211,6 +212,9 @@ class TmsExpense(models.Model):
     currency_id = fields.Many2one(
         'res.currency', 'Currency', required=True,
         default=lambda self: self.env.user.company_id.currency_id)
+    company_id = fields.Many2one(
+        'res.company', string="Company",
+        default=lambda self: self.env.user.company_id)
     state = fields.Selection([
         ('draft', 'Draft'),
         ('approved', 'Approved'),
@@ -370,6 +374,13 @@ class TmsExpense(models.Model):
     )
     fuel_efficiency_real = fields.Float(
     )
+    #convertir numero a texto
+    amount_to_text = fields.Char(compute='_get_amount_to_text', string='Monto en Texto', readonly=True,
+                                help='Amount of the invoice in letter')
+    @api.one
+    @api.depends('amount_total_total')
+    def _get_amount_to_text(self):
+        self.amount_to_text = amount_to_text.get_amount_to_text(self, self.amount_total_total)
 
     #cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
     cuenta_b = fields.Many2one("res.partner.bank", string="Cuenta Bancaria", related="payment_move_id.cuenta_b")
