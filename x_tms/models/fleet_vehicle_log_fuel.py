@@ -170,6 +170,7 @@ class FleetVehicleLogFuel(models.Model):
             rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
 
     @api.multi
+    @api.depends('tax_amount', 'price_subtotal','price_total')
     def _compute_total(self):
         for rec in self:
             rec.price_total = rec.tax_amount + rec.price_subtotal

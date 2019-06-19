@@ -354,13 +354,18 @@ class TmsExpense(models.Model):
     distance_empty = fields.Float(
         compute='_compute_distance_expense',
     )
-    distance_loaded_real = fields.Float()
-    distance_empty_real = fields.Float()
+    distance_loaded_real = fields.Float(
+    compute='_compute_distance_expense_dos',
+    )
+    distance_empty_real = fields.Float(
+         compute='_compute_distance_expense_dos',
+    )
     distance_routes = fields.Float(
         compute='_compute_distance_routes',
         string='Distance from routes',
         help="Routes Distance", readonly=True)
     distance_real = fields.Float(
+        compute='_compute_distance_expense_dos',
         help="Route obtained by electronic reading and/or GPS")
     income_km = fields.Float(
         compute='_compute_income_km',
@@ -373,6 +378,7 @@ class TmsExpense(models.Model):
         compute='_compute_percentage_km',
     )
     fuel_efficiency_real = fields.Float(
+          compute='_compute_distance_expense',
     )
     #convertir numero a texto
     amount_to_text = fields.Char(compute='_get_amount_to_text', string='Monto en Texto', readonly=True,
@@ -431,6 +437,14 @@ class TmsExpense(models.Model):
             for travel in rec.travel_ids:
                 rec.distance_loaded += travel.distance_loaded
                 rec.distance_empty += travel.distance_empty
+                rec.fuel_efficiency_real += travel.fuel_efficiency_travel
+
+    def _compute_distance_expense_dos(self):
+        for rec in self:
+            rec.distance_loaded_real += rec.distance_loaded
+            rec.distance_empty_real += rec.distance_empty
+            rec.distance_real += rec.distance_routes
+
 
     @api.depends('start_date', 'end_date')
     def _compute_travel_days(self):
@@ -470,12 +484,13 @@ class TmsExpense(models.Model):
             if rec.distance_real and rec.fuel_qty:
                 rec.fuel_efficiency = rec.distance_real / rec.fuel_qty
 
-    @api.depends('expense_line_ids')
+    @api.depends('travel_ids')
     def _compute_fuel_qty(self):
+        qty = 0.0
         for rec in self:
-            for line in rec.expense_line_ids:
-                if line.line_type == 'fuel':
-                    rec.fuel_qty += line.product_qty
+            for travel in rec.travel_ids:
+                qty += (travel.combustible1+travel.combustible2)
+            rec.fuel_qty = qty
 
     @api.depends('travel_ids', 'expense_line_ids')
     def _compute_amount_fuel(self):
@@ -770,10 +785,10 @@ class TmsExpense(models.Model):
         for rec in self:
             rec.current_odometer = rec.unit_id.odometer
 
-    @api.depends('travel_ids')
-    def _compute_distance_real(self):
-        for rec in self:
-            rec.distance_real = 1.0
+    # @api.depends('travel_ids')
+    # def _compute_distance_real(self):
+    #     for rec in self:
+    #         rec.distance_real = 1.0
 
     @api.model
     def create(self, values):
