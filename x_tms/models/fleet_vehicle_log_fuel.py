@@ -36,7 +36,7 @@ class FleetVehicleLogFuel(models.Model):
     product_uom_id = fields.Many2one('product.uom', string='UoM')
     product_qty = fields.Float(string='Liters', default=1.0,)
     tax_amount = fields.Float(string='Taxes',compute="_compute_taxes")
-    price_total = fields.Float(string='Total', compute="_compute_total", store=True)
+    price_total = fields.Float(string='Total', compute="_compute_total")
     special_tax_amount = fields.Float(
         compute="_compute_special_tax_amount", string='IEPS')
     price_unit = fields.Float(

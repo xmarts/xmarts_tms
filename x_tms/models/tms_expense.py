@@ -234,8 +234,7 @@ class TmsExpense(models.Model):
         string='Fake Expenses',
         store=True)
     fuel_qty = fields.Float(
-        compute='_compute_fuel_qty',
-        store=True)
+        compute='_compute_fuel_qty')
     amount_fuel = fields.Float(
         compute='_compute_amount_fuel',
         string='Cost of Fuel',
@@ -484,7 +483,7 @@ class TmsExpense(models.Model):
             if rec.distance_real and rec.fuel_qty:
                 rec.fuel_efficiency = rec.distance_real / rec.fuel_qty
 
-    @api.depends('travel_ids')
+    @api.depends('travel_ids','fuel_qty')
     def _compute_fuel_qty(self):
         qty = 0.0
         for rec in self:
