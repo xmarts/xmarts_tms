@@ -1332,7 +1332,7 @@ class TmsExpense(models.Model):
             total_discount = 0.0
             payment = loan.payment_move_id.id
             ac_loan = loan.active_loan
-            if loan.lock != True and loan.state == 'confirmed' and ac_loan == True:
+            if loan.lock != True and loan.state == 'confirmed' and ac_loan == True and payment and loan.balance > 0.0:
                 if ac_loan:
                     loan.write({
                         'expense_id': self.id
@@ -1354,7 +1354,8 @@ class TmsExpense(models.Model):
                     })
                     loan.expense_ids += expense_line
         for loan in loans:
-            if loan.lock == True and loan.state == 'confirmed' and ac_loan == True:
+            payment = loan.payment_move_id.id
+            if loan.lock == True and loan.state == 'confirmed' and ac_loan == True and payment and loan.balance > 0.0:
                 if loan.balance > 0.0:
                     loan.write({
                         'expense_id': self.id
