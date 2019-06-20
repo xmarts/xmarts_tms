@@ -234,8 +234,7 @@ class TmsExpense(models.Model):
         string='Fake Expenses',
         store=True)
     fuel_qty = fields.Float(
-        compute='_compute_fuel_qty',
-        store=True)
+        compute='_compute_fuel_qty')
     amount_fuel = fields.Float(
         compute='_compute_amount_fuel',
         string='Cost of Fuel',
@@ -484,7 +483,7 @@ class TmsExpense(models.Model):
             if rec.distance_real and rec.fuel_qty:
                 rec.fuel_efficiency = rec.distance_real / rec.fuel_qty
 
-    @api.depends('travel_ids')
+    @api.depends('travel_ids','fuel_qty')
     def _compute_fuel_qty(self):
         qty = 0.0
         for rec in self:
@@ -518,9 +517,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'refund':
                     rec.amount_refund += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo == 'reembolso':
-                    rec.amount_refund += line.valor
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo == 'reembolso':
+            #         rec.amount_refund += line.valor
 
     @api.depends('expense_line_ids')
     def _compute_amount_other_income(self):
@@ -545,9 +544,9 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'salary_discount':
                     rec.amount_salary_discount += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo != 'reembolso':
-                    rec.amount_salary_discount += (line.valor * -1)
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo != 'reembolso':
+            #         rec.amount_salary_discount += (line.valor * -1)
 
     @api.depends('expense_line_ids')
     def _compute_amount_loan(self):
@@ -695,7 +694,6 @@ class TmsExpense(models.Model):
                 rec.amount_real_expense +
                 rec.amount_salary_retention +
                 rec.amount_loan +
-                rec.amount_refund +
                 rec.amount_fuel_cash +
                 rec.amount_other_income
                 )
@@ -801,7 +799,7 @@ class TmsExpense(models.Model):
     def write(self, values):
         for rec in self:
             res = super(TmsExpense, self).write(values)
-            rec.get_travel_info()
+            #rec.get_travel_info()
             return res
 
     @api.multi
@@ -1302,16 +1300,16 @@ class TmsExpense(models.Model):
             for line in rec.expense_line_ids:
                 if line.line_type == 'refund':
                     rec.amount_refund += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo == 'reembolso':
-                    rec.amount_refund += line.valor
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo == 'reembolso':
+            #         rec.amount_refund += line.valor
             rec.amount_salary_discount = 0
             for line in rec.expense_line_ids:
                 if line.line_type == 'salary_discount':
                     rec.amount_salary_discount += line.price_total
-            for line in rec.expense_dif_ids:
-                if line.tipo != 'reembolso':
-                    rec.amount_salary_discount += (line.valor * -1)
+            # for line in rec.expense_dif_ids:
+            #     if line.tipo != 'reembolso':
+            #         rec.amount_salary_discount += (line.valor * -1)
 
 
 
@@ -1359,7 +1357,7 @@ class TmsExpense(models.Model):
             total_discount = 0.0
             payment = loan.payment_move_id.id
             ac_loan = loan.active_loan
-            if loan.lock != True and loan.state == 'confirmed' and ac_loan == True:
+            if loan.lock != True and loan.state == 'confirmed' and ac_loan == True and payment and loan.balance > 0.0:
                 if ac_loan:
                     loan.write({
                         'expense_id': self.id
@@ -1381,7 +1379,8 @@ class TmsExpense(models.Model):
                     })
                     loan.expense_ids += expense_line
         for loan in loans:
-            if loan.lock == True and loan.state == 'confirmed' and ac_loan == True:
+            payment = loan.payment_move_id.id
+            if loan.lock == True and loan.state == 'confirmed' and ac_loan == True and payment and loan.balance > 0.0:
                 if loan.balance > 0.0:
                     loan.write({
                         'expense_id': self.id
@@ -1526,6 +1525,40 @@ class TmsExpense(models.Model):
                     'product_uom_id': productd_id.uom_id.id,
                     'product_id': productd_id.id,
                     'unit_price': rec.amount_deducciones,
+                    'control': True
+                })
+
+            diferencia_reem = 0
+            diferencia_cam = 0
+            for x in rec.expense_dif_ids:
+                if x.tipo == 'reembolso':
+                    diferencia_reem += x.valor
+                if x.tipo == 'sobrante':
+                    diferencia_cam += x.valor
+            if diferencia_reem > 0:
+                product_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary')])
+                rec.expense_line_ids.create({
+                    'name': _("Reembolso por diferencia de gastos"),
+                    'expense_id': rec.id,
+                    'line_type': "salary",
+                    'product_qty': 1.0,
+                    'product_uom_id': product_id.uom_id.id,
+                    'product_id': product_id.id,
+                    'unit_price': diferencia_reem,
+                    'control': True
+                })
+            if diferencia_cam > 0:
+                productd_id = self.env['product.product'].search([
+                ('tms_product_category', '=', 'salary_discount')])
+                rec.expense_line_ids.create({
+                    'name': _("Descuento por diferencia de gastos"),
+                    'expense_id': rec.id,
+                    'line_type': "salary_discount",
+                    'product_qty': 1.0,
+                    'product_uom_id': productd_id.uom_id.id,
+                    'product_id': productd_id.id,
+                    'unit_price': diferencia_cam,
                     'control': True
                 })
 
