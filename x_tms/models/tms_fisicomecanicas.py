@@ -5,6 +5,16 @@
 
 from odoo import fields, models
 
+class FisicomecanicaVehicle(models.Model):
+    _name = 'tms.fisicomecanica.vehicle'
+
+    fisicomecanica_id=fields.Many2one('tms.fisicomecanica')
+    
+   
+    date_vig = fields.Date(string='Fecha de Vigencia')
+    folio_verificacion= fields.Char(string="Folio de Verificacion")
+    date_veri= fields.Date(string='Fecha Verificacion')
+    adjunto = fields.Binary(string="Adjunto")
 
 class TmsFisicomecanicas(models.Model):
 
@@ -12,11 +22,12 @@ class TmsFisicomecanicas(models.Model):
     
 
     name= fields.Char(string="Nombre")
-    vehicle_id = fields.Many2one('fleet.vehicle',string='Vehículo', required=True)
     folio= fields.Char(string="Folio")
     date_fisi = fields.Date(string='Fecha de Fisicomecanicas')
-    date_vig = fields.Date(string='Fecha de Vigencia')
-    folio_verificacion= fields.Char(string="Folio de Verificacion")
-    date_veri= fields.Date(string='Fecha Verificacion')
+    vehicle_id = fields.Many2one('fleet.vehicle',string='Vehículo', required=True)
+    fisicomecanica_ids = fields.One2many(
+        'tms.fisicomecanica.vehicle', 'fisicomecanica_id', string='Fisicomecanica')
     notes = fields.Text()
-    adjunto = fields.Binary(string="Adjunto")
+    
+
+

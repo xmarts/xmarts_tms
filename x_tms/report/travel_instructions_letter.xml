@@ -434,7 +434,7 @@
 
                                     <table class="table table-condensed" >
                                         <tr>
-                                            <td class="text-center" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="80%">ANTICIPOS</td>
+                                            <td class="text-right" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="80%">ANTICIPOS</td>
                                             <td class="text-center" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="10%"></td>
                                             <td class="text-center" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="10%"></td>
                                             

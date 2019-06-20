@@ -107,54 +107,73 @@
                                 <td><span t-esc="'%.2f'% sumkms"/></td>
                             </tr>
                             
-                            <tr>
-                                <td colspan="6"/>
-                                <td colspan="6">
-                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
-                                        <tr><th colspan="20" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
+                            
+                        </table>
+<!-- 
+                           <table class="table table-striped" style="border-left:solid gray 1px;  border-bottom:solid gray 1px;  font-size: 10px;">
+                                        <tr><th colspan="22" style="font-size: 12px; background: lightgray;"  class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
+
+                                        <t t-set="sum_rut" t-value="0"/>
                                         <t t-foreach="o.travel_ids" t-as="z">
                                         <tr t-if="z.si_seguro">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del seguro</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_seguro"/></td>
-                                            
+                                            <th colspan="2"></th>
+
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
+                                       
                                         </tr>
+                                    
                                         <tr t-if="z.lavado">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo de lavado</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_lavado"/></td>
+                                            <th colspan="2"></th>
+                                            
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
                                            
+                                           
                                         </tr>
+                                     
                                         <tr t-if="z.plastico">
-                                           <th colspan="2"><span t-field="z.name"/></th>
+                                            <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo por plastico</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_plastico"/></td>
                                             <th colspan="2"></th>
+                                            
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                       
                                             
                                         </tr>
                                         <tr t-if="z.fumigado">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo de fumigado</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_fumigado"/></td>
                                             <th colspan="2"></th>
+                                            
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                         
                                             
                                            
                                         </tr>
@@ -162,20 +181,26 @@
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Otros cargos</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_otros"/></td>
                                             <th colspan="2">Espacificaciones</th>
+                                            
                                             <td colspan="2"><span t-field="z.des_otros"/></td>
                                             <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                         
                                            
                                         </tr>
                                         <tr t-if="z.camisa">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo por camisa</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_camisa"/></td>
                                             <th colspan="2">Manga</th>
+                                            
                                             <td colspan="2"><span t-esc="dict(z._fields['camisa_manga'].selection).get(z.camisa_manga)"/></td>
                                             <th colspan="2">Material Espacial</th>
                                             <td colspan="2"><span t-field="z.camisa_mat"/></td>
@@ -185,43 +210,481 @@
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del chaleco</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_chaleco"/></td>
                                             <th colspan="2">Color</th>
+                                            
                                             <td colspan="2"><span t-field="z.chaleco_color"/></td>
                                             <th colspan="2"></th>
                                             <th colspan="2"></th>
+                                            
                                             
                                             
                                         </tr>
                                         <tr t-if="z.guantes">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
-                                            <td colspan="6">Cargo pr guantes</td>
+                                            <td colspan="6">Cargo por guantes</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_guantes"/></td>
                                             <th colspan="2">Tipo de guates</th>
+                                            
                                             <td colspan="2"><span t-field="z.tipo_guantes"/></td>
                                             <th colspan="2"></th>
-                                            
+                                            <th colspan="2"></th>
+                                           
                                         </tr>
                                         <tr t-if="z.pantalon">
                                             <th colspan="2"><span t-field="z.name"/></th>
                                             <th colspan="2">Concepto</th>
                                             <td colspan="6">Cargo del pantalon</td>
+                                            
                                             <th colspan="2">Importe</th>
                                             <td colspan="2"><span t-field="z.cargo_pantalon"/></td>
                                             <th colspan="2">SUA</th>
+                                            
                                             <td colspan="2"><span t-field="z.pantalon_sua"/></td>
-                                            <th colspan="2">SUA</th>
+                                            <th colspan="2">Material de pantalon</th>
                                             <td colspan="2"><span t-field="z.pantalon_mat"/></td>
                                         </tr>
+                                         <t t-set="sum_rut" t-value="sum_rut + z.cargo_seguro
+                                                                                + z.cargo_lavado
+                                                                                + z.cargo_plastico
+                                                                                + z.cargo_fumigado
+                                                                                + z.cargo_otros
+                                                                                + z.cargo_camisa
+                                                                                + z.cargo_chaleco
+                                                                                + z.cargo_guantes
+                                                                                + z.cargo_pantalon"/>
                                     </t>
+                                    <tr  t-if="sum_rut > 0">
+                                        <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <td colspan="6"></td>
+                                            
+                                            <th colspan="2">TOTAL</th>
+                                            <td colspan="2"><span t-esc="'%.2f'% sum_rut"/></td>
+                                            <th colspan="2"></th>
+                                            
+                                            <td colspan="2"></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                    </tr>
+                                    </table> -->
+
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr>
+                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">ANTICIPOS</th>       
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">VIAJE</th>
+                                            <th width="40%">ANTICIPOS</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">TOTAL</th>
+                                        </tr>
+                                        <t t-set="suman_fin" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="x">
+                                        <t t-set="suman" t-value="0"/>
+                                        <tr t-foreach="x.advance_ids" t-as="z">
+                                            <td><span t-field="x.name"/></td>
+                                            
+                                            <td><span t-field="z.product_id"/> <span t-field="z.name"/> <t t-if="z.notes"> - <span t-field="z.notes"/></t></td>
+                                           <th width="20%"></th>
+                                            <td><span t-esc="'%.2f'% z.amount"/></td>
+                                            <t t-set="suman" t-value="suman + z.amount"/>
+                                            
+                                            
+                                        </tr>
+                                        <t t-set="suman_fin" t-value="suman_fin + float(suman)"/>
+                                    </t>
+                                        <tr>
+
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% suman_fin"/></th>
+                                        </tr>
                                     </table>
-                                </td>
+                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr>
+                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">VALES</th>       
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">NOMBRE</th>
+                                            <th width="40%">VIAJE</th>
+                                            <th width="20%">FECHA</th>
+                                            <th width="20%">TOTAL</th>
+                                        </tr>
+                                     
+                                        <t t-set="suman" t-value="0"/>
+                                        <tr t-foreach="o.fuel_log_ids" t-as="z">
+                                            <td><span t-field="z.name"/></td>
+                                            
+                                            <td><span t-field="z.travel_id"/></td>
+                                           <td width="20%"><span t-field="z.date"/></td>
+                                            <td><span t-esc="'%.2f'% z.price_total"/></td>
+                                            <t t-set="suman" t-value="suman + z.price_total"/>
+                                            
+                                            
+                                        </tr>
+                                      
+                                  
+                                        <tr>
+
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% suman"/></th>
+                                        </tr>
+                                    </table>
+                                                 <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px;" width="100%">DIFERENCIA DE GASTOS</th>
+                            </tr>
+                            
+                             <tr>
+                                
+                                <th width="40%">NOMBRE</th>
+                                <th width="20%">TIPO</th>
+                                <th width="10%"></th>
+                                <th width="30%">TOTAL</th>
+                            </tr>
+                           <t t-set="sumga_sob" t-value="0"/>
+                            <t t-set="sumga_rem" t-value="0"/>
+                            <t t-set="total_gas" t-value="0"/>
+                            <t t-foreach="o.expense_dif_ids" t-as="z">
+                            <tr>
+                                
+                                <td><span t-field="z.name"/></td>
+                                <td><span t-field="z.tipo"/></td>
+                                <th width="10%"></th>
+                                <td><span t-field="z.valor"/></td>
+                            </tr>
+                            <t t-if="z.tipo == 'sobrante'">
+                            <t t-set="sumga_sob" t-value="sumga_sob + z.valor"/>
+                            </t>
+                            <t t-if="z.tipo == 'reembolso'">
+                            <t t-set="sumga_rem" t-value="sumga_rem + z.valor"/>
+                            </t>
+                          
+                            </t>
+                              <t t-set="total_gas" t-value="total_gas + (float(sumga_rem)-float(sumga_sob))"/>
+                            <tr>
+                                
+                                <th width="60%">TOTAL A PAGAR</th>
+                                <th width="20%"></th>
+                               <th width="10%"></th>
+                                <th width="30%">$<span t-esc="'%.2f'% total_gas"/></th>
+                            </tr>
+                           
+                        </table> 
+                         <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr>
+                                   <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">PRESTAMOS</th>       
+                                        </tr>
+                                        <tr>
+                                            <th width="20%">NOMBRE</th>
+                                            <th width="40%">PRODUCTO DE DESCUENTO</th>
+                                            <th width="20%">FECHA</th>
+                                            <th width="20%">TOTAL</th>
+                                        </tr>
+                                     
+                                        <t t-set="suman_p" t-value="0"/>
+                                        <tr t-foreach="o.loan_ids" t-as="z">
+                                            <td><span t-field="z.name"/></td>
+                                            
+                                            <td><span t-field="z.product_id"/></td>
+                                           <td width="20%"><span t-field="z.date_confirmed"/></td>
+                                            <td><span t-esc="'%.2f'% z.amount"/></td>
+                                            <t t-set="suman_p" t-value="suman_p + z.amount"/>
+                                            
+                                            
+                                        </tr>
+                                      
+                                  
+                                        <tr>
+
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% suman_p"/></th>
+                                        </tr>
+                                    </table> 
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px;" width="50%">PERCEPCIONES / DEDUCCIONES</th>
+                            </tr>
+                            
+                             <tr>
+                                
+                                <th width="20%">NOMBRE</th>
+                                <th width="40%">TIPO</th>
+                                <th width="20%">PERIODO</th>
+                                <th width="20%" class="text-right">TOTAL</th>
+                            </tr>
+                           <t t-set="sumga_deduc" t-value="0"/>
+                            <t t-set="sumga_per" t-value="0"/>
+                            <t t-set="total" t-value="0"/>
+                            <t t-foreach="o.employee_salary_ids" t-as="z">
+                            <tr>
+                                
+                                <td><span t-field="z.name"/></td>
+                                <td><span t-field="z.tipo"/></td>
+                                <td><span t-field="z.periodo"/></td>
+                                <td class="text-right"><span t-field="z.monto"/></td>
+                            </tr>
+                            <t t-if="z.tipo == 'deduccion'">
+                            <t t-set="sumga_deduc" t-value="sumga_deduc + z.monto"/>
+                            </t>
+                            <t t-if="z.tipo == 'percepcion'">
+                            <t t-set="sumga_per" t-value="sumga_per + z.monto"/>
+                            </t>
+                          
+                            </t>
+                              <t t-set="total" t-value="total + (float(sumga_per)-float(sumga_deduc))"/>
+                            <tr>
+                                
+                                <th width="20%">TOTAL A PAGAR</th>
+                                <th width="40%"></th>
+                                <th width="20%"></th>
+                                <th width="20%" class="text-right">$<span t-esc="'%.2f'% total"/></th>
+                            </tr>
+                           
+                        </table>
+                         <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                 <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px;" width="50%">GASTOS A CREDITO</th>
+                            </tr>
+                                        <tr>
+                                            <th width="20%">VIAJE</th>
+                                            <th width="40%">CONCEPTO</th>
+                                            <th width="20%">SIN IVA</th>
+                                            <th width="20%">CON IVA</th>
+                                        </tr>
+                                        <t t-set="sumco_fin" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="z">
+                                         
+                                         <t t-set="sumco" t-value="0"/>
+                                        <tr t-foreach="z.fuel_log_ids" t-as="x">
+
+                                            <td ><span t-field="z.name"/></td>
+                                            <td>Vale de combustible <span t-field="x.name"/> por <span t-esc="'%.2f'% x.product_qty"/> litros</td>
+                                            <td>$<span t-esc="'%.2f'% x.price_subtotal"/></td>
+                                            <td>$<span t-esc="'%.2f'% x.price_total"/></td>
+                                            <t t-set="sumco" t-value="sumco + x.price_total"/>
+                                        </tr>
+                                         <t t-set="sumcas" t-value="0"/>
+                                        <t t-foreach="z.route_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="l">
+                                                <t t-if="l.axis == z.ejes">
+                                                    <t t-if="x.credit" >
+                                                        <t t-set="sumcas" t-value="sumcas + l.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + l.cost_credit"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-foreach="z.route2_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="l">
+                                                <t t-if="l.axis == z.ejes">
+                                                    <t t-if="x.credit == True">
+                                                        <t t-set="sumcas" t-value="sumcas + l.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + l.cost_credit"/>
+                                                        
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-set="sumco_fin" t-value="sumco_fin + float(sumco)"/>
+                                        <tr t-if="sumcas > 0">
+                                            <td ><span t-field="z.name"/></td>
+                                            
+                                            <td>Costo a credito de las casetas</td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
+                                        </tr>
+                                    </t>
+                                        <tr>
+                                            
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% sumco_fin"/></th>
+                                        </tr>
+
+                                    </table>
+                        
+                    
+                             <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                <tr>
+                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="100%">GASTOS AUTORIZADOS / COMPROBADOS</th>
+                                </tr>
+                                        <tr>
+                                            <th width="20%">VIAJE</th>                                         
+                                            <th width="60%">GASTOS AUTORIZADOS / COMPROBADOS</th> 
+                                            <th width="20%"></th>                        
+                                            <th width="20%">TOTAL</th>
+                                          
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="x">
+                                        <t t-set="sumga" t-value="0"/>
+                                        <tr t-foreach="x.cargo_id" t-as="z">
+                                            <td><span t-field="x.name"/></td>
+                                            <td><span t-field="z.name"/></td>
+                                            <th width="20%"></th>
+                                            <td>$<span t-esc="'%.2f'% z.valor"/></td>
+                                            <t t-set="sumga" t-value="sumga + z.valor"/>
+                                                    
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="sumga_fin + float(sumga)"/>
+                                            
+                                    </t>
+                                        <tr>
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% sumga_fin"/></th>
+                                        </tr>
+                                    </table><hr/>
+        
+                                <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                <tr>
+                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="100%">GASTOS AUTORIZADOS / COMPROBADOS</th>
+                                </tr>
+                                        <tr>
+                                            <th width="20%">VIAJE</th>                                         
+                                            <th width="60%">GASTOS AUTORIZADOS / COMPROBADOS</th> 
+                                            <th width="20%"></th>                        
+                                            <th width="20%">TOTAL</th>
+                                          
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="x">
+                                        <t t-set="sumga" t-value="0"/>
+                                        <tr t-foreach="x.cargo_id" t-as="z">
+                                            <td><span t-field="x.name"/></td>
+                                            <td><span t-field="z.name"/></td>
+                                            <th width="20%"></th>
+                                            <td>$<span t-esc="'%.2f'% z.valor"/></td>
+                                            <t t-set="sumga" t-value="sumga + z.valor"/>
+                                                    
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="sumga_fin + float(sumga)"/>
+                                            
+                                    </t>
+                                        <tr>
+                                            <th width="40%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% sumga_fin"/></th>
+                                        </tr>
+                                    </table><hr/>
+                            <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                <tr>
+                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">FACTORES DE VIAJE</th>
+                                </tr>
+                                        <tr>
+                                            <th width="20%">VIAJE</th>                                         
+                                            <th width="20%">NOMBRE</th> 
+                                            <th width="20%">FACTOR</th>                        
+                                            <th width="40%" class="text-right">TOTAL</th>
+                                          
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="0"/>
+                                        <t t-foreach="o.travel_ids" t-as="x">
+                                        <t t-set="sumga_f" t-value="0"/>
+                                        <tr t-foreach="x.driver_factor_ids" t-as="z">
+                                            <td><span t-field="x.name"/></td>
+                                            <td><span t-field="z.name"/></td>
+                                             <td><span t-field="z.factor_type"/></td>
+                                            <td class="text-right">$<span t-esc="'%.2f'% z.total"/></td>
+                                            <t t-set="sumga_f" t-value="sumga_f + z.total"/>
+                                                    
+                                        </tr>
+                                        <t t-set="sumga_fin" t-value="sumga_fin + float(sumga_f)"/>
+                                            
+                                    </t>
+                                        <tr>
+                                            <th width="20%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%"></th>
+                                            <th width="40%" class="text-right">$<span t-esc="'%.2f'% sumga_fin"/></th>
+                                        </tr>
+                                    </table><hr/>
+        
+                 
+                      
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th class="text-center" colspan="5" style="background: lightgray; font-size: 12px;" width="100%">CALCULO DE LIQUIDACIÓN</th>
+                            </tr>
+                           
+
+                            <tr>
+                                <th >VIAJE</th>
+                                <th >RUTA</th>
+                                <th >TIPO DE LINEA</th>
+                                <th >PRODUCTO</th>
+                                <th >TOTAL</th>
+                            </tr>
+
+                                  <t t-set="sumga_de" t-value="0"/>
+                               <t t-foreach="o.expense_line_ids" t-as="z">
+                            <tr>
+                                
+                                <td><span t-field="z.travel_id"/></td>
+                                <td><span t-field="z.route_id"/></td>
+                                <td><span t-field="z.line_type"/></td>
+                                 <td><span t-field="z.product_id"/></td>
+                                  <td><span t-field="z.price_total"/></td>
+                            </tr>
+                            <t t-set="sumga_de" t-value="sumga_de + z.price_total"/>
+                            </t>
+
+                            <tr>
+                                <th >TOTAL</th>
+                                <th ></th>
+                                <th ></th>
+                                <th ></th>
+                                <th ><span t-esc="'%.2f'% sumga_de"/></th>                                
                             </tr>
                         </table>
-                   
+                    
+
+                                    
+                 
+                                <table style=" font-size: 10px;">
+                                    <tr>
+                                        <td style="height:50px;">OBSERVACIONES</td>
+                                    </tr>
+                                     <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-justify">
+                                            RECIBI DE <span style="font-weight:bold;" t-field="o.company_id.name"/> LA CANTIDAD DE <span style="font-weight:bold;" t-field="o.amount_balance"/>  (<span style="font-weight:bold;" t-field="o.amount_to_text" />) QUE CUBRE A LA FECHA EL IMPORTE DE MI SALARIO POR LOS VIAJES REALIZADOS, TIEMPOS EXTRA, 7 MO DIA Y TODAS LAS PRESTACIONES A LAS QUE TENGO DERECHO SIN QUE SE ME ADEUDE ALGUNA CANTIDAD POR OTRO CONCEPTO
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                    </tr>
+                                     <tr>
+                                        <td></td>
+                                    </tr>
+                                     <tr>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height:60px;" class="text-center"><span>_____________________________________________________</span><br/><span>NOMBRE Y FIRMA DEL OPERADOR</span></td>
+                                       
+                                    </tr>
+                                  
+                                        
+                                </table>
+                                     
                     </div>
                 </t>
             </t>

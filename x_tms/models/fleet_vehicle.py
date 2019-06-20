@@ -84,8 +84,8 @@ class FleetVehicle(models.Model):
 
 
     fisicomecanica_count = fields.Integer(compute="_compute_count_all", string='Fisicomecanica')
-    emisiones_count = fields.Integer(compute="_compute_count_all", string='Emisiones')
-    def _compute_count_all(self):
+    emisiones_count = fields.Integer(compute="_compute_count_all_new", string='Emisiones')
+    def _compute_count_all_new(self):
         fisi = self.env['tms.fisicomecanica']
         emi=self.env['tms.emisiones']
         for record in self:
@@ -105,3 +105,15 @@ class FleetVehicle(models.Model):
             )
             return res
         return False
+
+class FleetVehicleLogContract_inherit(models.Model):
+
+    _inherit = 'fleet.vehicle.log.contract'
+
+
+    odometer = fields.Float( string='Odometer Value', help='Odometer measure of the vehicle at the moment of this log')
+
+    @api.onchange('vehicle_id')
+    def _onchange_vehicle(self):
+        if self.vehicle_id:
+            self.odometer = self.vehicle_id.odometer
