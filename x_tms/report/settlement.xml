@@ -517,38 +517,7 @@
                                     </table>
                         
                     
-                             <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
-                                <tr>
-                                     <th class="text-center" colspan="4" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="100%">GASTOS AUTORIZADOS / COMPROBADOS</th>
-                                </tr>
-                                        <tr>
-                                            <th width="20%">VIAJE</th>                                         
-                                            <th width="60%">GASTOS AUTORIZADOS / COMPROBADOS</th> 
-                                            <th width="20%"></th>                        
-                                            <th width="20%">TOTAL</th>
-                                          
-                                        </tr>
-                                        <t t-set="sumga_fin" t-value="0"/>
-                                        <t t-foreach="o.travel_ids" t-as="x">
-                                        <t t-set="sumga" t-value="0"/>
-                                        <tr t-foreach="x.cargo_id" t-as="z">
-                                            <td><span t-field="x.name"/></td>
-                                            <td><span t-field="z.name"/></td>
-                                            <th width="20%"></th>
-                                            <td>$<span t-esc="'%.2f'% z.valor"/></td>
-                                            <t t-set="sumga" t-value="sumga + z.valor"/>
-                                                    
-                                        </tr>
-                                        <t t-set="sumga_fin" t-value="sumga_fin + float(sumga)"/>
-                                            
-                                    </t>
-                                        <tr>
-                                            <th width="40%">TOTAL</th>
-                                            <th width="20%"></th>
-                                            <th width="20%"></th>
-                                            <th width="20%">$<span t-esc="'%.2f'% sumga_fin"/></th>
-                                        </tr>
-                                    </table><hr/>
+                        
         
                                 <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
                                 <tr>

@@ -66,8 +66,8 @@ class TmsExpense(models.Model):
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
 
-    date_inicio = fields.Datetime(string='Fecha Prevista', compute='_compute_date_inicio', store=True)
-    date_fin = fields.Datetime(string='Fecha Prevista', compute='_compute_date_fin', store=True)
+    date_inicio = fields.Datetime(string='Fecha Prevista', compute='_compute_date_inicio')
+    date_fin = fields.Datetime(string='Fecha Prevista', compute='_compute_date_fin')
     @api.depends('travel_ids.date','date')
     def _compute_date_inicio(self):        
         for order in self:
