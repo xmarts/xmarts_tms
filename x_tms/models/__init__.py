@@ -47,4 +47,5 @@ from . import tms_waybill_transportable_line
 from . import tms_travel_template
 from . import tms_fisicomecanicas
 from . import tms_emisiones
+from . import amount_to_text
 

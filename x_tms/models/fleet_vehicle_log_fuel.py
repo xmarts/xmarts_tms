@@ -36,7 +36,7 @@ class FleetVehicleLogFuel(models.Model):
     product_uom_id = fields.Many2one('product.uom', string='UoM')
     product_qty = fields.Float(string='Liters', default=1.0,)
     tax_amount = fields.Float(string='Taxes',compute="_compute_taxes")
-    price_total = fields.Float(string='Total', compute="_compute_total", store=True)
+    price_total = fields.Float(string='Total', compute="_compute_total")
     special_tax_amount = fields.Float(
         compute="_compute_special_tax_amount", string='IEPS')
     price_unit = fields.Float(
@@ -170,6 +170,7 @@ class FleetVehicleLogFuel(models.Model):
             rec.tax_amount = rec.product_qty * (rec.product_id.standard_price * (tax/100))
 
     @api.multi
+    @api.depends('tax_amount', 'price_subtotal','price_total')
     def _compute_total(self):
         for rec in self:
             rec.price_total = rec.tax_amount + rec.price_subtotal

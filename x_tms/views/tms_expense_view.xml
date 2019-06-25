@@ -48,7 +48,11 @@
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
-                            <field name="date_inicio"/>
+                            <field name="date_inicio" invisible="1"/>
+                            <field name="date_fin" invisible="1"/>
+                            <field name="odoo_inicio" invisible="1"/>
+                            <field name="odoo_fin" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
                         </group>
                         <group>
                             <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>

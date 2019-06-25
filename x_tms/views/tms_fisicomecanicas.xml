@@ -7,10 +7,10 @@
       <field name="arch" type="xml">
         <tree>
           <field name="name"/> 
-          <field name="folio"/>
-          <field name="date_fisi"/>          
-          <field name="date_vig"/>                  
-          <field name="folio_verificacion"/>
+          <field name="vehicle_id"/>
+            <field name="folio"/>   
+           <field name="date_fisi"/>
+         
         
         </tree>
       </field>
@@ -30,13 +30,20 @@
                     </group>
                         <group col="4">
                           <field name="vehicle_id"/>
-                            <field name="folio"/>
-                            <field name="date_fisi"/>
-                            <field name="date_vig"/>
-                                                       
-                            <field name="folio_verificacion"/>
-                            <field name="date_veri"/>
-                            <field name="adjunto"/>
+                            <field name="folio"/>   
+                          <field name="date_fisi"/>
+                        </group>
+                         <group col="4">
+                          <field name="fisicomecanica_ids" nolabel="1">
+                                <tree editable="bottom">
+                                                                  
+                                    <field name="date_vig"/>
+                                    <field name="folio_verificacion"/>
+                                    <field name="date_veri"/>
+                                    <field name="adjunto"/>
+                                </tree>
+                          </field>
+                           
                         </group>
                         <separator string="Notes" colspan="4"/>
                         <field name="notes" nolabel="1"/>
