@@ -422,6 +422,8 @@ class TmsTravel(models.Model):
         default=lambda self: self.env.user)
     expense_id = fields.Many2one(
         'tms.expense', 'Expense Record', readonly=True)
+    account_id = fields.Many2one(
+        'account.invoice', 'Registro de Factura', readonly=True)
     event_ids = fields.One2many('tms.event', 'travel_id', string='Events')
     is_available = fields.Boolean(
         compute='_compute_is_available',
