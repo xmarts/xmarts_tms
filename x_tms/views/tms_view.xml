@@ -106,6 +106,7 @@
                             <field name="odometro_inicial" invisible="1" /> 
                             <field name="odometro_final" invisible="1"/>
                             <field name="expense_id" invisible="1"/>
+                            <field name="account_id" invisible="1"/>
                             <field name="crear_ope" invisible="1"/>
                         </group>
                         <group colspan="4">
@@ -796,6 +797,7 @@
 
     <menuitem id="menu_tms_settings_r_carta" name="Productos/Servicios" parent="menu_tms_settings" sequence="106"/>
     <menuitem action="tms_open_view_products_list" id="menu_tms_open_view_products" name="Productos/Servicios" parent="menu_tms_settings_r_carta" sequence="1"/>
+    <menuitem action="action_tms_viaje_cargos_adicionales_form" id="menu_tms_open_view_cargo_viajes_adicionales" name="Tipos de cargos adicionales" parent="menu_tms_settings_r_carta" sequence="2"/>
     <!-- SubMenu 6 -->
     <!-- <menuitem id="menu_tms_settings_r_carta" name="Relacionado a Carta Porte" parent="menu_tms_settings" sequence="106"/>
     <menuitem action="tms_open_view_product_list1" id="menu_tms_open_view_product_list1" name="Producto Flete" parent="menu_tms_settings_r_carta" sequence="1"/>
