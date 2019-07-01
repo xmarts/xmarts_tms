@@ -78,6 +78,7 @@
         'views/tms_tipos_carga.xml',
         'views/tms_fisicomecanicas.xml',
         'views/tms_emisiones.xml',
+        'views/tms_viaje_cargos.xml',
 
 
 

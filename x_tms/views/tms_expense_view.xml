@@ -341,4 +341,11 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
+     <record id="action_tms_viaje_cargos_adicionales_form" model="ir.actions.act_window">
+        <field name="name">Tipos de cargos adicionales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.tipocargosadicionales</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
 </odoo>
