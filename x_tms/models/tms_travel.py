@@ -1846,34 +1846,6 @@ class TmsTravel(models.Model):
             'origin':self.name,
             })
         self.subpedido_id = so.id
-    crear_ope=fields.Boolean(string="crear nuevo registro")
-    @api.multi
-    def create_nuevo_operador(self):
-        travel= self.env['tms.travel'].search([('name','=',self.name)], limit=1)
-        ids=travel.id
-        new_op=self.env['tms.travel'].create({
-            'travels_id':ids,
-            'facturar':True,
-            'cliente_id':self.cliente_id.id,
-            'producto':self.producto.id,
-            'costo_producto': self.costo_producto,
-            'sucursal_id':self.sucursal_id.id,
-            'lineanegocio':self.lineanegocio.id,
-            'date':fields.datetime.now(),
-            'tipo_remolque':self.tipo_remolque,
-            'tipo_carga':self.tipo_carga.id,
-            'unit_id':self.unit_id.id,
-            'route_id':self.route_id.id,
-            'crear_ope':True,
-            })
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'tms.travel',
-            'view_mode': 'form',
-            'res_id': new_op.id,
-            'target': 'current',
-            'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}}
-            }
 
         # product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         # self.env['sale.order.line'].create({
@@ -2003,6 +1975,35 @@ class TmsTravel(models.Model):
               'product_uom_qty':1,
               'order_id': so.id
               })
+
+    crear_ope=fields.Boolean(string="crear nuevo registro")
+    @api.multi
+    def create_nuevo_operador(self):
+        travel= self.env['tms.travel'].search([('name','=',self.name)], limit=1)
+        ids=travel.id
+        new_op=self.env['tms.travel'].create({
+            'travels_id':ids,
+            'facturar':True,
+            'cliente_id':self.cliente_id.id,
+            'producto':self.producto.id,
+            'costo_producto': self.costo_producto,
+            'sucursal_id':self.sucursal_id.id,
+            'lineanegocio':self.lineanegocio.id,
+            'date':fields.datetime.now(),
+            'tipo_remolque':self.tipo_remolque,
+            'tipo_carga':self.tipo_carga.id,
+            'unit_id':self.unit_id.id,
+            'route_id':self.route_id.id,
+            'crear_ope':True,
+            })
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'tms.travel',
+            'view_mode': 'form',
+            'res_id': new_op.id,
+            'target': 'current',
+            'flags': {'form': {'action_buttons': True, 'options': {'mode': 'edit'}}}
+            }
 
     @api.onchange('driver_factor_ids','route_id','route2_id','tipo_carga','modalidad_ruta1','modalidad_ruta2','tarifa_cliente','tarifa_cliente2','kmlextra','kmlextra2')
     def _onchange_type_factor(self):
