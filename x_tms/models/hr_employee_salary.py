@@ -15,6 +15,7 @@ class tms_employee_salary(models.Model):
     _name = 'hr.employee.salary'
     
     name = fields.Char(string="Concepto")
+    
     tipo = fields.Selection([('percepcion','Percepción'),('deduccion','Deducción')], string="Tipo")
     monto = fields.Float(string="Monto por periodo")
     periodo = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo de nomina")

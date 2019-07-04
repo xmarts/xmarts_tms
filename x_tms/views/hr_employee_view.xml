@@ -34,6 +34,7 @@
                     <group>
                         <field name="monto_info" />
                         <field name="periodo_info" />
+                        <field name="infonavit_account_id"/>
                     </group>
                 </page>
             </notebook>

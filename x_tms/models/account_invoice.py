@@ -28,12 +28,11 @@ class AccountInvoice_travel(models.Model):
     @api.multi
     def unlink(self):
         for rec in self:
-            cr = self.env.cr
-            sql ="delete from account_invoice_line where travels_ids='"+str(rec.id)+"'"
-            cr.execute(sql)            
+            travels = self.env['account.invoice.line'].search([('travels_ids', '=', rec.id)]).unlink()
+
             for acc in rec.travel_id:
                 acc.write({'account_id':False})
-
+            self.account._onchange_invoice_line_ids()     
             return super(AccountInvoice_travel, self).unlink()
 
 class AccountInvoice_line(models.Model):
@@ -52,6 +51,7 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def write(self, values):
+
         for rec in self:
             res = super(AccountInvoice, self).write(values)            
             if res:
@@ -74,7 +74,7 @@ class AccountInvoice(models.Model):
                                 'company_id':self.company_id.id,
                                 'invoice_id':recs.account.id,
                                 'travels_ids':recs.id,
-                                'account_id':t.account_id.id,
+                                'account_id':product_felte_obj.categ_id.property_account_income_categ_id.id,
                                 'account_analytic_id':account_analytic.id,
                                 #'analytic_tag_ids':rec.
                                 'quantity':1.00,
@@ -85,6 +85,7 @@ class AccountInvoice(models.Model):
                                 #'price_subtotal':0.00,
                                 #'currency_id':34
                                 })
+                              
                         if not account_analytic:
                             account=self.env['account.analytic.account'].create({                      
                                 'name':acc.unit_id.name,                             
@@ -102,7 +103,7 @@ class AccountInvoice(models.Model):
                                     'company_id':self.company_id.id,
                                     'invoice_id':recs.account.id,
                                     'travels_ids':recs.id,
-                                    'account_id':t.account_id.id,
+                                    'account_id':product_felte_obj.categ_id.property_account_income_categ_id.id,
                                     'account_analytic_id':account.id,
                                     #'analytic_tag_ids':rec.
                                     'quantity':1.00,
@@ -114,12 +115,16 @@ class AccountInvoice(models.Model):
                                     #'currency_id':34
                                     })
 
+
+
             
             for x in rec.travel_ids:
                 x.write({'line':True})
                 for acc in x.travel_id:
                     acc.write({'account_id':x.account.id})
+
             return res
+
     
 
  
@@ -168,7 +173,7 @@ class AccountInvoice(models.Model):
                                     'company_id':self.company_id.id,
                                     'invoice_id':rec.account.id,
                                     'travels_ids':rec.id,
-                                    'account_id':t.account_id.id,
+                                    'account_id':rec.product_felte_obj.categ_id.property_account_income_categ_id.id,
                                     'account_analytic_id':account_analytic.id,
                                     #'analytic_tag_ids':rec.
                                     'quantity':1.00,

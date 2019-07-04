@@ -78,3 +78,4 @@ class HrEmployee(models.Model):
 
     monto_info = fields.Float(string="Monto Infonavit", default=0.0)
     periodo_info = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo infonavit")
+    infonavit_account_id = fields.Many2one('account.account', string='Cuenta infonavit')

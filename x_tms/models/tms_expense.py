@@ -26,6 +26,7 @@ class tms_categories_events(models.Model):
 class ExpenseDiferences(models.Model):
     _name = "expense.diference"
     name = fields.Char(string="Concepto")
+    account_ids = fields.Many2one('account.account', string='Cuenta')
     tipo = fields.Selection([('reembolso','Reembolso'),('sobrante','Cambio')], string="Tipo")
     valor = fields.Float(string="Valor")
     expense_id = fields.Many2one("tms.expense")
@@ -65,6 +66,8 @@ class TmsExpense(models.Model):
     travel_ids = fields.Many2many('tms.travel',string='Travels')
     unit_id = fields.Many2one(
         'fleet.vehicle', 'Unit', required=True)
+   
+ 
 
     date_inicio = fields.Datetime(string='Fecha Prevista', compute='_compute_date_inicio')
     date_fin = fields.Datetime(string='Fecha Prevista', compute='_compute_date_fin')
@@ -636,6 +639,7 @@ class TmsExpense(models.Model):
                 if x.periodo == 'sem' and v > 0:
                     rec.employee_salary_ids.create({
                     'name': x.name + ", " + str(v) +" semanas",
+                    'account_ids': x.account_ids.id,
                     'tipo': x.tipo,
                     'monto': x.monto * v,
                     'periodo': x.periodo,
@@ -644,6 +648,7 @@ class TmsExpense(models.Model):
                 if x.periodo == 'quin' and q > 0:
                     rec.employee_salary_ids.create({
                     'name': x.name+ ", " + str(q) + " quincenas",
+                    'account_ids': x.account_ids.id,
                     'tipo': x.tipo,
                     'monto': x.monto * q,
                     'periodo': x.periodo,
@@ -652,6 +657,7 @@ class TmsExpense(models.Model):
                 if x.periodo == 'men' and m > 0:
                     rec.employee_salary_ids.create({
                     'name': x.name + ", " + str(m) +" meses",
+                    'account_ids': x.account_ids.id,
                     'tipo': x.tipo,
                     'monto': x.monto * m,
                     'periodo': x.periodo,
@@ -661,6 +667,7 @@ class TmsExpense(models.Model):
                 if self.employee_id.periodo_info == 'sem' and v > 0:
                     rec.employee_salary_ids.create({
                     'name':"Infonavit" + ", " + str(v) +" semanas",
+                    'account_ids': self.employee_id.infonavit_account_id.id,
                     'tipo': 'deduccion',
                     'monto': self.employee_id.monto_info * v,
                     'periodo': self.employee_id.periodo_info,
@@ -669,6 +676,7 @@ class TmsExpense(models.Model):
                 if self.employee_id.periodo_info == 'quin' and q > 0:
                     rec.employee_salary_ids.create({
                     'name': "Infonavit"+ ", " + str(q) + " quincenas",
+                    'account_ids': self.employee_id.infonavit_account_id.id,
                     'tipo': 'deduccion',
                     'monto': self.employee_id.monto_info * q,
                     'periodo': self.employee_id.periodo_info,
@@ -677,6 +685,7 @@ class TmsExpense(models.Model):
                 if self.employee_id.periodo_info == 'men' and m > 0:
                     rec.employee_salary_ids.create({
                     'name': "Infonavit" + ", " + str(m) +" meses",
+                    'account_ids': self.employee_id.infonavit_account_id.id,
                     'tipo': 'deduccion',
                     'monto': self.employee_id.monto_info * m,
                     'periodo': self.employee_id.periodo_info,
@@ -1266,6 +1275,7 @@ class TmsExpense(models.Model):
                 rec.expense_line_ids.create({
                     'name': _("Salary per travel: ") + str(travel.name),
                     'travel_id': travel.id,
+                    'account_ids':self.operating_unit_id.account_ids_viaje.id,
                     'expense_id': rec.id,
                     'line_type': "salary",
                     'product_qty': 1.0,
@@ -1278,11 +1288,13 @@ class TmsExpense(models.Model):
 
     @api.multi
     def create_diference_line(self, travel):
+        
         for rec in self:
             for x in travel.cargo_id:
                 if x.valor > x.advance_id.amount:
                     rec.expense_dif_ids.create({
                     'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                    'account_ids':self.operating_unit_id.account_ids_reembolso.id,
                     'tipo':'reembolso',
                     'valor': x.valor - x.advance_id.amount,
                     'expense_id': rec.id
@@ -1290,6 +1302,7 @@ class TmsExpense(models.Model):
                 if x.valor < x.advance_id.amount:
                     rec.expense_dif_ids.create({
                     'name': 'Diferencia del anticipo '+ str(x.advance_id.name),
+                    'account_ids':self.operating_unit_id.account_ids_cambio.id,
                     'tipo':'sobrante',
                     'valor': x.advance_id.amount - x.valor,
                     'expense_id': rec.id
@@ -1437,6 +1450,7 @@ class TmsExpense(models.Model):
                     if x.to_expense == True:
                         rec.expense_dif_ids.create({
                             'name': 'Anticipo '+ str(x.name)+ " por "+str(x.product_id.name),
+                            'account_ids':self.operating_unit_id.account_ids_cambio.id,
                             'tipo':'sobrante',
                             'valor': x.amount,
                             'expense_id': rec.id
@@ -1445,6 +1459,7 @@ class TmsExpense(models.Model):
                     if x.state == 'aprobado':
                         rec.expense_dif_ids.create({
                             'name': 'Gastos real '+ str(x.name.name),
+                            'account_ids':self.operating_unit_id.account_ids_reembolso.id,
                             'tipo':'reembolso',
                             'valor': x.valor,
                             'expense_id': rec.id
@@ -1530,11 +1545,15 @@ class TmsExpense(models.Model):
 
             diferencia_reem = 0
             diferencia_cam = 0
+            cuenta_reembolso = False
+            cuenta_sobrante = False
             for x in rec.expense_dif_ids:
                 if x.tipo == 'reembolso':
                     diferencia_reem += x.valor
+                    cuenta_reembolso = x.account_ids.id
                 if x.tipo == 'sobrante':
                     diferencia_cam += x.valor
+                    cuenta_sobrante = x.account_ids.id
             if diferencia_reem > 0:
                 product_id = self.env['product.product'].search([
                 ('tms_product_category', '=', 'salary')])
@@ -1542,6 +1561,7 @@ class TmsExpense(models.Model):
                     'name': _("Reembolso por diferencia de gastos"),
                     'expense_id': rec.id,
                     'line_type': "salary",
+                    'account_ids': cuenta_reembolso,
                     'product_qty': 1.0,
                     'product_uom_id': product_id.uom_id.id,
                     'product_id': product_id.id,
@@ -1555,6 +1575,7 @@ class TmsExpense(models.Model):
                     'name': _("Descuento por diferencia de gastos"),
                     'expense_id': rec.id,
                     'line_type': "salary_discount",
+                    'account_ids': cuenta_sobrante,
                     'product_qty': 1.0,
                     'product_uom_id': productd_id.uom_id.id,
                     'product_id': productd_id.id,

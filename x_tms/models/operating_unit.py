@@ -40,3 +40,6 @@ class OperatingUnit(models.Model):
     ieps_value = fields.Float(string="Valor del IEPS", default=0.3521)
     credit_limit = fields.Float()
     default_provider_fuel = fields.Many2one('res.partner', string="Proveedor de combustible por default")
+    account_ids_cambio = fields.Many2one('account.account', string='Cuenta gasto real')
+    account_ids_reembolso = fields.Many2one('account.account', string='Cuenta gasto real')
+    account_ids_viaje = fields.Many2one('account.account', string='Cuenta viaje')
