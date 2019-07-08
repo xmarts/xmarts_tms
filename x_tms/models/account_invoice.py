@@ -48,11 +48,20 @@ class AccountInvoice(models.Model):
         'tms.waybill', 'invoice_id', string="Waybills", readonly=True)
     travel_ids = fields.One2many('account.invoice.travel', 'account', string='Travels')
 
+    @api.onchange('travel_ids')
+    def _onchange_travel_ids(self):
+        taxes_grouped = self.get_taxes_values()
+        tax_lines = self.tax_line_ids.filtered('manual')
+        for tax in taxes_grouped.values():
+            tax_lines += tax_lines.new(tax)
+        self.tax_line_ids = tax_lines
+        return
 
     @api.multi
     def write(self, values):
 
         for rec in self:
+            #rec.travel_ids.account._onchange_invoice_line_ids()
             res = super(AccountInvoice, self).write(values)            
             if res:
                 product_felte_obj = self.env['product.product'].search([('es_flete','=',True)], limit=1)
@@ -66,7 +75,7 @@ class AccountInvoice(models.Model):
                             for t in product_felte_obj.taxes_id:
                                 taxes.append(t.id)                        
                             if recs.line == False:
-                                do=self.env['account.invoice.line'].create({           
+                                rec.invoice_line_ids.create({           
                                 #'sequence':10,
                                 'product_id':product_felte_obj.id,
                                 'origin':'Cobro por el flete del viaje - ' + acc.name,
@@ -82,9 +91,12 @@ class AccountInvoice(models.Model):
                                 'price_unit':acc.flete_cliente,
                                 #'discount':0.00,
                                 'invoice_line_tax_ids':[(6, 0, taxes)],
-                                #'price_subtotal':0.00,
+                                #'price_subtotal':100.00,
                                 #'currency_id':34
                                 })
+
+                                
+                                   
                               
                         if not account_analytic:
                             account=self.env['account.analytic.account'].create({                      
@@ -95,7 +107,7 @@ class AccountInvoice(models.Model):
                                 for t in product_felte_obj.taxes_id:
                                     taxes.append(t.id)                        
                                 if recs.line == False:
-                                    do=self.env['account.invoice.line'].create({           
+                                    rec.invoice_line_ids.create({        
                                     #'sequence':10,
                                     'product_id':product_felte_obj.id,
                                     'origin':'Cobro por el flete del viaje - ' + acc.name,
@@ -111,18 +123,21 @@ class AccountInvoice(models.Model):
                                     'price_unit':acc.flete_cliente,
                                     #'discount':0.00,
                                     'invoice_line_tax_ids':[(6, 0, taxes)],
-                                    #'price_subtotal':0.00,
+                                    #'price_subtotal':100.00,
                                     #'currency_id':34
                                     })
+                                    
+                                    
 
 
 
-            
+           
             for x in rec.travel_ids:
                 x.write({'line':True})
+
                 for acc in x.travel_id:
                     acc.write({'account_id':x.account.id})
-
+                   
             return res
 
     
