@@ -77,7 +77,11 @@ class TmsExpenseLoan(models.Model):
         readonly=True,
         ondelete='restrict',)
 
-    
+    prestamo_p = fields.Boolean(string='Prestamo Personal')
+    descuneto = fields.Boolean(string='Descuento mal Uso de Equipo de Trabajo')
+    transfe = fields.Boolean(string='Transferencia de Deuda por Cambio de Flotilla')
+    remplazo_repara = fields.Boolean(string='Remplazo o Repacion de Celular')
+    diferencia_dies = fields.Boolean(string='Diferencia en Diesel')
 
     @api.model
     def create(self, values):
