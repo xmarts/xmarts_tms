@@ -72,6 +72,7 @@
         'report/expense_report.xml',
         'report/settlement.xml',
         'report/discount_format.xml',
+        'report/discount_format_operador.xml',
         'data/ir_config_parameter.xml',
         'views/tms_travel_template_view.xml',
         'views/sale_order.xml',
