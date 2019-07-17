@@ -1846,6 +1846,7 @@ class TmsTravel(models.Model):
             'origin':self.name,
             })
         self.subpedido_id = so.id
+    
 
         # product_caseta_obj = self.env['product.product'].search([('es_caseta','=',True)], limit=1)
         # self.env['sale.order.line'].create({

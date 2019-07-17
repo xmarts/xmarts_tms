@@ -29,6 +29,7 @@
                               <field name="employee_salary_ids" colspan="4">
                                 <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
                                   <field name="name" required="1"/>
+                                  <field name="account_ids" required="1"/>
                                   <field name="tipo" required="1"/>
                                   <field name="periodo" required="1"/>
                                   <field name="monto" required="1"/>

@@ -21,6 +21,7 @@ class TmsExpenseLine(models.Model):
         readonly=True)
     product_qty = fields.Float(
         string='Qty', default=1.0)
+    account_ids = fields.Many2one('account.account', string='Cuenta')
     unit_price = fields.Float()
     price_subtotal = fields.Float(
         compute='_compute_price_subtotal',

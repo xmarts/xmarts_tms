@@ -131,7 +131,25 @@
                             </field>
                         </page>
                         <page string="Expense Lines">
-                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" context="{'default_expense_id': active_id, 'group_by_line_type': 1, 'default_travel_ids': travel_ids}" name="expense_line_ids" nolabel="1"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" context="{'default_expense_id': active_id, 'group_by_line_type': 1, 'default_travel_ids': travel_ids}" name="expense_line_ids" nolabel="1" colors="blue:line_type=='salary';red:line_type=='salary_discount';">
+                                 <tree  string="">
+                                    
+                                    <field name="travel_id"/>
+                                    <field name="route_id"/>
+                                    <field name='line_type'/>
+                                    <field name='product_id'/>
+                                    <field name='account_ids'/>
+                                    <field name="name"/>
+                                    <field name="unit_price"/>
+                                    <field name="tax_ids"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="tax_amount"/>
+                                    <field name="price_total"/>
+                                    <field name="is_invoice"/>
+                                    <field name="invoice_id"/>
+                                </tree>
+                            </field>
+
                         </page>
                         <page string="Advances">
                             <field colspan="4" name="advance_ids" nolabel="1" readonly="1">
@@ -172,6 +190,7 @@
                                 <tree string="" editable="bottom">
                                     <field invisible="1" name="expense_id"/>
                                     <field name="name"/>
+                                   <field name="account_ids"/>
                                     <field name="tipo"/>
                                     <field name="valor"/>
                                 </tree>
@@ -201,6 +220,7 @@
                               <field name="employee_salary_ids" colspan="4">
                                 <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
                                   <field name="name" required="1"/>
+                                  <field name="account_ids"/>
                                   <field name="tipo" required="1"/>
                                   <field name="periodo" required="1"/>
                                   <field name="monto" required="1"/>

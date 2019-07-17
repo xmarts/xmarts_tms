@@ -15,3 +15,4 @@ class TmsConfigSettings(models.TransientModel):
     _default_expense_currency_rate = fields.Float(
         related='company_id.expense_currency_rate',
     )
+   
