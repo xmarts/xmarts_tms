@@ -213,19 +213,37 @@ class FleetVehicleLogFuel(models.Model):
         for rec in self:
             vales = self.env['fleet.vehicle.log.fuel'].search([('travel_id','=',self.travel_id.id),('state','in',['approved','confirmed','closed'])])
             sumva = 0
+            excede=0
             for x in vales:
                 sumva += x.product_qty
+                if x.permite_exceso ==False:
+                    excede=excede+1
             sumva += self.product_qty
-            if sumva > self.travel_id.com_necesario:
+            if excede > 0:
+
+                if sumva > self.travel_id.com_necesario:
+                    if self.permite_exceso != True:
+                        raise ValidationError(
+                        _("Al aprovar este vale excede el combustible necesario ("+str(self.travel_id.com_necesario)+" litros), solicite la autorizacion para exceso de combustible."))
+                    else:
+                        rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
+                        rec.state = 'approved'
+                else:
+                    rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
+                    rec.state = 'approved'               
+                
+            else:
+
                 if self.permite_exceso != True:
                     raise ValidationError(
                     _("Al aprovar este vale excede el combustible necesario ("+str(self.travel_id.com_necesario)+" litros), solicite la autorizacion para exceso de combustible."))
                 else:
                     rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
                     rec.state = 'approved'
-            else:
-                rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
-                rec.state = 'approved'
+            
+               
+
+                    
             # rec.message_post(body=_('<b>Fuel Voucher Approved.</b>'))
             # rec.state = 'approved'
 
