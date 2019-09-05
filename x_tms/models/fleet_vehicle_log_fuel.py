@@ -207,6 +207,8 @@ class FleetVehicleLogFuel(models.Model):
     permite_exceso = fields.Boolean(string="Permitir Excedente de combustible?", default=False)
     folio_ficha = fields.Char(string="Ficha de deposito")
     adj_ficha = fields.Binary(string="Comprobante")
+    sistema = fields.Boolean(string="Sistema", default=False, help="Indica si el registro es generado por el sistema")
+
 
     @api.multi
     def action_approved(self):

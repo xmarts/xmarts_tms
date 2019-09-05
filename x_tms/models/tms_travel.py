@@ -622,8 +622,10 @@ class TmsTravel(models.Model):
             if self.lineanegocio.tipo == 'km':
                 reg.flete_2 = reg.tarifa_cliente2 * (self.route_id.distance + self.route2_id.distance)
 
-    @api.onchange('driver_factor_ids','com_necesario')
+    #@api.onchange('driver_factor_ids','com_necesario')
+    @api.onchange('driver_factor_ids')
     def onchange_flete_cliente_anticipo(self):
+        """
         line_ids = []
         for x in self.advance_ids:
             if x.advance_auto != True:
@@ -722,7 +724,162 @@ class TmsTravel(models.Model):
             'advance_ids': line_ids,
         })
         return res
+        """
+        todos_ids = []
+        existentes_ids = []
+        otros_ids = []
+        #---------------------------------
+        #ANTICIPOS EXISTENTES
+        #---------------------------------
+        #tipo: 1=Actualizar,0=Crear
+        for x in self.advance_ids:
+            line = {
+                'tipo': 1,
+                'id': x.id,
+                'datos':
+                    {
+              'name': str(x.name or ''),
+              'operating_unit_id': x.operating_unit_id.id,
+              'unit_id': x.unit_id.id,
+              'product_id': x.product_id.id,
+              'employee_id': x.employee_id.id,
+              'amount': x.amount,
+              'currency_id': x.currency_id.id,
+              'date': x.date,
+              'notes': str(x.notes or ''),
+              'state': x.state,
+              'move_id': x.move_id.id,
+              'expense_id': x.expense_id.id,
+              'travel_id': x.travel_id.id,
+              'cuenta_b': x.cuenta_b.id,
+              'adjunto_compro': x.adjunto_compro,
+              'paid': x.paid,
+              'payment_move_id': x.payment_move_id.id,
+              'n_transaccion': x.n_transaccion,
+              'auto_expense': x.auto_expense,
+              'advance_auto': x.advance_auto
+              }
+            }
+            existentes_ids.append(line)
+            
+        
+            
+        #---------------------------------
+        #FACTORES
+        #---------------------------------
+        if self.driver_factor_ids:
+            comb = self.env['product.product'].search([('tms_product_category', '=', 'real_expense')], limit=1)
+            total = 0
+            for x in self.driver_factor_ids:
+                if x.factor_type == 'costo_fijo':
+                    total = x.valor
+                if x.factor_type == 'porcentaje':
+                    total = (self.flete_cliente/100) * x.valor
+                if x.factor_type == 'costokm':
+                    d1 = 0
+                    d2 = 0
+                    if self.kml_ex == True:
+                        d1 = self.kmlextra
+                    if self.kml_ex2 == True:
+                        d1 = self.kmlextra2
+                    if x.if_diferentes != True:
+                        total = x.valor * (self.route_id.distance + d1 + self.route2_id.distance + d2)
+                    if x.if_diferentes == True:
+                        total = (x.valor * self.route_id.distance + d1) + (x.valor2 * self.route2_id.distance + d2)
 
+                line = {
+                  'tipo': 1,
+                  'id': 0,
+                  'datos': {
+                    'operating_unit_id': self.operating_unit_id.id,
+                    'unit_id': self.unit_id.id,
+                    'product_id': comb.id,
+                    'employee_id': self.employee_id.id,
+                    'amount': total * 0.2,
+                    'currency_id': self.env.user.company_id.currency_id,
+                    'date': datetime.today(),
+                    'notes': "Monto generado automaticamente calculando el 20 porciento del factor del operador",
+                    'state': 'draft',
+                    'adelanto_factor': True,
+                    'advance_auto': True,
+                  }
+                }
+
+                existe = False
+                for ant in existentes_ids:
+                    if comb.id == ant['datos']['product_id'] and ant['datos']['advance_auto']:
+                        existe = True
+                        ant.update({'datos': line['datos']})
+                
+                """
+                if not existe:
+                    line.update({'tipo': 0})
+                    existentes_ids.append(line)
+                """        
+        
+        #todos_ids.append(existentes_ids)
+        #todos_ids += otros_ids
+        
+        #---------------------------------
+        #RUTA 1 Y 2
+        #---------------------------------
+        product_caseta_obj = self.env['product.product'].search([('es_caseta', '=', True)], limit=1)
+        suma = 0
+        
+        for x in self.route_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    if not x.credit == True:
+                        suma += z.cost_cash
+        
+        for x in self.route2_id.tollstation_ids:
+            for z in x.cost_per_axis_ids:
+                if z.axis == self.ejes:
+                    if not x.credit == True:
+                        suma += z.cost_cash
+        
+        if suma > 0:
+            line = {
+                'tipo': 1,
+                'datos': {
+              'operating_unit_id': self.operating_unit_id.id,
+              'unit_id': self.unit_id.id,
+              'product_id': product_caseta_obj.id,
+              'employee_id': self.employee_id.id,
+              'amount': suma,
+              'currency_id': self.env.user.company_id.currency_id,
+              'date': datetime.today(),
+              'notes': "Monto generado automaticamente para pagar casetas sin opcion de credito activa",
+              'state': 'draft',
+              'advance_auto': True,
+              }
+            }
+            existe = False
+            for ant in existentes_ids:
+                if product_caseta_obj.id == ant['datos']['product_id'] and ant['datos']['advance_auto']:
+					existe = True
+					if ant['datos']['state'] != 'confirmed':
+						ant.update({'datos': line['datos']})
+
+            if not existe:
+                line.update({'tipo': 0})
+                existentes_ids.append(line)
+        
+        #------------------------------------
+        #REALIZA LAS TAREAS FINALES
+        #------------------------------------
+        final_ids = []                      
+        for i in existentes_ids:
+            if i['tipo'] == 1:
+                final_ids += [(i['tipo'], i['id'], i['datos'])]
+            if i['tipo'] == 0:
+                final_ids += [(0, 0, i['datos'])]
+                
+        #---------------------------------
+        #ACTUALIZAR
+        #---------------------------------
+        self.update({'advance_ids': final_ids})
+    
     @api.one
     @api.depends('peso_destino_remolque_1','peso_destino_remolque_2')
     def _compute_pesos_destino_total(self):
@@ -1774,7 +1931,7 @@ class TmsTravel(models.Model):
                 if self.rendimiento_manual1 != True:
                     if self.kml > 0:
                         vale = self.route_id.distance/self.kml
-
+		"""
         line_ids = []
         res = {'value':{
                 'fuel_log_ids':[],
@@ -1796,6 +1953,56 @@ class TmsTravel(models.Model):
             'fuel_log_ids': line_ids,
         })
         return res
+		"""
+		
+		#----------------------------------------------------
+       
+        if len(self.fuel_log_ids) > 0: #Actualizar existente.
+            lista = []
+            for x in self.fuel_log_ids:
+                if x.sistema:
+                    comb = self.env['product.product'].search([('tms_product_category', '=', 'fuel'), ('es_combustible', '=', True)], limit=1)
+                    valores = {
+                    'operating_unit_id': x.operating_unit_id,
+                    'vendor_id': x.vendor_id,
+                    'vehicle_id': x.vehicle_id,
+                    'product_id': x.product_id,
+                    'product_qty': vale,
+                    'price_total': 0,
+                    'employee_id': x.employee_id,
+                    'currency_id': x.currency_id,
+                    'state': x.state
+                    }
+                    x.update(valores)
+        elif self.unit_id:  #Agregar nuevo.
+            total = 0
+            comb = self.env['product.product'].search([('tms_product_category', '=', 'fuel'), ('es_combustible', '=', True)], limit=1)
+            
+            valores = {
+              'operating_unit_id': self.operating_unit_id.id,
+              'vendor_id': self.operating_unit_id.default_provider_fuel.id,
+              'vehicle_id': self.unit_id.id,
+              'product_id': comb.id,
+              'product_qty': vale,
+              'price_total': 0,
+              'employee_id': self.employee_id.id,
+              'currency_id': self.env.user.company_id.currency_id.id,
+              'state': 'draft',
+              'sistema': True
+            }
+            self.update({'fuel_log_ids': [(0, 0, valores)]})
+        
+        #Calculos.
+        for x in self.fuel_log_ids:
+            if x.sistema:
+                tax = 0
+                for t in x.product_id.supplier_taxes_id:
+                    tax += t.amount
+                x.tax_amount = x.product_qty * (x.product_id.standard_price * (tax / 100))
+                x.price_unit = x.product_id.standard_price
+                x.price_subtotal = x.price_unit * x.product_qty
+                x.price_total = x.tax_amount + x.price_subtotal
+
 
 
     si_seguro = fields.Boolean(string="Seguro de carga.", default=False)
