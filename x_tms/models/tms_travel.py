@@ -1378,18 +1378,23 @@ class TmsTravel(models.Model):
         travel = super(TmsTravel, self).create(values)
         print(values.get('com_solicitado'))
         print(values.get('com_necesario'))
-        if values.get('com_solicitado') > values.get('com_necesario'):
-            raise UserError(
-                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(values.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(values.get('com_necesario')) + ' Litros)'))
+        print(values.get('vales'))
+        print(values.get('exedente'))
+        if values.get('vales') == values.get('exedente'):
+            if not travel.operating_unit_id.travel_sequence_id:
+                raise ValidationError(_(
+                    'You need to define the sequence for travels in base %s' %
+                    travel.operating_unit_id.name
+                ))
+            sequence = travel.operating_unit_id.travel_sequence_id
+            travel.name = sequence.next_by_id()
+            return travel
+        else:
+            if values.get('com_solicitado') > values.get('com_necesario'):
+                raise UserError(
+                    _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(values.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(values.get('com_necesario')) + ' Litros)'))
         
-        if not travel.operating_unit_id.travel_sequence_id:
-            raise ValidationError(_(
-                'You need to define the sequence for travels in base %s' %
-                travel.operating_unit_id.name
-            ))
-        sequence = travel.operating_unit_id.travel_sequence_id
-        travel.name = sequence.next_by_id()
-        return travel
+        
 
     @api.depends()
     def _compute_is_available(self):
@@ -2295,7 +2300,24 @@ class TmsTravel(models.Model):
                         x.total = (x.valor * self.route_id.distance) + (x.valor2 * self.route2_id.distance)
 
     com_solicitado = fields.Float()
+    vales =fields.Float()
+    exedente =fields.Float()
 
+    @api.onchange('fuel_log_ids','route_id','route2_id')
+    def _onchange_com_vales(self):
+        if self.fuel_log_ids:
+            val = 0
+            per = 0
+            for x in self.fuel_log_ids:
+                val =val + 1
+                if x.permite_exceso == True:
+                    per =per + 1
+            print(val)
+            print(per)
+            self.vales =val
+            self.exedente =per
+   
+    
     @api.onchange('fuel_log_ids','route_id','route2_id')
     def _onchange_com_soli(self):
         tot_comb = 0
@@ -2383,11 +2405,22 @@ class TmsTravel(models.Model):
                     if self.kml > 0:
                         necesario = self.route_id.distance/self.kml
         print(vals.get('com_solicitado'))
-        print(round(necesario, 2))
-        if vals.get('com_solicitado') > round(necesario, 2):
-            raise UserError(
-                _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + str(round(necesario, 2)) + ' Litros)'))
-        return res
+        val = 0
+        per = 0
+        for x in self.fuel_log_ids:
+            val =val + 1
+            if x.permite_exceso == True:
+                per =per + 1
+        print(val)
+        print(per)
+        if val == per:
+            return res
+        else:    
+            print(round(necesario, 2))
+            if vals.get('com_solicitado') > round(necesario, 2):
+                raise UserError(
+                    _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + str(round(necesario, 2)) + ' Litros)'))
+            return res
 
     @api.model
     def _get_com_necesario(self, vals):

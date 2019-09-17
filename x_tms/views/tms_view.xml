@@ -102,6 +102,8 @@
                             <field name="validar_viaje" invisible="1"/>
                             <field name="com_necesario" invisible="1"/>
                             <field name="com_solicitado" invisible="1"/>
+                            <field name="vales" invisible="1"/>
+                            <field name="exedente" invisible="1"/>
                             <field name="presupuesto_creado" invisible="1"/>
                             <field name="odometro_inicial" invisible="1" /> 
                             <field name="odometro_final" invisible="1"/>
