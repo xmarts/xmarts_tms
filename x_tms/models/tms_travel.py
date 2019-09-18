@@ -1393,7 +1393,14 @@ class TmsTravel(models.Model):
             if values.get('com_solicitado') > values.get('com_necesario'):
                 raise UserError(
                     _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(values.get('com_solicitado'))+' Litros) es mayor al necesario. (' + '{0:.2f}'.format(values.get('com_necesario')) + ' Litros)'))
-        
+            if not travel.operating_unit_id.travel_sequence_id:
+                raise ValidationError(_(
+                    'You need to define the sequence for travels in base %s' %
+                    travel.operating_unit_id.name
+                ))
+            sequence = travel.operating_unit_id.travel_sequence_id
+            travel.name = sequence.next_by_id()
+            return travel
         
 
     @api.depends()
@@ -2404,24 +2411,27 @@ class TmsTravel(models.Model):
                 if self.rendimiento_manual1 != True:
                     if self.kml > 0:
                         necesario = self.route_id.distance/self.kml
-        print(vals.get('com_solicitado'))
+       
         val = 0
         per = 0
+        tol = 0
         for x in self.fuel_log_ids:
             val =val + 1
+            tol += x.product_qty
             if x.permite_exceso == True:
                 per =per + 1
-        print(val)
-        print(per)
+        print("Write",val)
+        print("Write",per)
+        print("Write",vals.get('com_solicitado'))
+        print("Write",tol)
         if val == per:
             return res
         else:    
             print(round(necesario, 2))
-            if vals.get('com_solicitado') > round(necesario, 2):
+            if tol > round(necesario, 2):
                 raise UserError(
-                    _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(vals.get('com_solicitado'))+' Litros) es mayor al necesario. (' + str(round(necesario, 2)) + ' Litros)'))
+                    _('Aviso !\nLa suma en los vales de combustible ('+'{0:.2f}'.format(tol)+' Litros) es mayor al necesario. (' + str(round(necesario, 2)) + ' Litros)'))
             return res
-
     @api.model
     def _get_com_necesario(self, vals):
         return vals.get('com_necesario')

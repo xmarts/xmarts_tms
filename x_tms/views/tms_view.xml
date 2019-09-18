@@ -224,6 +224,7 @@
                                     <field name='price_total'/>
                                     <field name='currency_id'/>
                                     <field name='state'/>
+                                    <field name="permite_exceso"/>
                                 </tree>
                             </field>
                         </page>
