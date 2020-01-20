@@ -24,23 +24,121 @@ class TmsFactor(models.Model):
     category = fields.Selection([
         ('driver', 'Driver'),
         ('customer', 'Customer'),
-        ('supplier', 'Supplier')], 'Type', required=True)
+        ('supplier', 'Supplier')], 'Type')
     factor_type = fields.Selection([
-        ('distance', 'Distance Route (Km/Mi)'),
-        ('distance_real', 'Distance Real (Km/Mi)'),
-        ('weight', 'Weight'),
-        ('travel', 'Travel'),
-        ('qty', 'Quantity'),
-        ('volume', 'Volume'),
-        ('percent', 'Income Percent'),
-        ('percent_driver', 'Income Percent per Driver'),
-        ('amount_driver', 'Amount Percent per Driver')],
+        ('costo_fijo', 'Costo Fijo'),
+        ('porcentaje', 'Porcentaje del Flete'),
+        ('costokm', 'Costo por Kilometro'),],
         required=True,
-        help='For next options you have to type Ranges or Fixed Amount\n - '
-             'Distance Route (Km/mi)\n - Distance Real (Km/Mi)\n - Weight\n'
-             ' - Quantity\n - Volume\nFor next option you only have to type'
-             ' Fixed Amount:\n - Travel\nFor next option you only have to type'
-             ' Factor like 10.5 for 10.50%:\n - Income Percent')
+        help='El Costo Fijo se agregara directamente el monto especificado.\n'
+        'Porcentaje del Flete calcula el porcentaje del flete especificado en factor.\n'
+        'Costo por KM calculara el total multiplicando el factor por el total de kilometros.')
+    if_diferentes = fields.Boolean(string="¿Valores difetentes por ruta?")
+    valor = fields.Float(string="Valor", default=0)
+    valor2 = fields.Float(string="Valor para 2da ruta", default=0)
+    total = fields.Float(string="Total de Factor", compute="_cal_total")
+
+    @api.onchange('factor_type')
+    def _onchange_type(self):
+        if self.factor_type == 'costokm':
+            if self.travel_id.tipo_remolque == 'sencillo':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_sencillo_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_pesado
+            if self.travel_id.tipo_remolque == 'doble':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_doble_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_doble_pesado
+            if self.travel_id.tipo_remolque == 'torton':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_torton_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_torton_pesado
+            if self.travel_id.tipo_remolque == 'rabon':
+                if self.travel_id.modalidad_ruta1 == 'vacio':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_vacio
+                if self.travel_id.modalidad_ruta1 == 'medido':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_medido
+                if self.travel_id.modalidad_ruta1 == 'pesado':
+                    self.valor = self.travel_id.tipo_carga.tarifa_rabon_pesado
+                if self.travel_id.modalidad_ruta2 == 'vacio':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_rabon_vacio
+                if self.travel_id.modalidad_ruta2 == 'medido':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_medido
+                if self.travel_id.modalidad_ruta2 == 'pesado':
+                    self.valor2 = self.travel_id.tipo_carga.tarifa_sencillo_pesado
+            if self.if_diferentes != True:
+                self.valor2 = self.valor
+        if self.factor_type != 'costokm':
+            self.if_diferentes == False
+
+    @api.one
+    def _cal_total(self):
+        if self.factor_type == 'costo_fijo':
+            self.total = self.valor
+        if self.factor_type == 'porcentaje':
+            self.total = (self.travel_id.flete_cliente/100) * self.valor
+        if self.factor_type == 'costokm':
+            if self.if_diferentes != True:
+                self.total = self.valor * (self.travel_id.route_id.distance + self.travel_id.route2_id.distance)
+            if self.if_diferentes == True:
+                self.total = (self.valor * self.travel_id.route_id.distance) + (self.valor2 * self.travel_id.route2_id.distance)
+    
+    @api.onchange('factor_type','valor','valor2','if_diferentes')
+    def _onchange_cal_total(self):
+        if self.factor_type == 'costo_fijo':
+            self.total = self.valor
+        if self.factor_type == 'porcentaje':
+            self.total = (self.travel_id.flete_cliente/100) * self.valor
+        if self.factor_type == 'costokm':
+            if self.if_diferentes != True:
+                self.total = self.valor * (self.travel_id.route_id.distance + self.travel_id.route2_id.distance)
+            if self.if_diferentes == True:
+                self.total = (self.valor * self.travel_id.route_id.distance) + (self.valor2 * self.travel_id.route2_id.distance)
+
+    # factor_type = fields.Selection([
+    #     ('distance', 'Distance Route (Km/Mi)'),
+    #     ('distance_real', 'Distance Real (Km/Mi)'),
+    #     ('weight', 'Weight'),
+    #     ('travel', 'Travel'),
+    #     ('qty', 'Quantity'),
+    #     ('volume', 'Volume'),
+    #     ('percent', 'Income Percent'),
+    #     ('percent_driver', 'Income Percent per Driver'),
+    #     ('amount_driver', 'Amount Percent per Driver')],
+    #     required=True,
+    #     help='For next options you have to type Ranges or Fixed Amount\n - '
+    #          'Distance Route (Km/mi)\n - Distance Real (Km/Mi)\n - Weight\n'
+    #          ' - Quantity\n - Volume\nFor next option you only have to type'
+    #          ' Fixed Amount:\n - Travel\nFor next option you only have to type'
+    #          ' Factor like 10.5 for 10.50%:\n - Income Percent')
+    
     range_start = fields.Float()
     range_end = fields.Float()
     factor = fields.Float()
@@ -51,18 +149,13 @@ class TmsFactor(models.Model):
         default=10)
     notes = fields.Text()
 
+    @api.model
     @api.onchange('factor_type')
     def _onchange_factor_type(self):
         values = {
-            'distance': _('Distance Route (Km/Mi)'),
-            'distance_real': _('Distance Real (Km/Mi)'),
-            'weight': _('Weight'),
-            'travel': _('Travel'),
-            'qty': _('Quantity'),
-            'volume': _('Volume'),
-            'percent': _('Income Percent'),
-            'percent_driver': _('Income Percent per Driver'),
-            'amount_driver': _('Amount Percent per Driver'),
+            'costo_fijo': _('Costo Fijo por el Viaje'),
+            'porcentaje': _('Porcentaje del Flete del viaje'),
+            'costokm': _('Costo calculado (km * factor)'),
         }
         if not self.factor_type:
             self.name = 'name'

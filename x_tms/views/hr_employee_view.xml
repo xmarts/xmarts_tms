@@ -11,6 +11,7 @@
                         <field name="operating_unit_id"/>
                         <field name="driver"/>
                         <field name="outsourcing" attrs="{'invisible':[('driver','=',False)]}"/>
+                        <field name="employee_category_id" />
                     </group>
                     <group col="4">
                         <field name="tms_advance_account_id" attrs="{'required':[('driver','=',True)], 'invisible':[('driver','=',False)] }"/>
@@ -20,12 +21,20 @@
                         <label for="driver_license" attrs="{'invisible': [('driver','=',False)]}"/>
                         <div>
                             <field name="driver_license" attrs="{'invisible': [('driver','=',False)]}"/>
-                            <button name="get_driver_license_info" type="object" string="Get Licence Info" attrs="{'invisible': [('driver','=',False)]}" class="oe_link"/>
+                            <!-- <button name="get_driver_license_info" type="object" string="Get Licence Info" attrs="{'invisible': [('driver','=',False)]}" class="oe_link"/> -->
                         </div>
+                        <field name="num_med_prev" />
                         <field name="license_type" attrs="{'invisible': [('driver','=',False)]}"/>
                         <field name="license_valid_from" attrs="{'invisible': [('driver','=',False)]}"/>
                         <field name="license_expiration" attrs="{'invisible': [('driver','=',False)]}"/>
                         <field name="days_to_expire" attrs="{'invisible': [('driver','=',False)]}"/>
+                    </group>
+                </page>
+                <page string="Infonavit">
+                    <group>
+                        <field name="monto_info" />
+                        <field name="periodo_info" />
+                        <field name="infonavit_account_id"/>
                     </group>
                 </page>
             </notebook>
@@ -37,7 +46,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('driver','=',True)]</field>
-        <field name="context">{}</field>
+        <field name="context">{'default_driver': True}</field>
         <field eval="False" name="view_id"/>
         <field name="search_view_id" ref="hr.view_employee_filter"/>
         <field name="help" type="html">
@@ -49,4 +58,5 @@
           </p>
         </field>
     </record>
+
 </odoo>

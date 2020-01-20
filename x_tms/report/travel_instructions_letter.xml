@@ -83,7 +83,7 @@
                         <t t-set="partner_way" t-value="partner_waybills.partner_id"/>
                         <t t-set="partner_not" t-value="partner_notes.partner_id"/>
                         <t t-if="partner_not == partner_way">
-                            <t t-call="tms.travel_instructions_letter_header"/>
+                            <t t-call="x_tms.travel_instructions_letter_header"/>
                             <div class="list-group">
                                 <h5 class="list-group-item-heading">
                                     <strong>Notes: </strong>
@@ -133,11 +133,348 @@
         </t>
     </template>
     <template id="travel_instructions_letter_translate">
-        <t t-call="report.html_container">
+        <t t-call="report.report_layout">
             <t t-as="doc_id" t-foreach="doc_ids">
-                <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'tms.travel_instructions_letter')"/>
+                <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'x_tms.travel_instructions_letter')"/>
             </t>
         </t>
     </template>
-    <report file="tms.travel_instructions_letter" id="print_travel_intructions_letter" model="tms.travel" name="tms.travel_instructions_letter" report_type="qweb-pdf" string="Letter of Instructions"/>
+    <!-- <report file="x_tms.travel_instructions_letter" id="print_travel_intructions_letter" model="tms.travel" name="x_tms.travel_instructions_letter" report_type="qweb-pdf" string="Letter of Instructions"/> -->
+
+    <template id="report_carta_instrucciones">
+        <t t-call="report.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="report.external_layout">
+                    <div class="page">
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th width="20%">OPERADOR:</th>
+                                <td width="30%"><span t-field="o.employee_id"/></td>
+                                <th width="20%">NO. DE LIQUIDACIÓN:</th>
+                                <td width="30%"><span t-field="o.expense_id.name" /></td>
+                            </tr>
+                            <tr>
+                                <th>CTA. BANCARIA:</th>
+                                <td><span t-field="o.employee_id.bank_account_id.bank_id" /> - <span t-field="o.employee_id.bank_account_id.acc_number" /></td>
+                                <th>FECHA SALIDA:</th>
+                                <td><span t-field="o.date_start"/></td>
+                            </tr>
+                            <tr>
+                                <th>CAMIÓN:</th>
+                                <td><span t-field="o.unit_id"/></td>
+                                <th>FECHA LLEGADA:</th>
+                                <td><span t-field="o.date_end"/></td>
+                            </tr>
+                            <tr>
+                                <th>KMS. SALIDA</th>
+                                <td><span t-esc="'%.2f'% o.odometro_inicial"/></td>
+                                <th>FECHA LIQUIDACIÓN:</th>
+                                <td><span t-field="o.expense_id.date"/></td>
+                            </tr>
+                            <tr>
+                                <th>KMS. LLEGADA:</th>
+                                <td><span t-esc="'%.2f'% o.odometro_final"/></td>
+                                <th>TIEMPO ESTIMADO:</th>
+                                <td><span t-esc="'%02d:%02d' % (int(o.travel_duration), o.travel_duration % 1 * 60)" /> HORAS</td>
+                            </tr>
+                            <tr>
+                                <th>KMS. RECORRIDOS:</th>
+                                <td><span t-esc="'%.2f'% o.distance_driver"/></td>
+                                <th>CATEGORIA OPERADOR</th>
+                                <td><span t-field="o.employee_id.employee_category_id"/></td>
+                            </tr>
+                        </table>
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th colspan="12" class="text-center" style="background: lightgray;">ITINERARIO</th>
+                            </tr>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>CP</th>
+                                <th>ORIGEN</th>
+                                <th>DESTINO</th>
+                                <th>PRODUCTO</th>
+                                <th>CARGA</th>
+                                <th>COMBUSTIBLE (LITROS)</th>
+                                <th>KMS</th>
+                                <!-- <th>CASETAS</th>
+                                <th>TARIFA</th>
+                                <th> FLETE </th> -->
+                            </tr>
+                            <tr>
+                                <td><span t-field="o.fecha_viaje"/></td>
+                                <td><span t-field="o.arrival_id.localidad.zip_sat_code.code"/></td>
+                                <td><span t-field="o.departure_id"/></td>
+                                <td><span t-field="o.arrival_id"/></td>
+                                <td><span t-field="o.producto"/></td>
+                                <td><span t-field="o.modalidad_ruta1"/></td>
+                                <td><span t-esc="'%.2f'% o.combustible1"/></td>
+                                <td><span t-esc="'%.2f'% o.route_id.distance"/></td>
+                                <!-- <td>$ <span t-esc="'%.2f'% o.casetas1"/></td>
+                                <td>$ <span t-esc="'%.2f'% o.tarifa_cliente"/></td>
+                                <td>$<span t-esc="'%.2f'% o.flete_1"/></td> -->
+                            </tr>
+                            <tr t-if="o.route2_id">
+                                <td><span t-field="o.fecha_viaje"/></td>
+                                <td><span t-field="o.arrival2_id.localidad.zip_sat_code.code"/></td>
+                                <td><span t-field="o.departure2_id"/></td>
+                                <td><span t-field="o.arrival2_id"/></td>
+                                <td><span t-field="o.producto"/></td>
+                                <td><span t-field="o.modalidad_ruta2"/></td>
+                                <td><span t-esc="'%.2f'% o.combustible2"/></td>
+                                <td><span t-esc="'%.2f'% o.route2_id.distance"/></td>
+                                <!-- <td>$ <span t-esc="'%.2f'% o.casetas2"/></td>
+                                <td>$ <span t-esc="'%.2f'% o.tarifa_cliente2"/></td>
+                                <td>$<span t-esc="'%.2f'% o.flete_2"/></td> -->
+                            </tr>
+                            <tr>
+                                <th class="text-right" colspan="6">TOTAL:</th>
+                                <td><span t-esc="'%.2f'% o.com_necesario"/></td>
+                                <td><span t-esc="'%.2f'% (float(o.route2_id.distance) + float(o.route_id.distance))"/></td>
+                                <!-- <td>$<span t-esc="'%.2f'% o.costo_casetas"/></td>
+                                <td/>
+                                <td>$<span t-esc="'%.2f'% o.flete_cliente"/></td> -->
+                            </tr>
+                            <!--<tr><td colspan="12"><br/></td></tr>-->
+                            <!--<tr>-->
+                            <!--    <th>FOLIO</th>-->
+                            <!--    <th colspan="3">RUTA VACIA</th>-->
+                            <!--    <th colspan="2">% DE UTIL.</th>-->
+                            <!--    <th>KM VACIO</th>-->
+                            <!--    <td colspan="5">-->
+                                    
+                            <!--    </td>-->
+                            <!--</tr>-->
+                            <tr>
+                                <!--<td><span t-field="o.name"/></td>-->
+                                <!--<td colspan="3"><span t-field="o.route2_id"/></td>-->
+                                <!--<td colspan="2"/>-->
+                                <!--<td><span t-field="o.distance_empty"/></td>-->
+                                <td colspan="6"/>
+                                <td colspan="6">
+                                    <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                                        <tr><th colspan="20" style="font-size: 12px;" class="text-center">GASTOS AUTORIZADOS DE RUTA</th></tr>
+                                        <tr t-if="o.si_seguro">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del seguro</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_seguro"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="o.lavado">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo de lavado</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_lavado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="o.plastico">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo por plastico</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_plastico"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="o.fumigado">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo de fumigado</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_fumigado"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                           
+                                        </tr>
+                                        <tr t-if="o.otros">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Otros cargos</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_otros"/></td>
+                                            <th colspan="2">Espacificaciones</th>
+                                            <td colspan="2"><span t-field="o.des_otros"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="o.camisa">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo por camisa</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_camisa"/></td>
+                                            <th colspan="2">Manga</th>
+                                            <td colspan="2"><span t-esc="dict(o._fields['camisa_manga'].selection).get(o.camisa_manga)"/></td>
+                                            <th colspan="2">Material Espacial</th>
+                                            <td colspan="2"><span t-field="o.camisa_mat"/></td>
+                                           
+                                        </tr>
+                                        <tr t-if="o.chaleco">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del chaleco</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_chaleco"/></td>
+                                            <th colspan="2">Color</th>
+                                            <td colspan="2"><span t-field="o.chaleco_color"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                            
+                                        </tr>
+                                        <tr t-if="o.guantes">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo pr guantes</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_guantes"/></td>
+                                            <th colspan="2">Tipo de guates</th>
+                                            <td colspan="2"><span t-field="o.tipo_guantes"/></td>
+                                            <th colspan="2"></th>
+                                            <th colspan="2"></th>
+                                        </tr>
+                                        <tr t-if="o.pantalon">
+                                            <th colspan="2">Concepto</th>
+                                            <td colspan="6">Cargo del pantalon</td>
+                                            <th colspan="2">Importe</th>
+                                            <td colspan="2"><span t-field="o.cargo_pantalon"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="o.pantalon_sua"/></td>
+                                            <th colspan="2">SUA</th>
+                                            <td colspan="2"><span t-field="o.pantalon_mat"/></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-striped" style="border: solid gray 1px; font-size: 10px;">
+                            <tr>
+                                <th class="text-center" style="background: lightgray; font-size: 12px;" width="50%">GASTOS A CREDITO</th>
+                                <th class="text-center" style="background: lightgray; font-size: 12px; border-left: solid gray 1px;" width="50%">GASTOS AUTORIZADOS / COMPROBADOS</th>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th width="60%">CONCEPTO</th>
+                                            <th width="20%">SIN IVA</th>
+                                            <th width="20%">CON IVA</th>
+                                        </tr>
+                                        <t t-set="sumco" t-value="0"/>
+                                        <tr t-foreach="o.fuel_log_ids" t-as="x">
+                                            <td>Vale de combustible <span t-field="x.name"/> por <span t-esc="'%.2f'% x.product_qty"/> litros</td>
+                                            <td>$<span t-esc="'%.2f'% x.price_subtotal"/></td>
+                                            <td>$<span t-esc="'%.2f'% x.price_total"/></td>
+                                            <t t-set="sumco" t-value="sumco + x.price_total"/>
+                                        </tr>
+                                        <t t-set="sumcas" t-value="0"/>
+                                        <t t-foreach="o.route_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="z">
+                                                <t t-if="z.axis == o.ejes">
+                                                    <t t-if="x.credit" >
+                                                        <t t-set="sumcas" t-value="sumcas + z.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + z.cost_credit"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <t t-foreach="o.route2_id.tollstation_ids" t-as="x">
+                                            <t t-foreach="x.cost_per_axis_ids" t-as="z">
+                                                <t t-if="z.axis == o.ejes">
+                                                    <t t-if="x.credit == True">
+                                                        <t t-set="sumcas" t-value="sumcas + z.cost_credit"/>
+                                                        <t t-set="sumco" t-value="sumco + z.cost_credit"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <tr t-if="sumcas > 0">
+                                            <td>Costo a credito de las casetas</td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
+                                            <td>$<span t-esc="'%.2f'% sumcas"/></td>
+                                        </tr>
+                                        <tr>
+                                            <th width="60%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% sumco"/></th>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="border-left: solid gray 1px;">
+                                    <table class="table table-condensed">
+                                        <tr>
+                                            <th width="60%">GASTOS AUTORIZADOS / COMPROBADOS</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">TOTAL</th>
+                                            <!-- <th width="20%">CON IVA</th> -->
+                                        </tr>
+                                        <t t-set="sumga" t-value="0"/>
+                                        <tr t-foreach="o.cargo_id" t-as="z">
+                                            <td><span t-field="z.name"/></td><!-- 
+                                            <td>$<span t-esc="'%.2f'% z.valor"/></td> -->
+                                            <th width="20%"></th>
+                                            <td>$<span t-esc="'%.2f'% z.valor"/></td>
+                                            <t t-set="sumga" t-value="sumga + z.valor"/> <!-- 
+                                            <th width="20%">$<span t-esc="'%.2f'% sumga"/></th> -->
+                                        </tr>
+                                        <tr>
+                                            <th width="60%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% sumga"/></th>
+                                        </tr>
+                                    </table><hr/>
+                                    
+                                    
+                                    
+
+                                    <table class="table table-condensed" >
+                                        <tr>
+                                            <td class="text-right" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="80%">ANTICIPOS</td>
+                                            <td class="text-center" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="10%"></td>
+                                            <td class="text-center" style="background: lightgray; font-size: 12px; border-left: solid lightgray 1px;" width="10%"></td>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <th width="60%">ANTICIPOS</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">TOTAL</th>
+                                        </tr>
+                                        <t t-set="suman" t-value="0"/>
+                                        <tr t-foreach="o.advance_ids" t-as="z">
+                                            <td><span t-field="z.product_id"/> <span t-field="z.name"/> <t t-if="z.notes"> - <span t-field="z.notes"/></t></td>
+                                           <!--  <td><span t-esc="'%.2f'% z.amount"/></td> -->
+                                           <th width="20%"></th>
+                                            <td><span t-esc="'%.2f'% z.amount"/></td>
+                                            <t t-set="suman" t-value="suman + z.amount"/>
+                                        </tr>
+                                        <tr>
+                                            <th width="60%">TOTAL</th>
+                                            <th width="20%"></th>
+                                            <th width="20%">$<span t-esc="'%.2f'% suman"/></th>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- <table class="table table-striped" style="border: solid gray 1px; width: 50%; font-size: 10px;">
+                            <tr>
+                                <th class="text-center" style="background: lightgray; font-size: 12px;" width="50%">CALCULO DE LIQUIDACIÓN</th>
+                            </tr>
+                            <tr>
+                                <td/>
+                            </tr>
+                        </table> -->
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    <report file="x_tms.travel_instructions_letter" id="print_travel_carta_instrucciones" model="tms.travel" name="x_tms.report_carta_instrucciones" report_type="qweb-pdf" string="Carta Instrucciones"/>
+
+
 </odoo>

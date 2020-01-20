@@ -42,7 +42,7 @@ class FleetVehicleLogFuelPrepaid(models.Model):
         string='Fuel Vauchers',
         readonly=True,
     )
-    balance = fields.Float(readonly=True, compute="_compute_balance")
+    balance = fields.Float()
 
     @api.model
     def create(self, values):
@@ -56,17 +56,17 @@ class FleetVehicleLogFuelPrepaid(models.Model):
         res.name = sequence.next_by_id()
         return res
 
-    @api.multi
-    @api.depends('log_fuel_ids')
-    def _compute_balance(self):
-        for rec in self:
-            rec.balance = rec.price_total
-            for fuel in rec.log_fuel_ids:
-                rec.balance -= fuel.price_total
-                if rec.balance > rec.price_total:
-                    raise ValidationError(
-                        _('The total amount of fuel voucher is '
-                          'higher than the allowed limit'))
+    # @api.multi
+    # @api.depends('log_fuel_ids')
+    # def _compute_balance(self):
+        # for rec in self:
+        #     rec.balance = rec.price_total
+        #     for fuel in rec.log_fuel_ids:
+        #         rec.balance -= fuel.price_total
+        #         if rec.balance > rec.price_total:
+        #             raise ValidationError(
+        #                 _('The total amount of fuel voucher is '
+        #                   'higher than the allowed limit'))
 
     @api.depends('invoice_id')
     def _compute_invoiced_paid(self):

@@ -8,7 +8,20 @@ from odoo import _, api, exceptions, fields, models
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
-
+    dmc_seguro = fields.Boolean(string="DMC Seguro")
+    dmc_lavado = fields.Boolean(string="DMC Lavado")
+    dmc_plastico = fields.Boolean(string="DMC Plastico")
+    dmc_fumigado = fields.Boolean(string="DMC Fumigado")
+    dmc_otros = fields.Boolean(string="DMC Otros")
+    dmc_camisa = fields.Boolean(string="DMC Camisa")
+    dmc_chaleco = fields.Boolean(string="DMC Chaleco")
+    dmc_pantalon = fields.Boolean(string="DMC Pantalon")
+    dmc_guantes = fields.Boolean(string="DMC Guantes")
+    es_caseta = fields.Boolean(string="Es producto caseta")
+    es_factor_op = fields.Boolean(string="Es producto factor")
+    es_combustible = fields.Boolean(string="Es producto combustible")
+    es_cargo = fields.Boolean(string="Es producto cargo")
+    es_flete = fields.Boolean(string="Es servicio flete")
     tms_product_category = fields.Selection([
         ('freight', 'Freight (Waybill)'),
         ('move', 'Moves (Waybill)'),
@@ -26,7 +39,8 @@ class ProductTemplate(models.Model):
         ('negative_balance', 'Negative Balance'),
         ('fuel_cash', 'Fuel in Cash'),
         ('tollstations', 'Tollstations (Expenses)'),
-        ('loan', 'Loan')],
+        ('loan', 'Loan'),
+        ('charge','Carga')],
         string='TMS Product Category')
     apply_for_salary = fields.Boolean()
 

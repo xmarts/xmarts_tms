@@ -15,18 +15,12 @@
                 <field name="trailer1_id"/>
                 <field name="dolly_id"/>
                 <field name="trailer2_id"/>
-                <field name="date_start"/>
-                <field name="date_end"/>
                 <filter context="{'group_by' : 'unit_id'}" string="Unit"/>
                 <filter context="{'group_by' : 'employee_id'}" string="Driver 1"/>
                 <filter context="{'group_by' : 'partner_id'}" string="Customer"/>
                 <filter context="{'group_by' : 'departure_id'}" string="Departure"/>
                 <filter context="{'group_by' : 'arrival_id'}" string="Arrival"/>
-                <filter context="{'group_by' : 'company_id'}" string="Company"/>
                 <filter context="{'group_by' : 'operating_unit_id'}" string="Base"/>
-                <filter context="{'group_by' : 'date'}" string="Date"/>
-                <filter context="{'group_by' : 'date_start_real:day'}" name="date_dispatched" string="Day Dispatched"/>
-                <filter context="{'group_by' : 'date_end_real:day'}" string="Day Finished"/>
                 <filter name="operating_unit_group_by" context="{'group_by':'operating_unit_id'}" string="Operating Unit"/>
             </search>
         </field>
@@ -38,19 +32,17 @@
         <field name="arch" type="xml">
             <tree string="Plantillas de viaje">
                 <field name="name"/>
-                <field name="date"/>
                 <field name="unit_id" string="Unit"/>
                 <field name="trailer1_id"/>
                 <field name="dolly_id"/>
                 <field name="trailer2_id"/>
                 <field name="employee_id"/>
-                <field name="waybill_ids" widget="many2many_tags"/>
                 <field name="route_id"/>
             </tree>
         </field>
     </record>
 
-    <record id="view_tms_travel_form" model="ir.ui.view">
+    <record id="view_tms_travel_template_form" model="ir.ui.view">
         <field name="name">tms.travel.template.form</field>
         <field name="model">tms.travel.template</field>
         <field name="arch" type="xml">
@@ -59,82 +51,50 @@
                     <button name="create_travel" string="Crear Viaje" type="object"/>
                 </header>
                 <sheet>
-                    <div class="oe_title">
-                        <h1>
-                            <label class="oe_inline" style="font-size:30px;" string="Travel - " attrs="{'invisible':[('name','=', False)]}"/>
-                            <field name="name" readonly="1"/>
-                        </h1>
-                    </div>
+                    <label style="font-size:18px;" string="Nombre de la plantilla" />
+                    <field name="name" readonly="0"/>
                     <group>
                         <group>
                             <field name="operating_unit_id" />
+                            <field name="sucursal_id" />
+                            <field name="cliente_id" />
+                            <field name="tipo_remolque" />
                             <field name="kit_id" />
                             <field name="unit_id" domain="[('fleet_type', '=', 'tractor')]"/>
-                            <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]"/>
-                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
-                            <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]"/>
+                            <field name="trailer1_id" attrs="{'required':['|', ('dolly_id','!=',False),('trailer2_id','!=',False)]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer2_id)]" string="Remolque 1"/>
+                            <field name="dolly_id" attrs="{'required':[('trailer2_id','!=',False)],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'dolly'}" domain="[('fleet_type', '=', 'dolly')]"/>
+                            <field name="trailer2_id" attrs="{'required':[('dolly_id','!=',False)],'invisible':[('tipo_remolque','!=','doble')]}" context="{'default_fleet_type': 'trailer'}" domain="[('fleet_type', '=', 'trailer'),('id','!=',trailer1_id)]" string="Remolque 2"/>
                         </group>
                         <group>  
-                            <field name="date" />
                             <field name="user_id" />
                             <field name="employee_id" />
-                            <field name="framework"/>
+                            <field name="tipo_viaje"/>
+                            <field name="lineanegocio" />
+                            <field name="tipo_lineanegocio" readonly="1"/>
+                            <field name="tipo_negocio" invisible="1"/>
+                            <field name="producto"/>
+                            <field name="costo_producto"/>
                         </group>
                         <group colspan="4">
                             <field name="route_id" />
+                            <field name='ruta_vacia1' />
+                            <field name='rendimiento_manual1' />
+                            <field name='kmlmuno' attrs="{'invisible':[('rendimiento_manual1','!=',True)],'required':[('rendimiento_manual1','=',True)]}"/>
                         </group>
                         <group>
-                            <field name='departure_id'/>
+                            <field name='departure_id' />
                         </group>
                         <group>
                             <field name="arrival_id"/>
                         </group>
+                        <group colspan="4">
+                            <field name="route2_id" />
+                            <field name='ruta_vacia2' />
+                            <field name='rendimiento_manual2' />
+                            <field name='kmlm2' attrs="{'invisible':[('rendimiento_manual2','!=',True)],'required':[('rendimiento_manual2','=',True)]}"/>
+                        </group>
                     </group>
                     <notebook colspan="4">
-                        <page string="Vehicle log fuel">
-                            <field name="fuel_log_ids" nolabel="1" context="{'default_travel_id':active_id, 'default_operating_unit_id':operating_unit_id}">
-                              <tree colors="red:state=='cancel'; green:state=='approved';blue:state=='confirmed';">
-                                    <field name='name'/>
-                                    <field name='employee_id'/>
-                                    <field name='vendor_id'/>
-                                    <field name='product_qty'/>
-                                    <field name='product_uom_id'/>
-                                    <field name='price_total'/>
-                                    <field name='state'/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="Advances">
-                            <field name="advance_ids" context="{'default_travel_id':active_id, 'default_operating_unit_id': operating_unit_id}"/>
-                        </page>
-                        <page string="Waybills">
-                            <group>
-                                <field name="waybill_ids" nolabel="1">
-                                    <tree colors="red:state=='cancel';green:state=='approved';blue:state=='confirmed';" string="Waybills">
-                                        <button groups="x_tms.group_waybill_approve" icon="gtk-go-forward" name="action_approve" states="draft" string="Approve" type="object"/>
-                                        <button groups="x_tms.group_waybill_confirm" icon="gtk-ok" name="action_confirm" states="approved" string="Confirm" type="object"/>
-                                        <field name="state"/>
-                                        <field name="name"/> 
-                                        <field name="date_order"/>
-                                        <field name="partner_id"/> 
-                                        <field name="product_qty" sum="Product Quantity"/> 
-                                        <field name="amount_untaxed" sum="Amount Untaxed"/>
-                                        <field name="amount_tax" sum="Taxes"/> 
-                                        <field name="amount_total" sum="Total "/> 
-                                    </tree>
-                                </field>
-                            </group>
-                        </page>
-                        <page string="Expense driver factor">
-                            <field name="driver_factor_ids" context="{'default_category': 'driver'}"/>
-                        </page>
-                        <page string="History">
-                            <field name="event_ids" context="{'default_travel_id':active_id}"/>
-                            <group>
-                                <separator colspan="4" string="Notes"/>
-                                <field name="notes" nolabel="1"/>
-                            </group>
-                        </page>
                         <page string="Statistics">
                             <group>
                                 <group>
@@ -150,18 +110,9 @@
                                     <separator colspan="4" string="Fuel Efficiency"/>
                                     <newline/>
                                     <field name="fuel_efficiency_expected" readonly="1"/>
-                                    <field name="fuel_efficiency_travel"/>
-                                    <field name="fuel_efficiency_extraction"/>
+                                    <!-- <field name="fuel_efficiency_travel"/>
+                                    <field name="fuel_efficiency_extraction"/> -->
                                 </group>
-                            </group>
-                            <separator colspan="4" string="Date and Times"/>
-                            <group col="6" colspan="4">
-                                <field name="date_start" />
-                                <field name="date_end" />
-                                <field name="travel_duration" widget="float_time"/>
-                                <field name="date_start_real" />
-                                <field name="date_end_real" />
-                                <field name="travel_duration_real" widget="float_time"/>
                             </group>
                         </page>
                     </notebook>

@@ -25,7 +25,7 @@
             <form string="Drivers Loans">
             <header>
                 <button name="action_cancel_draft" icon="fa-reply" states="cancel" string="Set to Draft" type="object"/>
-                <button name="action_cancel" icon="fa-times" states="draft,approved,confirmed" string="Cancel" type="object"/>
+                <button name="action_cancel" icon="fa-times" states="draft,approved,confirmed,closed" string="Cancel" type="object"/>
                 <button name="action_approve" icon="fa-thumbs-up" class="oe_highlight" states="draft" string="Approve" type="object"/>
                 <button name="action_confirm" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
                 <button name="action_authorized" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
@@ -82,6 +82,7 @@
                                 <field name="date"/>
                                 <field name="name"/>
                                 <field name="expense_id"/>
+                                <field name="state_expense" readonly="1"/>
                                 <field name="price_total"/>
                             </tree>
                         </field>
@@ -98,6 +99,15 @@
              
                 <page string="Notes">                        
                     <field colspan="4" name="notes" nolabel="1"/>
+                </page>
+                <page string="Formato">
+                 <group >                        
+                    <field name="prestamo_p"/>
+                    <field name="descuneto"/>
+                    <field name="transfe"/>
+                    <field name="remplazo_repara"/>
+                    <field name="diferencia_dies"/>
+                </group>
                 </page>
             </notebook>
             </sheet>

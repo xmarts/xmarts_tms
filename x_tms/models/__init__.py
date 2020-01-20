@@ -15,11 +15,13 @@ from . import hr_employee
 from . import operating_unit
 from . import product_template
 from . import res_company
+from . import res_partner
 from . import tms_advance
 from . import tms_config_settings
 from . import tms_custom_house
 from . import tms_customs
 from . import tms_event
+from . import hr_employee_salary
 from . import tms_expense
 from . import tms_expense_line
 from . import tms_expense_loan
@@ -35,6 +37,7 @@ from . import tms_route_tollstation
 from . import tms_route_tollstation_costperaxis
 from . import tms_toll_data
 from . import tms_transportable
+from . import sale_order
 from . import tms_travel
 from . import tms_unit_kit
 from . import tms_waybill
@@ -42,3 +45,7 @@ from . import tms_waybill_line
 from . import tms_waybill_taxes
 from . import tms_waybill_transportable_line
 from . import tms_travel_template
+from . import tms_fisicomecanicas
+from . import tms_emisiones
+from . import amount_to_text
+

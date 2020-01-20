@@ -35,8 +35,8 @@
                 </header>
                 <sheet>
                     <h1>
-                    <field name="waybill_type" readonly="1" />
-                        <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Waybill - " style="font-size:30px;"/>
+                        <field name="waybill_type" readonly="1" />
+                        <span> - </span>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
                     <group col="4">
@@ -44,7 +44,7 @@
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" name="date_order"/>
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" groups="base.group_multi_currency" name="currency_id"/>
                         <separator colspan="4" string="·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·  ·" style="text-align: center;"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" colspan="4" domain="[('customer','=',True), ('is_company', '=', True)]" name="partner_id"/>
+                        <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" colspan="4" domain="[('customer','=',True)]" name="partner_id"/>
                         <!--  -->
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" context="{'search_default_customer':1, 'show_address': 1}" domain="[('parent_id','=',partner_id)]" name="partner_order_id" options="{&quot;always_reload&quot;: True}"/>
                         <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" context="{'search_default_customer':1, 'show_address': 1}" domain="[('parent_id','=',partner_id)]" name="partner_invoice_id" options="{&quot;always_reload&quot;: True}"/>
@@ -63,7 +63,7 @@
                                 <separator coslpan="4" string="Transportable"/>
                                 <field attrs="{'readonly':[('state','in',('confirmed', 'cancel'))]}" colspan="4" name="transportable_line_ids" nolabel="1">
                                     <tree editable="bottom">
-                                        <field name="transportable_id"/>
+                                        <field name="transportable_id" domain="[('tms_product_category','=','charge')]"/>
                                         <field name="name"/>
                                         <field name="transportable_uom_id"/>
                                         <field name="quantity"/>
@@ -362,7 +362,7 @@
         <field name="view_mode">tree,form,calendar,graph</field>
         <field name="search_view_id" ref="view_tms_waybill_filter"/>
         <field name="domain" >[('waybill_type','=','waybill')]</field>
-        <field name="context">{&quot;search_default_user_id&quot;:uid, 'search_default_this_month': 1, 'default_waybill_type': 'waybill'}</field>
+        <field name="context">{'search_default_user_id':uid, 'search_default_this_month': 1, 'default_waybill_type': 'waybill'}</field>
         <field name="help">Waybills</field>
     </record>
     <record id="action_tms_request_form" model="ir.actions.act_window">

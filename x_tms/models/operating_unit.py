@@ -19,6 +19,8 @@ class OperatingUnit(models.Model):
         'ir.sequence', string='Advance Sequence')
     waybill_sequence_id = fields.Many2one(
         'ir.sequence', string='Waybill Sequence')
+    request_sequence_id = fields.Many2one(
+        'ir.sequence', string='Request Sequence')
     expense_sequence_id = fields.Many2one(
         'ir.sequence', string='Expense Sequence')
     loan_sequence_id = fields.Many2one(
@@ -35,4 +37,9 @@ class OperatingUnit(models.Model):
         'account.journal', string='Purchase Journal')
     ieps_product_id = fields.Many2one(
         'product.product', string='IEPS Product')
+    ieps_value = fields.Float(string="Valor del IEPS", default=0.3521)
     credit_limit = fields.Float()
+    default_provider_fuel = fields.Many2one('res.partner', string="Proveedor de combustible por default")
+    account_ids_cambio = fields.Many2one('account.account', string='Cuenta gasto real Cambio')
+    account_ids_reembolso = fields.Many2one('account.account', string='Cuenta gasto real Rembolso')
+    account_ids_viaje = fields.Many2one('account.account', string='Cuenta viaje')

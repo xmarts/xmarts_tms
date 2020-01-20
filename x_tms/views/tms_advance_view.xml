@@ -54,11 +54,12 @@
         <field name="arch" type="xml">
             <form string="Advances">
                 <header>
-                    <button name="action_cancel_draft" icon="fa-reply" states="cancel" string="Set to Draft" type="object"/>
-                    <button name="action_cancel" icon="fa-times" states="draft,approved,confirmed" string="Cancel" type="object"/>
-                    <button name="action_approve" icon="fa-thumbs-up" class="oe_highlight" states="draft" string="Approve" type="object"/>
-                    <button name="action_confirm" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
-                    <button name="action_authorized" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
+                    <button name="action_cancel_draft" groups="x_tms.group_tms_advance_validator" icon="fa-reply" states="cancel" string="Set to Draft" type="object"/>
+                    <button name="action_cancel" groups="x_tms.group_tms_advance_validator" icon="fa-times" states="draft,approved,confirmed" string="Cancel" type="object"/>
+                    <button name="action_approve" groups="x_tms.group_tms_advance_validator" icon="fa-thumbs-up" class="oe_highlight" attrs="{'invisible':[('state','in', ['authorized','approved','confirmed','closed','cancel'])]}" string="Approve" type="object"/>
+                    <!-- <button name="action_approve" icon="fa-thumbs-up" class="oe_highlight" states="draft" string="Approve" type="object"/> -->
+                    <button name="action_confirm" groups="x_tms.group_tms_advance_validator" icon="fa-check-square-o" class="oe_highlight" states="approved" string="Confirm" type="object"/>
+                    <button name="action_authorized" groups="x_tms.group_tms_advance_validator" icon="fa-key" string="To authorize advance" type="object" class="oe_highlight" states="authorized"/>
                     <field name="state" statusbar_visible="draft,approved,authorized,confirmed,cancel,closed" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -77,12 +78,14 @@
                             <field name="date" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}"/>
                             <field name="currency_id" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" groups="base.group_multi_currency"/>
                             <field name="auto_expense" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" />
+                            <field name="adelanto_factor" invisible="1"/>
                         </group>
                     </group>
                     <group>
                         <group>
                             <field name="product_id" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}"/>
                             <field name="amount" options="{'currency_field': 'currency_id'}" widget="monetary" attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}"/>
+                        <field name="to_expense"/>
                         </group>
                     </group>
                     <group>
@@ -98,6 +101,11 @@
                                     <field name="paid"/>
                                     <field name="expense_id"/>
                                     <field name="payment_move_id"/>
+                                    <field name="cuenta_b" readonly="1"/>
+                                    <field name="n_transaccion" readonly="1"/>
+                                    <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
+                                    <field name="filename" invisible="1"/>
+                                    <field name="advance_auto" invisible="1"/>
                                 </group>
                             </page>
                         </notebook>

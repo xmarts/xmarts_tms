@@ -15,15 +15,16 @@ class TmsUnitKit(models.Model):
 
     name = fields.Char(required=True)
     unit_id = fields.Many2one('fleet.vehicle', 'Unit', required=True)
-    trailer1_id = fields.Many2one('fleet.vehicle', 'Trailer 1')
+    trailer1_id = fields.Many2one('fleet.vehicle', 'Remolque 1')
     dolly_id = fields.Many2one('fleet.vehicle', 'Dolly')
-    trailer2_id = fields.Many2one('fleet.vehicle', 'Trailer 2')
+    trailer2_id = fields.Many2one('fleet.vehicle', 'Remolque 2')
     employee_id = fields.Many2one(
-        'hr.employee', 'Driver', domain=[('driver', '=', True)])
+        'hr.employee', 'Driver', domain=[('driver', '=', True)], related="unit_id.employee_id")
     date_start = fields.Datetime()
     date_end = fields.Datetime()
     notes = fields.Text()
     active = fields.Boolean(default=True)
+    tipo_remolque = fields.Selection([('sencillo','Sencillo'),('doble','Doble'),('torton','Tortón'),('rabon','Rabón')], string="Tipo de remolque", required=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(unit_id,name)',

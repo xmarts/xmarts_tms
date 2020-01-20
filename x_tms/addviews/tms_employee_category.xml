@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data>
+
+    <record model="ir.ui.view" id="employee_category_list">
+      <field name="name">hr_employee_category_menu</field>
+      <field name="model">hr.employee.category</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+  	  <record model="ir.ui.view" id="tms_hr_employee_category_list">
+      <field name="name">hr_employee_category</field>
+      <field name="model">hr.employee.category</field>
+      <field name="arch" type="xml">
+	  <form string="Vehicle Status Log">
+                  
+                    <sheet>
+                       <group name="group0"> 
+                            <field name="name"/>
+                            
+                            
+                        </group>
+                        <notebook>
+                          <page string="Deducciones y Percepciones">
+                            <group>
+                              <field name="employee_salary_ids" colspan="4">
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="product_id"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
+                                  <field name="hr_emp_cat_id" invisible="1"/>
+                                </tree>
+                              </field>
+                            </group>
+                        </page>
+                        </notebook>
+                    </sheet>
+                </form>
+         </field>
+     </record>
+    </data>
+</odoo>
+            

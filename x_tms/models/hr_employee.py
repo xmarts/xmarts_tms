@@ -29,7 +29,7 @@ class HrEmployee(models.Model):
     tms_expense_negative_account_id = fields.Many2one(
         'account.account', 'Negative Balance Account')
     operating_unit_id = fields.Many2one(
-        'operating.unit', 'Operating Unit')
+        'operating.unit', 'Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     driver_license = fields.Char(string="License ID")
     license_type = fields.Char()
     days_to_expire = fields.Integer(compute='_compute_days_to_expire')
@@ -37,6 +37,8 @@ class HrEmployee(models.Model):
     license_valid_from = fields.Date()
     license_expiration = fields.Date()
     outsourcing = fields.Boolean(string='Outsourcing?')
+    employee_category_id = fields.Many2one("hr.employee.category", string="Categoria de empleado")
+    num_med_prev = fields.Char(string="Número de medicina preventiva")
 
     @api.depends('license_expiration')
     def _compute_days_to_expire(self):
@@ -72,3 +74,8 @@ class HrEmployee(models.Model):
                 client.close()
                 raise ValidationError(_(
                     'The driver license is not in SCT database'))
+
+
+    monto_info = fields.Float(string="Monto Infonavit", default=0.0)
+    periodo_info = fields.Selection([('sem','Semanal'),('quin','Quincenal'),('men','Mensual')], string="Periodo infonavit")
+    infonavit_account_id = fields.Many2one('account.account', string='Cuenta infonavit')

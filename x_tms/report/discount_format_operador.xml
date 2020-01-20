@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="report_recibo_discount_operador">
+         
+         
+             <t t-foreach="docs" t-as="doc">
+            
+              
+                <div class="page">
+                    
+       
+                <div style="border: solid #000000 1px;">
+                    <div>
+                    <table width="100%" style="font-size:18px;">
+                        <tr style="background:#000000; color:#FFFFFF">
+                            <td width="20%"><img t-attf-src="data:image/*;base64,{{doc.company_id.logo}}" style="width:80px;"/></td>
+                            <td width="80%" ><strong class="text-center">Formato de Solicitud de Prestamo o Descuento</strong></td>
+                           
+                        </tr>
+                    </table>
+                    <br/>
+                   
+                    <table width="100%">
+                        <tr>
+                            <td width="60%" style="padding-left:10px;"><span>Nombre del operador: <span t-field="doc.name" /></span></td>
+                            <td width="15%"><span>Monto a Descontar</span>  </td>
+                            <td width="15%" class="text-left"><div style="border: solid #000000 1px; -webkit-border-radius: 5px;
+                    -moz-border-radius: 5px;
+                    border-radius: 5px;
+                    padding-right:15px;padding-top:15px; aling:left;"><div class="text-center">  </div></div></td>
+                    <td width="10%"></td>
+                </tr>
+                          
+                
+                    </table>
+                </div>
+                <br/><br/>
+                <div>
+                    <table style="font-size:14px;">
+                        <tr>
+                            <td width="5%"></td>
+                            <td width="40%"> <table style="width:100%">
+                                    <tr style="background:#000000; color:#FFFFFF">
+                                        <td colspan="2" class="text-center">Motivo de Descuento</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td ><div style="border: solid #000000 1px;  width:10px;padding-right:20px;  "> <div style="padding-right:5px; padding-top:12px; padding-left:5px;" class="text-center"></div></div></td>
+                                     
+                                        <td  style="padding-left:5px;padding-bottom:15px;"><span>Prestamo Personal</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                          <td ><div style="border: solid #000000 1px;  width:10px;padding-right:20px;  "> <div style="padding-right:5px; padding-top:12px; padding-left:5px;" class="text-center"></div></div></td>
+                                          
+                                        <td  style="padding-left:5px;padding-bottom:15px;"><span>Descuento mal Uso de Equipo de Trabajo</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                          <td  ><div style="border: solid #000000 1px;  width:10px;padding-right:20px;  "> <div style="padding-right:5px; padding-top:12px; padding-left:5px;" class="text-center"></div></div></td>
+                                         
+                                        <td  style="padding-left:5px;padding-bottom:15px;"><span>Transferencia de Deuda por Cambio de Flotilla</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                          <td  ><div style="border: solid #000000 1px;  width:10px;padding-right:20px;  "> <div style="padding-right:5px; padding-top:12px; padding-left:5px;" class="text-center"></div></div></td>
+                                         
+                                        <td style="padding-left:5px; padding-bottom:15px;"><span>Remplazo o Repacion de Celular</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                          <td  ><div style="border: solid #000000 1px;  width:10px;padding-right:20px;  "> <div style="padding-right:5px; padding-top:12px; padding-left:5px;" class="text-center"></div></div></td>
+                                        <td style="padding-left:5px;padding-bottom:15px;"><span>Diferencia en Diesel</span></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="10%"></td>
+                            <td width="40%"><table>
+                                    <tr style="background:#000000; color:#FFFFFF">
+                                        <td colspan="2" class="text-center">Condiciones de Pago</td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                    <tr>
+                                        <td width="70%" style="padding-left:5px;padding-bottom:15px;"><span>Monto a Descontar por Liq</span></td>
+                                         <td width="30%"><div style="border: solid #000000 1px; -webkit-border-radius: 5px;
+                                        -moz-border-radius: 5px;
+                                        border-radius: 5px;
+                                        padding-right:55px; padding-top:15px; padding-left:55px;
+                                       ">  </div></td>
+                                    
+                                        
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                        <td width="70%" style="padding-left:5px;padding-bottom:15px;"><span>No. De Parcialidades</span></td>
+                                   
+                                       
+                                        <td width="30%" ><div style="border: solid #000000 1px; -webkit-border-radius: 5px;
+                                        -moz-border-radius: 5px;
+                                        border-radius: 5px;
+                                        padding-right:55px; padding-top:15px; padding-left:55px;
+                                       ">  </div></td>
+                                       
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="2" style="padding-top:5px;"></td>
+                                    </tr>
+                                     <tr>
+                                        <td width="70%" style="padding-left:5px;padding-bottom:15px;"><span>Fecha Inicio Descuento</span></td>
+                                   
+                                        <td width="30%"><div style="border: solid #000000 1px; -webkit-border-radius: 5px;
+                                        -moz-border-radius: 5px;
+                                        border-radius: 5px;
+                                        padding-right:55px; padding-top:15px; padding-left:55px;
+                                         "><div class="text-center">  </div></div></td>
+                                    </tr>
+                                </table></td>
+                               
+                        </tr>
+
+
+                    </table>
+                    <br/><br/>
+                    <table>
+                        <tr>
+                            <td width="4%"></td>
+                            <td width="28%" class="text-center">Nombre y Firma de Quien Solicita</td>
+                            <td width="4%"></td>
+                            <td width="28%" class="text-center">Nombre y Firma del Operador</td>
+                            <td width="4%"></td>
+                            <td width="28%" class="text-center">Nombre y Firma de Quien Autoriza</td>
+                            <td width="4"></td>
+
+                        </tr>
+                         <tr>
+                           <td colspan="7" style="padding-top:10px;"></td>
+                         </tr>
+                         <tr>
+                           <td colspan="7" style="padding-top:10px;"></td>
+                         </tr>
+                         <tr>
+                           <td colspan="7" style="padding-top:10px;"></td>
+                         </tr>
+                         <tr>
+                             <td width="4%"></td>
+                            <td width="28%">________________________________</td>
+                            <td width="4%"></td>
+                            <td width="28%">________________________________</td>
+                            <td width="4%"></td>
+                            <td width="28%">________________________________</td>
+                            <td width="4" style="padding-right:5px;"></td>
+                         </tr>
+                         <tr>
+                             <td width="4%"></td>
+                            <td width="28%" class="text-center">Supervisor de Flotilla</td>
+                            <td width="4%"></td>
+                            <td width="28%" class="text-center">Operador</td>
+                            <td width="4%"></td>
+                            <td width="28%" class="text-center">Jefe de Operaciones</td>
+                            <td width="4"></td>
+                         </tr>
+                         <tr>
+                           <td colspan="7" style="padding-top:10px;"></td>
+                         </tr>
+                          <tr>
+                           <td colspan="7" style="padding-top:10px;"></td>
+                         </tr>
+                    </table>
+                </div>
+                </div>
+            </div>
+                 
+                </t>
+          
+        </template>
+       <record id="paperformat_discount" model="report.paperformat"> 
+            <field name="name">No header</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">20</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">3</field>
+            <field name="dpi">90</field>
+    </record>
+
+
+        <report file="x_tms.report_recibo_discount_operador" id="action_report_discount_operador" model="hr.employee" name="x_tms.report_recibo_discount_operador" report_type="qweb-pdf" string="Prestamo / Descuento" paperformat="x_tms.paperformat_discount"/>
+</data>
+</odoo>

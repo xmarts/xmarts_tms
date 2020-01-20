@@ -10,6 +10,10 @@ from odoo import _, api, exceptions, fields, models
 import base64
 from suds.client import Client
 from lxml import etree
+from zeep import Client
+from xml.etree import ElementTree as ET
+import sys
+import locale
 
 class TmsRoute(models.Model):
     _name = 'tms.route'
@@ -46,9 +50,24 @@ class TmsRoute(models.Model):
         'tms.route.place',
         'route_id',
         string='Places')
+    route_stop_ids = fields.One2many(
+        'tms.route.stops',
+        'route_id',
+        string='Places')
     tollstation_ids = fields.Many2many(
         'tms.route.tollstation', string="Toll Station")
     note_ids = fields.One2many('tms.route.note', 'route_id', string='Notes')
+    cargos_id = fields.One2many('tms.viaje.cargos', 'route_id', string="Cargos Adicionales")
+    # total_casetas = fields.Float(string="Total Casetas", compute="get_t_casetas")
+
+    # @api.multi
+    # @api.depends('tollstation_ids', 'total_casetas')
+    # def get_t_casetas(self):
+    #     for record in self:
+    #         suma = 0.0
+    #         for rec in record.tollstation_ids:
+    #             suma += rec.costo_caseta
+    #         record.total_casetas = suma
 
     @api.depends('distance_empty', 'distance')
     @api.onchange('distance_empty')
@@ -70,23 +89,64 @@ class TmsRoute(models.Model):
                         " the distance route."))
             rec.distance_empty = rec.distance - rec.distance_loaded
 
-    ruta_file = fields.Binary('Archivo, detalles de ruta', readonly=True)
+    #ruta_file = fields.Binary('Archivo, detalles de ruta', readonly=True)
+
+    mapa_link = fields.Char(string="Enlace de ruta")
+
+    fuel_log_ids = fields.One2many(
+        'fleet.vehicle.log.fuel.tem', 'route_id', string='Vales de combustible')
 
     @api.multi
     def get_route_soap(self):
-        url="http://www.gmapserver.com/GlobalMap_API/V3/GlobalMapWSDL.wsdl"
-        client = Client(url)
-        #print client ## shows the details of this service
+        paradas = []
+        it = 0
+        for r in self.route_place_ids:
+            paradas.append([r.place_id.name,r.place_id.latitude,r.place_id.longitude])
+            it += 1
+        it = 20 - it
+        if it > 0:
+            i = 0
 
-        result = client.service.CalcularRuta("225217657648564", 16, 15, 18, 2.5, 4, 0, 0, 1, 1, 1, 3,
-        "Monterrey", 0, 0, 1, 2, "Guadalajara", 0, 0, 2, 3, "Morelia", 0, 0, 2, -5, "", 0, 0, 0, 0, "0", 0, 0, 0,
-        0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0,
-        0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0,
-        "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0)
-        print result ## see: restult.txt below
-        root = etree.fromstring(result)
-        textelem = root.find('INFO_RUTA/RESULTADOS')
-        print textelem.DISTANCIA_TOTAL
+            while it > i:
+                paradas.append(["",0,0])
+                i += 1
+
+        client = Client('http://www.gmapserver.com/GlobalMap_API/V3/GlobalMapWSDL.wsdl')
+        result = client.service.CalcularRuta("225217657648564", 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3,
+        str(self.departure_id.name), self.departure_id.latitude, self.departure_id.longitude, 0, 0,
+        str(self.arrival_id.name), self.arrival_id.latitude, self.arrival_id.longitude, 0, 0,
+        str(paradas[0][0] or ""), float(paradas[0][1] or 0), float(paradas[0][2] or 0), 0, 0, str(paradas[1][0] or ""), float(paradas[1][1] or 0), float(paradas[1][2] or 0), 0, 0,
+        str(paradas[2][0] or ""), float(paradas[2][1] or 0), float(paradas[2][2] or 0), 0, 0, str(paradas[3][0] or ""), float(paradas[3][1] or 0), float(paradas[3][2] or 0), 0, 0,
+        str(paradas[4][0] or ""), float(paradas[4][1] or 0), float(paradas[4][2] or 0), 0, 0, str(paradas[5][0] or ""), float(paradas[5][1] or 0), float(paradas[5][2] or 0), 0, 0,
+        str(paradas[6][0] or ""), float(paradas[6][1] or 0), float(paradas[6][2] or 0), 0, 0, str(paradas[7][0] or ""), float(paradas[7][1] or 0), float(paradas[7][2] or 0), 0, 0,
+        str(paradas[8][0] or ""), float(paradas[8][1] or 0), float(paradas[8][2] or 0), 0, 0, str(paradas[9][0] or ""), float(paradas[9][1] or 0), float(paradas[9][2] or 0), 0, 0,
+        str(paradas[10][0] or ""), float(paradas[10][1] or 0), float(paradas[10][2] or 0), 0, 0, str(paradas[11][0] or ""), float(paradas[11][1] or 0), float(paradas[11][2] or 0), 0, 0,
+        str(paradas[12][0] or ""), float(paradas[12][1] or 0), float(paradas[12][2] or 0), 0, 0, str(paradas[13][0] or ""), float(paradas[13][1] or 0), float(paradas[13][2] or 0), 0, 0,
+        str(paradas[14][0] or ""), float(paradas[14][1] or 0), float(paradas[14][2] or 0), 0, 0, str(paradas[15][0] or ""), float(paradas[15][1] or 0), float(paradas[15][2] or 0), 0, 0,
+        str(paradas[16][0] or ""), float(paradas[16][1] or 0), float(paradas[16][2] or 0), 0, 0, str(paradas[17][0] or ""), float(paradas[17][1] or 0), float(paradas[17][2] or 0), 0, 0,
+        str(paradas[18][0] or ""), float(paradas[18][1] or 0), float(paradas[18][2] or 0), 0, 0, str(paradas[19][0] or ""), float(paradas[19][1] or 0), float(paradas[19][2] or 0), 0, 0,
+        )
+        result = result.encode('utf-8')
+        tree = ET.XML(result)
+        distancia = ""
+        tiempo = ""
+        for r in tree.findall("RESULTADOS/DISTANCIA_TOTAL"):
+            distancia = r.text
+            distancia = distancia[:-4]
+
+        thora = ""
+        tmin = ""
+        for r in tree.findall("RESULTADOS/TIEMPO_TOTAL"):
+            tiempo = r.text
+            thora = tiempo[:-5]
+            tmin = tiempo[4:6]
+
+        for r in tree.findall("LINKS/MAPA"):
+            self.mapa_link = r.text
+
+        print(result)
+        self.distance = float(distancia.replace(",",""))
+        self.travel_time = (float(thora)+(float(tmin)/60))
 
 
     @api.multi

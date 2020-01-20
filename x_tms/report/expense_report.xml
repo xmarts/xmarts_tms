@@ -262,9 +262,9 @@
     <template id="expense_report_translate">
         <t t-call="report.html_container">
             <t t-as="doc_id" t-foreach="doc_ids">
-                <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'tms.expense_report')"/>
+                <t t-raw="translate_doc(doc_id, doc_model, 'partner_id.lang', 'x_tms.expense_report')"/>
             </t>
         </t>
     </template>
-    <report file="tms.expense_report" id="print_expense_report" model="tms.expense" name="tms.expense_report" report_type="qweb-pdf" string="Expense Report"/>
+    <report file="x_tms.expense_report" id="print_expense_report" model="tms.expense" name="x_tms.expense_report" report_type="qweb-pdf" string="Expense Report"/>
 </odoo>

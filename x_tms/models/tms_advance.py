@@ -5,7 +5,7 @@
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
-
+import base64
 
 class TmsAdvance(models.Model):
     _name = 'tms.advance'
@@ -13,8 +13,16 @@ class TmsAdvance(models.Model):
     _description = 'Money advance payments for Travel expenses'
     _order = "name desc, date desc"
 
+    #cuenta_banc = fields.Char(string="Cuenta Bancaria", related="payment_move_id.cuenta_banc")
+    cuenta_b = fields.Many2one("res.partner.bank", string="Cuenta Bancaria", related="payment_move_id.cuenta_b")
+    n_transaccion = fields.Char(string="Número de Transacción", related="payment_move_id.n_transaccion")
+    adjunto_compro = fields.Binary(string="Comprobante", related="payment_move_id.adjunto_compro")
+    filename = fields.Char('file name', related="payment_move_id.filename")
+
+    advance_auto = fields.Boolean(string="Anticipo Automatico", default=False)
+    adelanto_factor = fields.Boolean(string="Es adelando de salario?", default=False)
     operating_unit_id = fields.Many2one(
-        'operating.unit', string='Operating Unit', required=True)
+        'operating.unit', string='Operating Unit', required=True,default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     name = fields.Char(string='Advance Number')
     state = fields.Selection(
         [('draft', 'Draft'),
@@ -39,9 +47,9 @@ class TmsAdvance(models.Model):
         store=True,)
     employee_id = fields.Many2one(
         'hr.employee',
-        compute='_compute_employee_id',
+        related='travel_id.employee_id',
         string='Driver',
-        store=True,)
+        store=True)
     amount = fields.Monetary(required=True)
     notes = fields.Text()
     move_id = fields.Many2one(
@@ -71,6 +79,9 @@ class TmsAdvance(models.Model):
     product_id = fields.Many2one(
         'product.product', string='Product', required=True,
         domain=[('tms_product_category', '=', 'real_expense')])
+
+
+    to_expense = fields.Boolean(string="Comparar en gastos", default=False)
 
     @api.multi
     @api.depends('travel_id')

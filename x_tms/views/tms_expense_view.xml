@@ -35,6 +35,7 @@
                     <button class="oe_highlight" confirm="Are you sure to confirm this expense? This action can't be changed." icon="fa-check-square-o" name="action_confirm" states="approved" string="Confirm" type="object"/>
                     <button name="action_cancel" states="approved,confirmed" string="Cancel" type="object"/>
                     <button name="get_travel_info" states="approved,draft" string="Update Expense" type="object"/>
+                    <button name="get_nomina" states="approved,draft" string="Actualizar Percepciones/Deducciones" type="object"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -42,14 +43,29 @@
                         <label attrs="{'invisible':[('name','=', False)]}" class="oe_inline" string="Expense - " style="font-size:30px;"/>
                         <field class="oe_inline" name="name" readonly="1"/>
                     </h1>
-                    <group col="4">
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="employee_id"/>
-                        <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
+                    <group>
+                        <group>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="operating_unit_id"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="date"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" name="currency_id"/>
+                            <field name="date_inicio" invisible="1"/>
+                            <field name="date_fin" invisible="1"/>
+                            <field name="odoo_inicio" invisible="1"/>
+                            <field name="odoo_fin" invisible="1"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" domain="[('fleet_type', '=', 'tractor')]" name="unit_id"/>
+                            <field name="employee_id"/>
+                        </group>
+                        <!-- <group>
+                            <field name="force_perceps"/>
+                            <field name="periodo_force_perceps" attrs="{'invisible': [('force_perceps','!=',True)]}"/>
+                            <field name="force_info"/>
+                        </group> -->
                     </group>
                     <notebook>
+                        
                         <page string="Resume">
                             <group col="2">
                                 <div>
@@ -57,12 +73,14 @@
                                         <separator colspan="2" string="Expense Summary"/>
                                         <field name="amount_salary"/>
                                         <field name="amount_other_income"/>
-                                        <field name="amount_refund"/>
+                                        <field name="amount_refund" invisible="1"/>
                                         <field name="amount_salary_discount"/>
                                         <field name="amount_salary_retention"/>
                                         <field name="amount_loan"/>
                                         <field name="amount_real_expense"/>
                                         <field name="amount_fuel_cash"/>
+                                        <field name="amount_percepciones"/>
+                                        <field name="amount_deducciones"/>
                                         <field name="amount_subtotal_real"/>
                                         <field name="amount_tax_real"/>
                                         <field name="amount_total_real"/>
@@ -93,7 +111,8 @@
                                     <field name='travel_days'/>
                                 </group>
                             </group>
-                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('state','=', 'done'), ('state','!=','cancel'), ('unit_id', '=', unit_id)]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1">
+                            <!-- <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('state','=', 'done'), ('state','!=','cancel'), ('unit_id', '=', unit_id)]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1"> -->
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" colspan="4" domain="[('employee_id','=', employee_id), ('state','=', 'done')]" context="{'tree_view_ref' : 'tms.view_tms_travel_tree_customer', 'form_view_ref': 'tms.view_tms_travel_form_expense'}" name="travel_ids" nolabel="1">
                                 <tree default_order="name" string="">
                                     <field invisible="1" name="state"/>
                                     <field name="name"/>
@@ -112,7 +131,25 @@
                             </field>
                         </page>
                         <page string="Expense Lines">
-                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" context="{'default_expense_id': active_id, 'group_by_line_type': 1, 'default_travel_ids': travel_ids}" name="expense_line_ids" nolabel="1"/>
+                            <field attrs="{'readonly':[('state','in',('confirmed','cancel','closed'))]}" context="{'default_expense_id': active_id, 'group_by_line_type': 1, 'default_travel_ids': travel_ids}" name="expense_line_ids" nolabel="1" colors="blue:line_type=='salary';red:line_type=='salary_discount';">
+                                 <tree  string="">
+                                    
+                                    <field name="travel_id"/>
+                                    <field name="route_id"/>
+                                    <field name='line_type'/>
+                                    <field name='product_id'/>
+                                    <field name='account_ids'/>
+                                    <field name="name"/>
+                                    <field name="unit_price"/>
+                                    <field name="tax_ids"/>
+                                    <field name="price_subtotal"/>
+                                    <field name="tax_amount"/>
+                                    <field name="price_total"/>
+                                    <field name="is_invoice"/>
+                                    <field name="invoice_id"/>
+                                </tree>
+                            </field>
+
                         </page>
                         <page string="Advances">
                             <field colspan="4" name="advance_ids" nolabel="1" readonly="1">
@@ -128,7 +165,37 @@
                             </field>
                         </page>
                         <page string="Fuel log Vouchers">
-                            <field colspan="4" name="fuel_log_ids" nolabel="1" readonly="1"/>
+                            <group>
+                                <field name="file_fuel" readonly="0" widget="binary" string="Vale de transacciones" filename="filenamef"/>
+                                <field name="filenamef" invisible="1"/>
+                            </group>
+                            <group>
+                                <field colspan="4" name="fuel_log_ids" nolabel="1" readonly="1"/>
+                                <field colspan="4" name="fuel_dif_ids" nolabel="1">
+                                    <tree string="" editable="bottom">
+                                        <field invisible="1" name="expense_id"/>
+                                        <field name="name"/>
+                                        <field name="descripcion"/>
+                                        <field name="litros"/>
+                                        <field name="importe"/>
+                                        <field name="fecha"/>
+                                        <field name="hora"/>
+                                        <field name="unidad"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                        <page string="Diferencia de gastos">
+                            <field colspan="4" name="expense_dif_ids" nolabel="1">
+                                <tree string="" editable="bottom">
+                                    <field invisible="1" name="expense_id"/>
+                                    <field name="name"/>
+                                   <field name="account_ids" invisible="1"/>
+                                   <field name="product_id"/>
+                                    <field name="tipo"/>
+                                    <field name="valor"/>
+                                </tree>
+                            </field>
                         </page>
                         <page string="Loans">
                             <field colspan="4" name="loan_ids" nolabel="1" attrs="{'readonly':[('state','in',('confirmed'))]}">
@@ -141,10 +208,27 @@
                                     <field name="balance"/>                    
                                     <field name="paid" />
                                     <field name="state"/>
+                                    <field name="discount_type"/>
+                                    <field name="percent_discount"/>
+                                    <field name="fixed_discount"/>
                                     <field name="lock"/>
                                     <field name="amount_discount"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Deducciones y Percepciones">
+                            <group>
+                              <field name="employee_salary_ids" colspan="4">
+                                <tree editable="buttom" colors="blue:tipo=='percepcion';red:tipo=='deduccion';">
+                                  <field name="name" required="1"/>
+                                  <field name="product_id"/>
+                                  <field name="tipo" required="1"/>
+                                  <field name="periodo" required="1"/>
+                                  <field name="monto" required="1"/>
+                                  <field name="expense_id" invisible="1"/>
+                                </tree>
+                              </field>
+                            </group>
                         </page>
                         <page string="Notes">
                             <group>
@@ -155,6 +239,11 @@
                                 <group>
                                     <field name='paid'/>
                                     <field name='payment_move_id'/>
+                                    
+                                    <field name="cuenta_b"/>
+                                    <field name="n_transaccion" readonly="1"/>
+                                    <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
+                                    <field name="filename" invisible="1"/>
                                 </group>
                             </group>
                         </page>
@@ -187,6 +276,8 @@
                                 </group>
                             </group>
                         </page>
+                        
+                        
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -248,5 +339,35 @@
         <field name="context">{}</field>
         <field name="search_view_id" ref="view_tms_expense_filter"/>
         <field name="help">TMS Travel Expenses</field>
+    </record>
+    <!--  <record id="action_tms_fisicomecanica_form" model="ir.actions.act_window">
+        <field name="name">Fisicomecanica</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model"></field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record> -->
+
+    <record id='action_tms_fisicomecanica_form' model='ir.actions.act_window'>
+    <field name="name">Fisicomecanica</field>
+    <field name="res_model">tms.fisicomecanica</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,graph</field>
+  
+    </record>
+
+     <record id="action_tms_emisiones_form" model="ir.actions.act_window">
+        <field name="name">Emisiones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.emisiones</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+     <record id="action_tms_viaje_cargos_adicionales_form" model="ir.actions.act_window">
+        <field name="name">Tipos de cargos adicionales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">tms.tipocargosadicionales</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

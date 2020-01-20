@@ -22,7 +22,7 @@ class TmsWaybill(models.Model):
     _description = 'Waybills'
     _order = 'name desc'
 
-    waybill_type = fields.Selection([('waybill','Carta Porte'),('request','Solicitud Transporte')], string="Estado de solicitud", default='draft')
+    waybill_type = fields.Selection([('waybill','Carta Porte'),('request','Solicitud Transporte')], string="Estado de solicitud", default='waybill')
     operating_unit_id = fields.Many2one(
         'operating.unit', string='Operating Unit', required=True)
     customer_factor_ids = fields.One2many(
@@ -83,8 +83,8 @@ class TmsWaybill(models.Model):
     arrival_address_id = fields.Many2one(
         'res.partner', 'Arrival Address', required=True,
         help="Arrival address for current Waybill.", change_default=True)
-    upload_point = fields.Char(change_default=True)
-    download_point = fields.Char(change_default=True)
+    upload_point = fields.Many2one("tms.place",change_default=True)
+    download_point = fields.Many2one("tms.place",change_default=True)
     invoice_id = fields.Many2one(
         'account.invoice', 'Invoice', readonly=True, copy=False)
     invoice_paid = fields.Boolean(
@@ -183,20 +183,25 @@ class TmsWaybill(models.Model):
         string="Customs")
 
     expense_ids = fields.Many2many(
-        'tms.expense', compute='_compute_expense_ids', string="Expenses")
+        'tms.expense', string="Expenses")
+    #, compute='_compute_expense_ids'
 
-    @api.depends('travel_ids')
-    def _compute_expense_ids(self):
-        for rec in self:
-            rec.expense_ids = False
-            for travel in rec.travel_ids:
-                rec.expense_ids += travel.expense_id
+    # @api.depends('travel_ids')
+    # def _compute_expense_ids(self):
+    #     for rec in self:
+    #         rec.expense_ids = False
+    #         for travel in rec.travel_ids:
+    #             rec.expense_ids += travel.expense_id
 
     @api.model
     def create(self, values):
         waybill = super(TmsWaybill, self).create(values)
-        sequence = waybill.operating_unit_id.waybill_sequence_id
-        waybill.name = sequence.next_by_id()
+        if waybill.waybill_type == 'request':
+            sequence = waybill.operating_unit_id.request_sequence_id
+            waybill.name = sequence.next_by_id()
+        if waybill.waybill_type == 'waybill':
+            sequence = waybill.operating_unit_id.waybill_sequence_id
+            waybill.name = sequence.next_by_id()
         product = self.env['product.product'].search([
             ('tms_product_category', '=', 'freight')], limit=1)
         if product:

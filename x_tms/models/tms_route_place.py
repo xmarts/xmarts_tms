@@ -15,14 +15,29 @@ class TmsRoutePlace(models.Model):
         required=True,
         string="Route")
     sequence = fields.Integer(default=10)
-    place_id = fields.Many2one('tms.place', string="Place")
-    state_id = fields.Many2one(
-        'res.country.state',
-        related="place_id.state_id",
-        readonly=True,
-        string="State")
-    country_id = fields.Many2one(
-        'res.country',
-        related="place_id.country_id",
-        readonly=True,
-        string="Country")
+    place_id = fields.Many2one('tms.place', string="Place", domain=[('tipo_ubicacion','!=','parada')])
+    calle = fields.Char(string="Calle",readonly=True, related="place_id.calle")
+    noexterior = fields.Char(string="No. Exterior",readonly=True, related="place_id.noexterior")
+    nointerior = fields.Char(string="No. Interior",readonly=True, related="place_id.nointerior")
+    localidad = fields.Many2one('res.colonia.zip.sat.code', string='Localidad',readonly=True, related="place_id.localidad")
+    latitude = fields.Float(string="Latitud",readonly=True, related="place_id.latitude")
+    longitude = fields.Float(string="Longitud",readonly=True, related="place_id.longitude")
+    tipo_ubicacion = fields.Selection([('almacen','Almacén'),('puerto','Puerto'),('parada','Parada')], string="Tipo de ubicacion", readonly=True, related="place_id.tipo_ubicacion")
+
+
+class TmsRouteStops(models.Model):
+    _name = 'tms.route.stops'
+    _order = 'sequence'
+
+    route_id = fields.Many2one(
+        'tms.route',
+        required=True,
+        string="Route")
+    sequence = fields.Integer(default=10)
+    place_id = fields.Many2one('tms.place', string="Place", domain=[('tipo_ubicacion','=','parada')])
+    calle = fields.Char(string="Calle",readonly=True, related="place_id.calle")
+    noexterior = fields.Char(string="No. Exterior",readonly=True, related="place_id.noexterior")
+    nointerior = fields.Char(string="No. Interior",readonly=True, related="place_id.nointerior")
+    localidad = fields.Many2one('res.colonia.zip.sat.code', string='Localidad',readonly=True, related="place_id.localidad")
+    latitude = fields.Float(string="Latitud",readonly=True, related="place_id.latitude")
+    longitude = fields.Float(string="Longitud",readonly=True, related="place_id.longitude")

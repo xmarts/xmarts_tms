@@ -24,7 +24,7 @@ class TmsExpenseLoan(models.Model):
     employee_id = fields.Many2one(
         'hr.employee', 'Driver', required=True)
     expense_ids = fields.Many2many(
-        'tms.expense.line', readonly=True)
+        'tms.expense.line')
     state = fields.Selection(
         [('draft', 'Draft'),
          ('authorized', 'Waiting for authorization'),
@@ -35,13 +35,13 @@ class TmsExpenseLoan(models.Model):
         readonly=True,
         default='draft')
     discount_method = fields.Selection([
-        ('each', 'Each Travel Expense Record'),
-        ('weekly', 'Weekly'),
-        ('fortnightly', 'Fortnightly'),
-        ('monthly', 'Monthly')], required=True)
+        ('each', 'Por Cada Registro de Viaje'),
+        ('weekly', 'Semanal'),
+        ('fortnightly', 'Quincenal'),
+        ('monthly', 'Mensual')], required=True)
     discount_type = fields.Selection([
-        ('fixed', 'Fixed'),
-        ('percent', 'Loan Percentage'), ], required=True)
+        ('fixed', 'Fijo'),
+        ('percent', 'Porcentaje'), ], required=True)
     notes = fields.Text()
     origin = fields.Char()
     amount = fields.Float(required=True)
@@ -76,6 +76,12 @@ class TmsExpenseLoan(models.Model):
         "is only for Loan Expense Records with balance < 0.0",
         readonly=True,
         ondelete='restrict',)
+
+    prestamo_p = fields.Boolean(string='Prestamo Personal')
+    descuneto = fields.Boolean(string='Descuento mal Uso de Equipo de Trabajo')
+    transfe = fields.Boolean(string='Transferencia de Deuda por Cambio de Flotilla')
+    remplazo_repara = fields.Boolean(string='Remplazo o Repacion de Celular')
+    diferencia_dies = fields.Boolean(string='Diferencia en Diesel')
 
     @api.model
     def create(self, values):
@@ -205,7 +211,8 @@ class TmsExpenseLoan(models.Model):
             rec.state = 'draft'
             rec.message_post(_('<strong>Loan drafted.</strong>'))
 
-    @api.depends('expense_ids')
+
+    @api.depends('expense_ids','state','balance')
     def _compute_balance(self):
         for loan in self:
             line_amount = 0.0
@@ -213,10 +220,12 @@ class TmsExpenseLoan(models.Model):
                 loan.balance = loan.amount
             else:
                 for line in loan.expense_ids:
-                    line_amount += line.price_total
+                    if line.state_expense == 'confirmed':
+                        line_amount += line.price_total
                 loan.balance = loan.amount + line_amount
-            if loan.balance <= 0.0:
-                loan.write({'state': 'closed'})
+            if loan.balance <= 0.0 and loan.state == 'confirmed':
+                loan.state = 'closed'
+                #loan.write({'state': 'closed'})
 
     @api.multi
     def unlink(self):

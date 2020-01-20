@@ -58,6 +58,7 @@
                         <separator colspan="4" string="Validity"/>
                         <field name="date_start"/>
                         <field name="date_end"/>
+                        <field name="tipo_remolque" />
                         <field name="active" />
                     </group>
                 </sheet>

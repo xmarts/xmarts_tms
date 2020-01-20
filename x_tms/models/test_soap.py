@@ -64,7 +64,7 @@
 # proxy = WSDL.Proxy(wsdl, namespace = namespace)
 # proxy.soapproxy.config.debug = 1
 
-# proxy.GetCursOnDate(input)
+# proxy.GetCursOnDate(input)     MXCIK161109FH2
 
 
 from zeep import Client
@@ -81,7 +81,20 @@ result = client.service.CalcularRuta("225217657648564", 16, 15, 18, 2.5, 4, 0, 0
 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0,
 "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0, "", 0, 0, 0, 0)
 result = result.encode('utf-8')
-print result
 tree = ET.XML(result)
-with open("file.xml", "w") as f:
-    f.write(ET.tostring(tree))
+for r in tree.findall("RESULTADOS/DISTANCIA_TOTAL"):
+    print(r.text)
+# tree = ET.XML(result)
+# texto = tree[2][0].text
+# print texto
+# with open("file.xml", "w") as f:
+#     f.write(ET.tostring(tree))
+
+# tiempo = "20h:52m"
+# thora = tiempo[:-5]
+# tmin = tiempo[4:6]
+# print (thora)
+# print(tmin)
+# print (float(thora)+(float(tmin)/60))
+
+#** NOTA DE CREDITO POR EL 5% DE LA FACTURA

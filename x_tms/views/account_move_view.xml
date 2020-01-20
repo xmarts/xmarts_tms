@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="account_move_tms_form" model="ir.ui.view">
+        <field name="name">Move for TMS</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="cuenta_b"/>
+                <field name="n_transaccion"/>
+                <field name="adjunto_compro" readonly="0" widget="binary" filename="filename"/>
+                <field name="filename" invisible="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>

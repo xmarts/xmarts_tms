@@ -7,14 +7,21 @@
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                 <field name="credit_limit"/>
+                <field name="account_ids_cambio"  />
+                <field name="account_ids_reembolso" />
+                <field name="account_ids_viaje" />
                 <group string="Sequences for TMS">
                     <field name="travel_sequence_id" required="1"/>
                     <field name="expense_sequence_id" required="1"/>
                     <field name="waybill_sequence_id" required="1"/>
+                    <field name="request_sequence_id" required="1"/>
                     <field name="advance_sequence_id" required="1"/>
                     <field name="fuel_log_sequence_id" required="1"/>
                     <field name="loan_sequence_id" required="1"/>
                     <field name="prepaid_fuel_sequence_id" required="1"/>
+
+                    
+                
                 </group>
                 <group string="Journals for TMS">
                     <field name="advance_journal_id" required="1"/>
@@ -25,6 +32,10 @@
                 </group>
                 <group string="Products for TMS">
                     <field name="ieps_product_id" required="1"/>
+                    <field name="ieps_value" required="1"/>
+                </group>
+                <group string="Proveedor Combustible">
+                    <field name="default_provider_fuel"/>
                 </group>
             </field>
         </field>

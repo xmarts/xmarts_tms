@@ -5,7 +5,17 @@
 
 from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+
+
+class AttachmentsVehicle(models.Model):
+    _name = 'tms.attachment.vehicle'
+
+    name = fields.Char(string='Concepto')
+    date = fields.Datetime(string='Fecha')
+    adjunto_compro_vehicle = fields.Binary(string="Adjunto")
+    filename = fields.Char('file name')
+    fleet_id=fields.Many2one('fleet.vehicle')
 
 
 class FleetVehicle(models.Model):
@@ -13,9 +23,10 @@ class FleetVehicle(models.Model):
     _description = "Vehicle"
     _order = 'name'
 
+    attachment_vehicle = fields.One2many('tms.attachment.vehicle', 'fleet_id', string="Adjuntos")
     name = fields.Char(compute=False, required=True)
     operating_unit_id = fields.Many2one(
-        'operating.unit', string='Operating Unit')
+        'operating.unit', string='Operating Unit',default=lambda self: self.env['operating.unit'].search([('name','=','Mexico')], limit=1).id or self.env['operating.unit'].search([('name','=','México')], limit=1).id or '')
     year_model = fields.Char()
     serial_number = fields.Char()
     registration = fields.Char()
@@ -47,6 +58,17 @@ class FleetVehicle(models.Model):
     insurance_days_to_expire = fields.Integer(
         compute='_compute_insurance_days_to_expire', string='Days to expire')
 
+    ejes = fields.Integer(string="Numero de ejes", default=2)
+    efficiency = fields.Float(
+        digits=(4, 2),
+        help=_("Rendimiento L/KM"),
+        string=_("Rendimiento L/Km")
+    )
+    f_category = fields.Many2one("fleet.vehicle.category", string="Categoria")
+    f_status = fields.Many2one("fleet.vehicle.state", string="Estado")
+    f_status_r = fields.Many2one("fleet.vehicle.status_reason", string="Razon de estado")
+    f_marca = fields.Many2one("fleet.vehicle.model.brand", string="Marca")
+    #f_tipo_motor = fields.Many2one("fleet.vehicle.motor", string="Tipo de motor")
     @api.depends('insurance_expiration')
     def _compute_insurance_days_to_expire(self):
         for rec in self:
@@ -59,3 +81,39 @@ class FleetVehicle(models.Model):
                 rec.insurance_days_to_expire = delta.days + 1
             else:
                 rec.insurance_days_to_expire = 0
+
+
+    fisicomecanica_count = fields.Integer(compute="_compute_count_all", string='Fisicomecanica')
+    emisiones_count = fields.Integer(compute="_compute_count_all_new", string='Emisiones')
+    def _compute_count_all_new(self):
+        fisi = self.env['tms.fisicomecanica']
+        emi=self.env['tms.emisiones']
+        for record in self:
+            record.fisicomecanica_count = fisi.search_count([('vehicle_id', '=', record.id)])
+            record.emisiones_count = emi.search_count([('vehicle_id', '=', record.id)])
+    
+    @api.multi
+    def return_action_to_open_new(self):
+        """ This opens the xml view specified in xml_id for the current vehicle """
+        self.ensure_one()
+        xml_id = self.env.context.get('xml_id')
+        if xml_id:
+            res = self.env['ir.actions.act_window'].for_xml_id('x_tms', xml_id)
+            res.update(
+                context=dict(self.env.context, default_vehicle_id=self.id, group_by=False),
+                domain=[('vehicle_id', '=', self.id)]
+            )
+            return res
+        return False
+
+class FleetVehicleLogContract_inherit(models.Model):
+
+    _inherit = 'fleet.vehicle.log.contract'
+
+
+    odometer = fields.Float( string='Odometer Value', help='Odometer measure of the vehicle at the moment of this log')
+
+    @api.onchange('vehicle_id')
+    def _onchange_vehicle(self):
+        if self.vehicle_id:
+            self.odometer = self.vehicle_id.odometer
